@@ -19,11 +19,9 @@ routes.use('/api/v1/category', category);
 routes.use('/api/v1/subcategory', subcategory);
 routes.use('/api/v1/coupon', coupon);
 
-
-routes.get('/', (_req:express.Request, res:express.Response)=>{
-res.status(200);
-res.send("this main page of routes");
-
-})
+routes.get('/', (_req: express.Request, res: express.Response) => {
+  res.status(200);
+  res.send('this main page of routes');
+});
 
 export default routes;

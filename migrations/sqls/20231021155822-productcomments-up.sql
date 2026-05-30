@@ -8,3 +8,4 @@ CREATE TABLE IF NOT EXISTS productcomment (
     ON DELETE CASCADE 
     ON UPDATE CASCADE
 );
+

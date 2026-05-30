@@ -1,14 +1,11 @@
-// @ts-ignore
 import pool from '../database_connection/db';
 import { category } from '../types/category';
-
-
 
 export class Category {
   async index(): Promise<category[]> {
     try {
-      // @ts-ignore
       const conn = await pool.connect();
+
       const sql = 'SELECT * FROM productcat';
 
       const result = await conn.query(sql);
@@ -17,14 +14,16 @@ export class Category {
 
       return result.rows;
     } catch (err) {
-      throw new Error(`Could not get category. Error: ${err}`);
+      throw new Error(
+        `Could not get category. Error: ${(err as Error).message}`
+      );
     }
   }
 
   async show(id: string): Promise<category> {
     try {
       const sql = 'SELECT * FROM productcat WHERE id=($1)';
-      // @ts-ignore
+
       const conn = await pool.connect();
 
       const result = await conn.query(sql, [id]);
@@ -37,29 +36,35 @@ export class Category {
     }
   }
 
-  async deletecategory(id: string) {
+  async deletecategory(name: string): Promise<boolean> {
     try {
-      const sql = 'delete FROM productcat WHERE id=($1)';
-      // @ts-ignore
+      const sql = 'delete FROM productcat WHERE catname=($1)';
+
       const conn = await pool.connect();
 
-      const result = await conn.query(sql, [id]);
+      const result = await conn.query(sql, [name]);
       conn.release();
-      return result.rowCount;
+      if (result.rowCount) {
+        return true;
+      }
+      return false;
     } catch (err) {
-      throw new Error(`Could not delete category with ${id}. Error: ${err}`);
+      throw new Error(`Could not delete category with ${name}. Error: ${err}`);
     }
   }
 
-  async create(c: category): Promise<category> {
+  async create(c: category): Promise<category | boolean> {
     try {
       const sql =
         'INSERT INTO productcat(catname,image) VALUES ($1, $2) RETURNING *';
-      // @ts-ignore
+
       const conn = await pool.connect();
       const result = await conn.query(sql, [c.name, c.image]);
       conn.release();
-      return result.rowCount;
+      if (result.rowCount) {
+        return result.rows[0];
+      }
+      return false;
     } catch (err) {
       throw new Error(`Could not add new category`);
     }
@@ -68,7 +73,6 @@ export class Category {
   async checkcategoryexist(cat: string): Promise<boolean> {
     try {
       const sql = 'SELECT EXISTS(SELECT 1 FROM productcat WHERE catname = $1)';
-      // @ts-ignore
       const conn = await pool.connect();
 
       const result = await conn.query(sql, [cat]);

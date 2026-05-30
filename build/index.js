@@ -1,28 +1,25 @@
-'use strict';
-var __importDefault =
-  (this && this.__importDefault) ||
-  function (mod) {
-    return mod && mod.__esModule ? mod : { default: mod };
-  };
-Object.defineProperty(exports, '__esModule', { value: true });
-const body_parser_1 = __importDefault(require('body-parser'));
-const express_1 = __importDefault(require('express'));
-const cors_1 = __importDefault(require('cors'));
-const routes_1 = __importDefault(require('./routes'));
-const app = (0, express_1.default)();
-const port = 4000;
-const corsOptions = {
-  origin: 'http://localhost:3000',
-  optionsSuccessStatus: 200
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
 };
-app.use((0, cors_1.default)(corsOptions));
-// parse application/x-www-form-urlencoded
+Object.defineProperty(exports, "__esModule", { value: true });
+const body_parser_1 = __importDefault(require("body-parser"));
+const express_1 = __importDefault(require("express"));
+const cors_1 = __importDefault(require("cors"));
+const routes_1 = __importDefault(require("./routes"));
+const app = (0, express_1.default)();
+const port = 3005;
+const corsoptions = {
+    origin: process.env.FRONTEND_LINK,
+    optionsSuccessStatus: 200
+};
+app.use((0, cors_1.default)(corsoptions));
+// this part is responsible for recieving data from frontend forms (data-form) and save it in the req.body
 app.use(body_parser_1.default.urlencoded({ extended: false }));
-// this middelware convert json request to javascript object
 app.use(body_parser_1.default.json());
 app.use(routes_1.default);
 app.listen(port, async () => {
-  const url = `http://localhost:3004`;
-  console.log(` open ${url} to review the project ...`);
+    const url = `http://localhost:${port}`;
+    console.log(` open ${url} to review the project ...`);
 });
 exports.default = app;

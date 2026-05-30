@@ -1,13 +1,9 @@
-// @ts-ignore
 import pool from '../database_connection/db';
 import { coupon } from '../types/coupon';
 
-
-
 export class Coupon {
-  async index(): Promise<coupon[]> {
+  async index(): Promise<coupon[] | []> {
     try {
-      // @ts-ignore
       const conn = await pool.connect();
       const sql = 'SELECT * FROM  discountcoupon';
 
@@ -24,7 +20,6 @@ export class Coupon {
   async show(name: string): Promise<coupon> {
     try {
       const sql = 'SELECT * FROM discountcoupon  WHERE name=($1)';
-      // @ts-ignore
       const conn = await pool.connect();
 
       const result = await conn.query(sql, [name]);
@@ -38,7 +33,6 @@ export class Coupon {
   async deletecoupon(id: string) {
     try {
       const sql = 'delete FROM  discountcoupon WHERE id=($1)';
-      // @ts-ignore
       const conn = await pool.connect();
 
       const result = await conn.query(sql, [id]);
@@ -53,7 +47,6 @@ export class Coupon {
     try {
       const sql =
         'INSERT INTO  discountcoupon (name,discount,expire) VALUES ($1,$2,$3) RETURNING *';
-      // @ts-ignore
       const conn = await pool.connect();
       const result = await conn.query(sql, [c.name, c.discount, c.expire]);
       const coupon = result.rows[0];
@@ -64,14 +57,26 @@ export class Coupon {
     }
   }
 
-  async checkcouponexist(name: string): Promise<boolean> {
+  async checkcouponexistbyname(name: string): Promise<boolean> {
     try {
       const sql =
         'SELECT EXISTS(SELECT 1 FROM  discountcoupon WHERE name = $1)';
-      // @ts-ignore
       const conn = await pool.connect();
 
       const result = await conn.query(sql, [name]);
+      conn.release();
+      return result.rows[0].exists;
+    } catch (err) {
+      throw new Error(` Error: ${err}`);
+    }
+  }
+
+  async checkcouponexistbyid(id: string): Promise<boolean> {
+    try {
+      const sql = 'SELECT EXISTS(SELECT 1 FROM  discountcoupon WHERE id = $1)';
+      const conn = await pool.connect();
+
+      const result = await conn.query(sql, [id]);
       conn.release();
       return result.rows[0].exists;
     } catch (err) {
@@ -83,7 +88,7 @@ export class Coupon {
     try {
       const sql =
         'update discountcoupon set name=($1), discount=($2), expire=($3)  where id=($4)';
-      // @ts-ignore
+
       const conn = await pool.connect();
       const result = await conn.query(sql, [
         c.name,
@@ -92,7 +97,10 @@ export class Coupon {
         c.id
       ]);
       conn.release();
-      return result.rowCount;
+      if (result.rowCount) {
+        return true;
+      }
+      return false;
     } catch (err) {
       throw new Error(`${err}`);
     }

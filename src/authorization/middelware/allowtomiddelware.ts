@@ -1,8 +1,6 @@
 import express from 'express';
 import { UserRole } from '../../types/user';
 
-
-
 const allowTo =
   (...roles: UserRole[]) =>
   async (

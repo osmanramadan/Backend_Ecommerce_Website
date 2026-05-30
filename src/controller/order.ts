@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
-import { Order} from '../model/order';
-import { order } from '../types/order';
+import { Order } from '../model/order';
+import { order, orderproduct } from '../types/order';
 import { Product } from '../model/product';
 import { product } from '../types/product';
 import fs from 'fs';
@@ -9,125 +9,159 @@ import path from 'path';
 const orderobject = new Order();
 const productobject = new Product();
 
-
 export default class Ordercontroller {
-
   index = async (_req: Request, res: Response) => {
     try {
-      const data = [];
-      // @ts-ignore
       const orders: order[] = await orderobject.index();
-      if (orders) {
+
+      if (orders.length > 0) {
+        const data: order[] = [];
         for (const value of orders) {
-          const items: any = [];
-          // @ts-ignore
-          for (const v of value.items) {
-            const products: product | boolean = await productobject.show(v[0]);
+          const items: product[] = [];
+
+          for (const productId of value.items) {
+            const productsData: product | boolean = await productobject.show(
+              productId as string
+            );
+
+            if (!productsData || typeof productsData === 'boolean') {
+              res.status(404);
+              res.json({
+                status: 'fail',
+                msg: `Product with id ${productId} not found`
+              });
+              return;
+            }
+
             const imagePath = path.join(
               __dirname,
               '../uploads/products',
-              // @ts-ignore
-              products.coverimage
+              productsData.coverimage
             );
 
             try {
               const imageData = await fs.promises.readFile(imagePath);
 
               const imgCover = imageData.toString('base64');
-              // @ts-ignore
-              products.imageCoverData = imgCover;
+
+              productsData.imageCoverData = imgCover;
             } catch (err) {
-              res.json({ status: 'fail' });
+              res.json({
+                status: 'fail',
+                msg: 'Failed to read product image',
+                error: err
+              });
               return;
             }
 
-            // @ts-ignore
-            items.push([products, v[1], v[2]]);
-
+            items.push(productsData);
           }
           value.items = items;
           data.push(value);
         }
+        res.json({ status: 'success', ordersCount: data.length, data: data });
+        return;
       }
-
-      res.json({ status: 'success', data: data });
+      res.status(404);
+      res.json({ status: 'success', data: [], msg: 'No orders found' });
       return;
     } catch (err) {
       res.status(400);
-      res.json({ status: 'fail' });
+      res.json({
+        status: 'fail',
+        msg: 'Failed to retrieve orders',
+        error: err
+      });
       return;
     }
   };
 
   show = async (req: Request, res: Response) => {
     try {
-      const data = [];
-      // @ts-ignore
-      const orderbyuser: order[] = await orderobject.show(
-        parseInt(req.params.userid)
-      );
-      if (orderbyuser) {
-        for (const value of orderbyuser) {
-          const items: any = [];
-          // @ts-ignore
-          for (const v of value.items) {
-            const products: product | boolean = await productobject.show(v[0]);
-            // @ts-ignore
+      const orderbyuser: order[] | [] = await orderobject.show(req.body.userid);
+
+      if (orderbyuser.length > 0) {
+        const data: order[] = [];
+        for (const order of orderbyuser) {
+          const items: product[] = [];
+
+          for (const productId of order.items) {
+            const productINOrder: product | boolean = await productobject.show(
+              productId as string
+            );
+
+            if (!productINOrder || typeof productINOrder === 'boolean') {
+              res.status(404);
+              res.json({
+                status: 'fail',
+                msg: `Product with id ${productId} not found`
+              });
+              return;
+            }
+
             const imagePath = path.join(
               __dirname,
               '../uploads/products',
-              // @ts-ignore
-              products.coverimage
+
+              productINOrder.coverimage
             );
 
             try {
               const imageData = await fs.promises.readFile(imagePath);
 
               const imgCover = imageData.toString('base64');
-              // @ts-ignore
-              products.imageCoverData = imgCover;
+
+              productINOrder.imageCoverData = imgCover;
             } catch (err) {
-              res.json({ status: 'fail' });
+              res.json({
+                status: 'fail',
+                msg: 'Failed to read product image',
+                error: err
+              });
               return;
             }
 
-            const colors = [];
-
-            for (let i = 2; i <= v.length; i++) {
-              
-              if (v[i] !== undefined) {
-                colors.push(v[i]);
-              }
-            }
-            // @ts-ignore
-            items.push([products, v[1], colors]);
+            items.push(productINOrder);
           }
-          value.items = items;
-          data.push(value);
+          order.items = items;
+          data.push(order);
         }
+        res.json({ status: 'success', ordersCount: data.length, data: data });
+        return;
       }
-
-      res.json({ status: 'success', data: data });
+      res.status(404);
+      res.json({
+        status: 'success',
+        data: [],
+        msg: 'No orders found for this user'
+      });
       return;
     } catch (err) {
       res.status(400);
-      res.json({ status: 'fail' });
+      res.json({
+        status: 'fail',
+        msg: 'Failed to retrieve orders for the user',
+        error: err
+      });
+      return;
     }
   };
 
   delete = async (req: Request, res: Response) => {
     try {
-      const deleted = await orderobject.deleteorder(parseInt(req.params.id));
+      const deleted = await orderobject.deleteorder(
+        parseInt(req.params.orderId)
+      );
       if (deleted) {
-        res.json({ status: 'success' });
+        res.json({ status: 'success', msg: 'Order deleted successfully' });
         return;
       }
       res.status(400);
-      res.json({ status: 'fail' });
+      res.json({ status: 'fail', msg: 'Failed to delete order' });
       return;
     } catch (err) {
       res.status(400);
-      res.json({ status: 'fail' });
+      res.json({ status: 'fail', msg: 'Failed to delete order', error: err });
       return;
     }
   };
@@ -135,30 +169,37 @@ export default class Ordercontroller {
   updateorderstatus = async (req: Request, res: Response) => {
     try {
       const updated = await orderobject.updateorderstatus(
-        parseInt(req.body.id),
+        parseInt(req.body.orderId),
         req.body.status
       );
       if (updated) {
-        res.json({ status: 'success' });
+        res.json({
+          status: 'success',
+          msg: 'Order status updated successfully'
+        });
         return;
       }
       res.status(400);
-      res.json({ status: 'fail' });
+      res.json({ status: 'fail', msg: 'Failed to update order status' });
       return;
     } catch (err) {
       res.status(400);
-      res.json({ status: 'fail' });
+      res.json({
+        status: 'fail',
+        msg: 'Failed to update order status',
+        error: err
+      });
       return;
     }
   };
 
   create = async (req: Request, res: Response) => {
     try {
-
       const orderquery: order = {
         userinfo: req.body.userinfo,
         user_id: parseInt(req.body.userid),
         address: req.body.address,
+        // here we make the order accept an array of product ids , their quantities , and their colors and sizes if exist
         items: req.body.items,
         order_status: req.body.status,
         price: req.body.price
@@ -166,15 +207,56 @@ export default class Ordercontroller {
 
       const neworder = await orderobject.create(orderquery);
       if (neworder) {
-        
-        res.json({ status: 'success', data: neworder });
+        res.json({
+          status: 'success',
+          msg: 'Order created successfully',
+          data: neworder
+        });
         return;
       }
-      res.json({ status: 'fail' });
+      res.status(400);
+      res.json({ status: 'fail', msg: 'Order not created' });
       return;
     } catch (err) {
       res.status(400);
-      res.json({ status: 'fail' });
+      res.json({ status: 'fail', msg: 'Order not created', error: err });
+      return;
+    }
+  };
+
+  addproductTOorder = async (req: Request, res: Response) => {
+    try {
+      const orderId = parseInt(req.body.orderId);
+      const productId = parseInt(req.body.productId);
+      const quantity = parseInt(req.body.quantity);
+
+      const orderProduct: orderproduct = {
+        order_id: orderId,
+        product_id: productId,
+        quantity: quantity
+        //color: req.body.color
+        //size: req.body.size
+      };
+
+      const updatedOrder = await orderobject.addproductTOorder(orderProduct);
+      if (updatedOrder) {
+        res.json({
+          status: 'success',
+          msg: 'Product added to order successfully',
+          data: updatedOrder
+        });
+        return;
+      }
+      res.status(400);
+      res.json({ status: 'fail', msg: 'Failed to add product to order' });
+      return;
+    } catch (err) {
+      res.status(400);
+      res.json({
+        status: 'fail',
+        msg: 'Failed to add product to order',
+        error: err
+      });
       return;
     }
   };

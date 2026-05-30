@@ -1,23 +1,18 @@
-// @ts-ignore
 import pool from '../database_connection/db';
-import { product ,prodComment } from '../types/product';
-
+import { product, prodComment } from '../types/product';
 
 export class Product {
-  async index(): Promise<any | boolean> {
+  async index(): Promise<product[] | []> {
     try {
-      // @ts-ignore
       const conn = await pool.connect();
       const sql = 'SELECT * FROM products';
       const result = await conn.query(sql);
 
       conn.release();
-
       if (result.rowCount) {
         return result.rows;
       }
-
-      return false;
+      return [];
     } catch (err) {
       throw new Error(`Could not get products  Error: ${err}`);
     }
@@ -26,19 +21,17 @@ export class Product {
   async show(id: string): Promise<product | boolean> {
     try {
       const sql = 'SELECT * FROM products WHERE id=($1)';
-      // @ts-ignore
+
       const conn = await pool.connect();
 
       const result = await conn.query(sql, [id]);
 
       conn.release();
-
       if (result.rowCount) {
         return result.rows[0];
       }
       return false;
     } catch (err) {
-      console.log(err,'________________++++++++++++++)))))))))))))))))))')
       throw new Error(`Could not find product with ${id}. Error: ${err}`);
     }
   }
@@ -46,7 +39,7 @@ export class Product {
   async deleteproduct(id: string) {
     try {
       const sql = 'delete FROM products WHERE id=($1)';
-      // @ts-ignore
+
       const conn = await pool.connect();
 
       const result = await conn.query(sql, [id]);
@@ -60,7 +53,7 @@ export class Product {
   async updateproduct(p: product) {
     try {
       const sql = `UPDATE products SET ptitle=($2),pdesc=($3),price=($4),discount=($5),priceafterdiscount=($6),category=($7),subcategory=($8),brand=($9),colors=($10),images=($11),coverimage=($12) WHERE id=($1)`;
-      // @ts-ignore
+
       const conn = await pool.connect();
       const result = await conn.query(sql, [
         p.id,
@@ -87,7 +80,7 @@ export class Product {
     try {
       const sql =
         'INSERT INTO products (ptitle,pdesc,price,discount,priceafterdiscount,category,subcategory,brand,colors,images,coverimage) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11) RETURNING *';
-      // @ts-ignore
+
       const conn = await pool.connect();
       const result = await conn.query(sql, [
         p.ptitle,
@@ -106,6 +99,7 @@ export class Product {
       conn.release();
       return users;
     } catch (err) {
+      console.error(err);
       throw new Error(`Could not add new product: ${err}`);
     }
   }
@@ -114,7 +108,6 @@ export class Product {
     try {
       const sql =
         'INSERT INTO productcomment (text,username,stars,prodid) VALUES ($1, $2,$3,$4) RETURNING *';
-      // @ts-ignore
       const conn = await pool.connect();
       const result = await conn.query(sql, [
         c.text,
@@ -130,10 +123,10 @@ export class Product {
     }
   }
 
-  async showcomments(id: string): Promise<product | boolean> {
+  async showcomments(id: string): Promise<prodComment[] | boolean> {
     try {
       const sql = 'SELECT * FROM productcomment WHERE prodid =$1';
-      // @ts-ignore
+
       const conn = await pool.connect();
       const result = await conn.query(sql, [id]);
       conn.release();
@@ -147,30 +140,28 @@ export class Product {
     }
   }
 
-  async newclothes(cat: string): Promise<product | boolean> {
+  async newclothes(cat: string): Promise<product[] | []> {
     try {
       const sql = 'SELECT * FROM products WHERE category=($1)';
-      // @ts-ignore
+
       const conn = await pool.connect();
       const result = await conn.query(sql, [cat]);
       conn.release();
 
       if (result.rowCount) {
-        
         return result.rows;
       }
-      return false;
+      return [];
     } catch (err) {
-      
       throw new Error(` Error: ${err}`);
     }
   }
 
-  async getproductstars(id: string): Promise<prodComment | boolean> {
+  async getproductstars(id: string): Promise<prodComment> {
     try {
       const sql =
         'select sum(stars) as sumstar,count(stars) as numstar from productcomment where prodid=($1)';
-      // @ts-ignore
+
       const conn = await pool.connect();
 
       const result = await conn.query(sql, [id]);
@@ -178,9 +169,25 @@ export class Product {
       conn.release();
 
       if (result.rowCount) {
-        return result.rows;
+        return result.rows[0];
       }
-      return false;
+      return { sumstar: 0, numstar: 0 };
+    } catch (err) {
+      throw new Error(` Error: ${err}`);
+    }
+  }
+
+  async checkproductexist(ptitle: string): Promise<boolean> {
+    try {
+      const sql = 'SELECT EXISTS(SELECT 1 FROM products WHERE ptitle = $1)';
+
+      const conn = await pool.connect();
+
+      const result = await conn.query(sql, [ptitle]);
+
+      conn.release();
+
+      return result.rows[0].exists;
     } catch (err) {
       throw new Error(` Error: ${err}`);
     }

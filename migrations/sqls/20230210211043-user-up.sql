@@ -1,5 +1,5 @@
-CREATE TYPE roleChoose   AS ENUM('user','admin_1/id=80226753244');
-CREATE TYPE verifyChoose AS ENUM('false', 'true');
+CREATE TYPE  roleChoose   AS ENUM('user','admin_1/id=80226753244');
+CREATE TYPE  verifyChoose AS ENUM('false', 'true');
 
 CREATE TABLE IF NOT EXISTS users (
     id SERIAL UNIQUE,

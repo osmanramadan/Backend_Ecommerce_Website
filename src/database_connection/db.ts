@@ -12,26 +12,17 @@ const {
   NODE_ENV
 } = process.env;
 
-let pool;
+const database = NODE_ENV === 'test' ? TEST_POSTGRES_DB : DEV_POSTGRES_DB;
 
-if (NODE_ENV === 'test') {
-  pool = new Pool({
-    host: POSTGRES_HOST,
-    database: TEST_POSTGRES_DB,
-    user: POSTGRES_USER,
-    password: POSTGRES_PASSWORD,
-    port: 5433
-  });
-}
-
-if (NODE_ENV === 'dev') {
-    pool = new Pool({
-        host: POSTGRES_HOST,
-        database: DEV_POSTGRES_DB,
-        user: POSTGRES_USER,
-        password: POSTGRES_PASSWORD || 'storefront',
-        port: 5433
-    });
-}
+const pool = new Pool({
+  host: POSTGRES_HOST,
+  database,
+  user: POSTGRES_USER,
+  password: POSTGRES_PASSWORD,
+  port: 5432,
+  ssl: {
+    rejectUnauthorized: false
+  }
+});
 
 export default pool;

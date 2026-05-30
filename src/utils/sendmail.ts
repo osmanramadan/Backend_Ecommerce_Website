@@ -48,7 +48,7 @@ const sendEmail = async (options: Options) => {
   const mail = MailGenerator.generate(response);
 
   const message = {
-    from: 'osman@gmail.com',
+    from: 'dev.osmanramadan@gmail.com',
     to: options.email,
     subject: options.subject,
     html: mail

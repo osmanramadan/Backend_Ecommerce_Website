@@ -1,10 +1,9 @@
-// @ts-ignore
 import pool from '../../database_connection/db';
+import { order } from '../../types/order';
 
 export class Orderservices {
-  async checkstatus(userid: number, status: string) {
+  async checkstatus(userid: number, status: string): Promise<order[] | []> {
     try {
-      // @ts-ignore
       const conn = await pool.connect();
 
       const sql =

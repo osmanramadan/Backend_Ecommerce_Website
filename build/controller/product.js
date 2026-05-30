@@ -1,64 +1,344 @@
-'use strict';
-Object.defineProperty(exports, '__esModule', { value: true });
-const product_1 = require('../model/product');
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const product_1 = require("../model/product");
+const fs_1 = __importDefault(require("fs"));
+const path_1 = __importDefault(require("path"));
 const productobject = new product_1.Product();
 class Productcontroller {
-  constructor() {
-    this.index = async (_req, res) => {
-      try {
-        const allproducts = await productobject.index();
-        res.json(allproducts);
-      } catch (e) {
-        res.status(400);
-        res.json({ status: 'fail' });
-      }
-    };
-    this.show = async (req, res) => {
-      try {
-        const productbyid = await productobject.show(req.params.id);
-        res.json(productbyid);
-      } catch (e) {
-        res.status(400);
-        res.json({ status: 'fail' });
-      }
-    };
-    this.delete = async (req, res) => {
-      try {
-        const deleted = await productobject.deleteproduct(req.params.id);
-        res.json(deleted);
-      } catch (err) {
-        res.status(400);
-        res.json({ status: 'fail' });
-      }
-    };
-    this.update = async (req, res) => {
-      try {
-        const updated = await productobject.updateproduct(
-          req.body.productname,
-          req.body.price,
-          req.body.category,
-          req.body.id
-        );
-        res.json(updated);
-      } catch (err) {
-        res.status(400);
-        res.json({ status: 'fail' });
-      }
-    };
-    this.create = async (req, res) => {
-      try {
-        const productquery = {
-          Pname: req.body.productname,
-          price: req.body.price,
-          category: req.body.category
+    constructor() {
+        this.index = async (_req, res) => {
+            try {
+                const allproducts = await productobject.index();
+                if (allproducts.length > 0) {
+                    const data = [];
+                    for (const value of allproducts) {
+                        const imagePath = path_1.default.join(__dirname, '../uploads/products', value.coverimage);
+                        try {
+                            const imageData = await fs_1.default.promises.readFile(imagePath);
+                            const imgCover = { imageCoverData: imageData.toString('base64') };
+                            const imagesData = [];
+                            let rate = 0;
+                            if (value.images && value.images.length > 0) {
+                                for (const img of value.images) {
+                                    const imagePath = path_1.default.join(__dirname, '../uploads/products', img);
+                                    const imageData = await fs_1.default.promises.readFile(imagePath);
+                                    imagesData.push(imageData.toString('base64'));
+                                }
+                            }
+                            const imgsData = { imagesData: imagesData };
+                            const stars = await productobject.getproductstars(value.id);
+                            if (stars.sumstar && stars.numstar) {
+                                rate = stars.sumstar / stars.numstar;
+                            }
+                            const rateProduct = { rate: rate };
+                            data.push(Object.assign(Object.assign(Object.assign(Object.assign({}, value), rateProduct), imgsData), imgCover));
+                        }
+                        catch (err) {
+                            res.json({
+                                status: 'fail',
+                                msg: 'Failed to load image for product with id ' +
+                                    value.id +
+                                    ' or rate for product '
+                            });
+                            return;
+                        }
+                    }
+                    res.json({
+                        status: 'success',
+                        productsCount: data.length,
+                        msg: 'Products loaded successfully',
+                        data: data
+                    });
+                    return;
+                }
+                res.status(404);
+                res.json({ status: 'success', data: [] });
+                return;
+            }
+            catch (e) {
+                res.status(400);
+                res.json({ status: 'fail', msg: 'Failed to load products' });
+            }
         };
-        const newproduct = await productobject.create(productquery);
-        res.json(newproduct);
-      } catch (err) {
-        res.status(400);
-        res.json({ status: 'fail' });
-      }
-    };
-  }
+        this.show = async (req, res) => {
+            try {
+                const productbyid = await productobject.show(req.params.id);
+                if (productbyid && typeof productbyid === 'object') {
+                    const data = [];
+                    const imagePath = path_1.default.join(__dirname, '../uploads/products', productbyid.coverimage);
+                    try {
+                        const imageData = await fs_1.default.promises.readFile(imagePath);
+                        const imgCover = { imageCoverData: imageData.toString('base64') };
+                        const imagesData = [];
+                        let rate = 0;
+                        if (productbyid.images && productbyid.images.length > 0) {
+                            for (const img of productbyid.images) {
+                                const imagePath = path_1.default.join(__dirname, '../uploads/products', img);
+                                const imageData = await fs_1.default.promises.readFile(imagePath);
+                                imagesData.push(imageData.toString('base64'));
+                            }
+                        }
+                        const imgsData = { imagesData: imagesData };
+                        const stars = await productobject.getproductstars(productbyid.id);
+                        if (stars.sumstar && stars.numstar) {
+                            rate = stars.sumstar / stars.numstar;
+                        }
+                        const rateProduct = { rate: rate };
+                        data.push(Object.assign(Object.assign(Object.assign(Object.assign({}, productbyid), rateProduct), imgCover), imgsData));
+                    }
+                    catch (err) {
+                        res.json({
+                            status: 'fail',
+                            msg: 'Failed to load image or stars for product ' + productbyid.ptitle
+                        });
+                        return;
+                    }
+                    res.json({ status: 'success', data: data[0] });
+                    return;
+                }
+                res.status(404);
+                res.json({
+                    status: 'fail',
+                    msg: 'No product found with id ' + req.params.id
+                });
+                return;
+            }
+            catch (e) {
+                res.status(404);
+                return res.json({
+                    status: 'fail',
+                    msg: 'No product found with id ' + req.params.id
+                });
+            }
+        };
+        this.newclothes = async (_req, res) => {
+            try {
+                const items = await productobject.newclothes('ملابس');
+                if (items.length > 0) {
+                    const data = [];
+                    for (const value of items) {
+                        const imagePath = path_1.default.join(__dirname, '../uploads/products', value.coverimage);
+                        try {
+                            const imageData = await fs_1.default.promises.readFile(imagePath);
+                            const imgCover = { imageCoverData: imageData.toString('base64') };
+                            const imagesData = [];
+                            let rate = 0;
+                            if (value.images && value.images.length > 0) {
+                                for (const img of value.images) {
+                                    const imagePath = path_1.default.join(__dirname, '../uploads/products', img);
+                                    const imageData = await fs_1.default.promises.readFile(imagePath);
+                                    imagesData.push(imageData.toString('base64'));
+                                }
+                            }
+                            const imgsData = { imagesData: imagesData };
+                            const stars = await productobject.getproductstars(value.id);
+                            if (stars.sumstar && stars.numstar) {
+                                rate = stars.sumstar / stars.numstar;
+                            }
+                            const rateProduct = { rate: rate };
+                            data.push(Object.assign(Object.assign(Object.assign(Object.assign({}, value), rateProduct), imgCover), imgsData));
+                        }
+                        catch (err) {
+                            res.json({
+                                status: 'fail',
+                                msg: 'Failed to load image for product with id ' + value.id
+                            });
+                            return;
+                        }
+                    }
+                    res.json({ status: 'success', productCount: data.length, data: data });
+                    return;
+                }
+                res.status(404);
+                res.json({ status: 'success', msg: 'No products found', data: [] });
+                return;
+            }
+            catch (err) {
+                res.status(400);
+                res.json({ status: 'fail', msg: 'Failed to load products' });
+                return;
+            }
+        };
+        this.delete = async (req, res) => {
+            try {
+                const deleted = await productobject.deleteproduct(req.params.id);
+                if (deleted) {
+                    res.json({ status: 'success', msg: 'Product deleted successfully' });
+                    return;
+                }
+                else {
+                    res.json({ status: 'fail', msg: 'Failed to delete product' });
+                    return;
+                }
+            }
+            catch (err) {
+                res.status(400);
+                res.json({ status: 'fail', msg: 'Failed to delete product' });
+                return;
+            }
+        };
+        this.update = async (req, res) => {
+            const subcategory = req.body.subcategory.split(',');
+            const colors = req.body.colors.split(',');
+            //🍳 There is a problem here if  user want to update field , he should provide all other fields .
+            const data = {
+                id: req.body.id,
+                ptitle: req.body.ptitle,
+                pdesc: req.body.pdesc,
+                price: req.body.price,
+                discount: req.body.discount,
+                priceafterdiscount: req.body.priceafterdiscount,
+                category: req.body.category,
+                subcategory: subcategory,
+                brand: req.body.brand,
+                colors: colors,
+                images: req.body.images,
+                coverimage: req.body.coverimage
+            };
+            try {
+                const updated = await productobject.updateproduct(data);
+                if (updated) {
+                    res.json({ status: 'success', msg: 'Product updated successfully' });
+                    return;
+                }
+                else {
+                    res.json({ status: 'fail', msg: 'Failed to update product' });
+                    return;
+                }
+            }
+            catch (err) {
+                res.status(400);
+                res.json({
+                    status: 'fail',
+                    msg: 'Failed to update product',
+                    error: err
+                });
+                return;
+            }
+        };
+        this.create = async (req, res) => {
+            try {
+                const subcategory = req.body.subcategory.split(',');
+                const colors = req.body.colors.split(',');
+                const data = {
+                    ptitle: req.body.ptitle,
+                    pdesc: req.body.pdesc,
+                    price: req.body.price,
+                    discount: req.body.discount,
+                    priceafterdiscount: req.body.priceafterdiscount,
+                    category: req.body.category,
+                    subcategory: subcategory,
+                    brand: req.body.brand,
+                    colors: colors,
+                    images: req.body.images,
+                    coverimage: req.body.coverimage
+                };
+                const newproduct = await productobject.create(data);
+                if (newproduct) {
+                    res.json({
+                        status: 'success',
+                        message: 'Product created successfully',
+                        data: newproduct
+                    });
+                    return;
+                }
+                else {
+                    res.json({ status: 'fail', msg: 'Failed to create product' });
+                    return;
+                }
+            }
+            catch (err) {
+                res.status(400);
+                res.json({
+                    status: 'fail',
+                    msg: 'Failed to create product',
+                    error: err
+                });
+                return;
+            }
+        };
+        this.createcomment = async (req, res) => {
+            try {
+                const comment = {
+                    prodid: req.body.productId,
+                    username: req.body.username,
+                    text: req.body.text,
+                    stars: req.body.stars
+                };
+                const newcomment = await productobject.addComment(comment);
+                if (newcomment) {
+                    res.json({
+                        status: 'success',
+                        Message: 'Comment added successfully',
+                        data: newcomment
+                    });
+                    return;
+                }
+                else {
+                    res.json({ status: 'fail', msg: 'Failed to add comment' });
+                    return;
+                }
+            }
+            catch (err) {
+                res.status(400);
+                res.json({ status: 'fail', msg: 'Failed to add comment' });
+                return;
+            }
+        };
+        this.getproductcomments = async (req, res) => {
+            try {
+                const comments = await productobject.showcomments(req.params.id);
+                if (comments) {
+                    res.json({
+                        status: 'success',
+                        msg: 'Comments retrieved successfully',
+                        data: comments
+                    });
+                    return;
+                }
+                else {
+                    res.status(404);
+                    res.json({
+                        status: 'fail',
+                        msg: 'Comments not found for the product',
+                        data: []
+                    });
+                    return;
+                }
+            }
+            catch (e) {
+                res.status(400);
+                res.json({ status: 'fail', msg: 'Failed to get comments' });
+                return;
+            }
+        };
+        this.getproductstars = async (req, res) => {
+            try {
+                const proStars = await productobject.getproductstars(req.params.id);
+                if (proStars.numstar && proStars.sumstar) {
+                    res.json({
+                        status: 'success',
+                        message: 'Stars retrieved successfully',
+                        data: proStars,
+                        rate: proStars.sumstar / proStars.numstar
+                    });
+                    return;
+                }
+                else {
+                    res.status(404);
+                    res.json({ status: 'No stars', msg: 'No stars found for the product' });
+                    return;
+                }
+            }
+            catch (e) {
+                res.status(400);
+                res.json({ status: 'fail', msg: 'Failed to get stars' });
+                return;
+            }
+        };
+    }
 }
 exports.default = Productcontroller;

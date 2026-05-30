@@ -1,6 +1,6 @@
-
 export type mark = {
-    id?: number;
-    name?: string;
-    image?: string;
-  };
+  id?: number;
+  name?: string;
+  image?: string;
+  imageData?: string;
+};

@@ -1,6 +1,6 @@
 CREATE TABLE  IF NOT EXISTS  user_address (
     id SERIAL  PRIMARY KEY,
-    addremail CHARACTER VARYING(50) NOT NULL ,
+    addremail CHARACTER VARYING(50) NOT NULL,
     addrtitle VARCHAR(255) NOT NULL,
     addrdetails VARCHAR(255) NOT NULL,
     phone  VARCHAR(50) NOT NULL,

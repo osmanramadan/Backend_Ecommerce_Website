@@ -1,8 +1,6 @@
-
-
-export type address={
-    addremail:String;
-    addrtitle:String;
-    addrdetails:String;
-    phone:String;
-}
+export type address = {
+  addremail: string;
+  addrtitle: string;
+  addrdetails: string;
+  phone: string;
+};

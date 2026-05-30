@@ -1,42 +1,63 @@
 import express from 'express';
 import Usercontroller from '../../controller/user';
-import verify from '../../authorization/middelware/jwtmiddelware';
+import verify, {
+  verifyAdmin
+} from '../../authorization/middelware/jwtmiddelware';
 import UserServicesController from '../../controller/services/user';
 import {
   signupValidator,
   loginValidator,
-  // forgetPasswordValidator,
-  // verifyPasswordValidator,
-  // resetPasswordValidator
+  forgetPasswordValidator,
+  verifyPasswordValidator,
+  resetPasswordValidator,
+  updateUserProfileValidator,
+  updateUserPasswordValidator,
+  useridValidator
 } from '../../utils/validator/authValidator';
 
 const usercontroller = new Usercontroller();
 const usercontrollerservices = new UserServicesController();
 const users: express.Router = express.Router();
 
-users.get('/', usercontroller.index);
+users.get('/', verifyAdmin, usercontroller.index);
 users.post('/signup', signupValidator, usercontroller.create);
 users.post('/login', loginValidator, usercontroller.getuserbycredentials);
 users.post(
   '/forgotPassword',
-  // forgetPasswordValidator,
+  forgetPasswordValidator,
   usercontroller.forgetpassword
 );
 users.post(
   '/verifyResetCode',
-  // verifyPasswordValidator,
+  verifyPasswordValidator,
   usercontroller.verifyresetcode
 );
 users.post(
   '/resetPassword',
-  // resetPasswordValidator,
+  resetPasswordValidator,
   usercontroller.resetpassword
 );
-users.put('/updateuserprofile', usercontroller.updateuserprofile);
-users.put('/updateuserpassword', usercontroller.updateuserpassword);
+users.put(
+  '/updateuserprofile',
+  verify,
+  updateUserProfileValidator,
+  usercontroller.updateuserprofile
+);
+users.put(
+  '/updateuserpassword',
+  verify,
+  updateUserPasswordValidator,
+  usercontroller.updateuserpassword
+);
+users.get('/:userid', useridValidator, verify, usercontroller.show);
 
-users.get(' /:userid/purchases', verify, usercontrollerservices.userpurchases);
-users.get('/:id', verify, usercontroller.show);
-users.delete('/delete/:id', verify, usercontroller.delete);
+// This option is to allow users to delete their accounts but not others accounts
+users.delete('/:userid', useridValidator, verify, usercontroller.delete);
 
+users.get(
+  '/purchases/:userid',
+  useridValidator,
+  verify,
+  usercontrollerservices.userpurchases
+);
 export default users;

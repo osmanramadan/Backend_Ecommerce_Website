@@ -1,14 +1,10 @@
-// @ts-ignore
 import pool from '../database_connection/db';
-import { order } from '../types/order';
-
-
+import { order, orderproduct } from '../types/order';
 
 export class Order {
-  async index(): Promise<order> {
+  async index(): Promise<order[] | []> {
     try {
       const sql = 'SELECT * FROM  orders';
-      // @ts-ignore
       const conn = await pool.connect();
 
       const result = await conn.query(sql);
@@ -21,10 +17,9 @@ export class Order {
     }
   }
 
-  async show(userid: number): Promise<order> {
+  async show(userid: number): Promise<order[] | []> {
     try {
       const sql = 'SELECT * FROM  orders WHERE user_id=($1)';
-      // @ts-ignore
       const conn = await pool.connect();
 
       const result = await conn.query(sql, [userid]);
@@ -36,13 +31,32 @@ export class Order {
       throw new Error(`Could not find order with ${userid}. Error: ${err}`);
     }
   }
-  
-  
-  async create(o: order): Promise<order> {
+
+  async checkorderexist(orderId: number): Promise<boolean> {
+    try {
+      const sql = 'SELECT * FROM  orders WHERE id=($1)';
+      const conn = await pool.connect();
+
+      const result = await conn.query(sql, [orderId]);
+      const orders = result.rows;
+      conn.release();
+
+      if (orders.length) {
+        return true;
+      }
+      return false;
+    } catch (err) {
+      throw new Error(
+        `Could not check order existence for order ${orderId}. Error: ${err}`
+      );
+    }
+  }
+
+  async create(o: order): Promise<order | boolean> {
     try {
       const sql =
         'INSERT INTO orders (userinfo, address, items, user_id, order_status,price) VALUES ($1,$2,$3,$4,$5,$6) RETURNING *';
-      // @ts-ignore
+
       const conn = await pool.connect();
 
       const result = await conn.query(sql, [
@@ -56,10 +70,11 @@ export class Order {
 
       const orders = result.rows;
       conn.release();
-
-      return orders;
+      if (result.rowCount) {
+        return orders[0];
+      }
+      return false;
     } catch (err) {
-      
       throw new Error(`can't add new order`);
     }
   }
@@ -67,7 +82,6 @@ export class Order {
   async deleteorder(id: number) {
     try {
       const sql = 'delete FROM orders WHERE id=($1)';
-      // @ts-ignore
       const conn = await pool.connect();
 
       const result = await conn.query(sql, [id]);
@@ -82,7 +96,6 @@ export class Order {
     try {
       const sql =
         'UPDATE orders SET order_status=($1) WHERE id=($2) RETURNING *';
-      // @ts-ignore
       const conn = await pool.connect();
 
       const result = await conn.query(sql, [newstatus, id]);
@@ -94,6 +107,29 @@ export class Order {
       return false;
     } catch (err) {
       throw new Error(`${err}`);
+    }
+  }
+
+  async addproductTOorder(
+    orderProduct: orderproduct
+  ): Promise<orderproduct | boolean> {
+    try {
+      const sql =
+        'INSERT INTO order_product (order_id, product_id, quantity) VALUES ($1,$2,$3) RETURNING *';
+
+      const conn = await pool.connect();
+      const result = await conn.query(sql, [
+        orderProduct.order_id,
+        orderProduct.product_id,
+        orderProduct.quantity
+      ]);
+      conn.release();
+      if (result.rowCount) {
+        return result.rows[0];
+      }
+      return false;
+    } catch (err) {
+      throw new Error(`Could not add product to order. Error: ${err}`);
     }
   }
 }

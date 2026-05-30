@@ -1,17 +1,12 @@
-// @ts-ignore
-
 import pool from '../../database_connection/db';
-import { user } from '../../types/user';
-
+import { product } from '../../types/product';
 
 export class Userservices {
-  async userpurchases(userid: string): Promise<user[]> {
+  async userpurchases(userid: string): Promise<product[]> {
     try {
-      // @ts-ignore
       const conn = await pool.connect();
       const sql =
-        "SELECT pname from products where id in (SELECT product_id from orders inner join orders_product on orders.id=orders_product.order_id where orders.user_id=($1) and orders.order_status='complete')";
-
+        'SELECT ptitle , pdesc , price , discount , priceafterdiscount , category , brand , coverimage FROM products WHERE id IN ( SELECT product_id FROM "orders" INNER JOIN order_product   ON "orders".id = order_product.order_id WHERE "orders".user_id = $1 AND "orders".order_status = \'complete\')';
       const result = await conn.query(sql, [userid]);
       const purchases = result.rows;
       conn.release();

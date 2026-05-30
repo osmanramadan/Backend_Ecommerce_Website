@@ -1,18 +1,14 @@
-// @ts-ignore
-import pool from   '../database_connection/db';
+import pool from '../database_connection/db';
 import Cipher from '../authentication/bcrypt';
 import dotenv from 'dotenv';
-import { user , updateuserData } from '../types/user';
+import { user } from '../types/user';
 
 dotenv.config();
-
-
 
 const cipher = new Cipher();
 export class User {
   async index(): Promise<user[]> {
     try {
-      // @ts-ignore
       const conn = await pool.connect();
       const sql = 'SELECT * FROM users';
 
@@ -28,7 +24,7 @@ export class User {
   async show(id: string): Promise<user> {
     try {
       const sql = 'SELECT * FROM users WHERE id=($1)';
-      // @ts-ignore
+
       const conn = await pool.connect();
 
       const result = await conn.query(sql, [id]);
@@ -38,15 +34,22 @@ export class User {
       throw new Error(`Could not find user with ${id}. Error: ${err}`);
     }
   }
-  async deleteuser(id: string): Promise<[]> {
+  async deleteuser(id: string): Promise<boolean> {
     try {
-      const sql = 'delete FROM users WHERE id=($1)';
-      // @ts-ignore
+      const sql = 'DELETE FROM users WHERE id = $1 RETURNING id';
+
       const conn = await pool.connect();
 
       const result = await conn.query(sql, [id]);
+
       conn.release();
-      return result.rows;
+
+      // if no rows deleted
+      if (result.rows.length === 0) {
+        return false;
+      }
+
+      return true;
     } catch (err) {
       throw new Error(`Could not delete user with ${id}. Error: ${err}`);
     }
@@ -58,7 +61,7 @@ export class User {
   ): Promise<user | null> {
     try {
       const sql = 'SELECT * FROM users WHERE email=($1)';
-      // @ts-ignore
+
       const conn = await pool.connect();
       const result = await conn.query(sql, [email]);
       conn.release();
@@ -74,19 +77,37 @@ export class User {
     }
   }
 
-  async getuserbyemail(email: string): Promise<any> {
+  async getuserbyemail(email: string): Promise<user | boolean> {
     try {
       const sql = 'SELECT * FROM users WHERE email = $1';
-      // @ts-ignore
+
       const conn = await pool.connect();
       const result = await conn.query(sql, [email]);
       conn.release();
 
       if (result.rows.length) {
-        const userdata: User = result.rows[0];
+        const userdata: user = result.rows[0];
         return userdata;
       }
-      // return null;
+      return false;
+    } catch (err) {
+      throw new Error(`Error: ${err}`);
+    }
+  }
+
+  async getuserbyphone(phone: string): Promise<user | boolean> {
+    try {
+      const sql = 'SELECT * FROM users WHERE phone = $1';
+
+      const conn = await pool.connect();
+      const result = await conn.query(sql, [phone]);
+      conn.release();
+
+      if (result.rows.length) {
+        const userdata: user = result.rows[0];
+        return userdata;
+      }
+      return false;
     } catch (err) {
       throw new Error(`Error: ${err}`);
     }
@@ -96,7 +117,7 @@ export class User {
     try {
       const sql =
         'INSERT INTO users (email,username,password,phone) VALUES ($1, $2, $3,$4) RETURNING *';
-      // @ts-ignore
+
       const conn = await pool.connect();
       const hash = await cipher.encrypt(u.password as string);
       const result = await conn.query(sql, [
@@ -117,7 +138,7 @@ export class User {
   async emailExists(email: string): Promise<boolean> {
     try {
       const sql = 'SELECT EXISTS(SELECT 1 FROM users WHERE email = $1)';
-      // @ts-ignore
+
       const conn = await pool.connect();
 
       const result = await conn.query(sql, [email]);
@@ -125,6 +146,7 @@ export class User {
 
       return result.rows[0].exists;
     } catch (err) {
+      console.log(err);
       throw new Error(`Error while checking if email exists. Error: ${err}`);
     }
   }
@@ -132,7 +154,7 @@ export class User {
   async phoneExists(phone: string): Promise<boolean> {
     try {
       const sql = 'SELECT EXISTS(SELECT 1 FROM users WHERE phone = $1)';
-      // @ts-ignore
+
       const conn = await pool.connect();
 
       const result = await conn.query(sql, [phone]);
@@ -144,7 +166,7 @@ export class User {
     }
   }
 
-  async updateUserFields(data: updateuserData): Promise<boolean> {
+  async updateUserFields(data: user): Promise<boolean> {
     const { email, ...fieldsToUpdate } = data;
     const updateColumns = Object.keys(fieldsToUpdate);
     const updateValues = Object.values(fieldsToUpdate);
@@ -157,7 +179,7 @@ export class User {
         .map((column, index) => `${column} = $${index + 2}`)
         .join(', ');
       const sql = `UPDATE users SET ${updateSetClauses} WHERE email = $1`;
-      // @ts-ignore
+
       const conn = await pool.connect();
       const result = await conn.query(sql, [email, ...updateValues]);
       conn.release();
@@ -173,7 +195,7 @@ export class User {
         'SELECT from users where email=$1 and passwordResetCode=$2';
       const sql_expire =
         'SELECT from users where email=$1 and passwordResetCode=$2 and passwordResetExpires > Now()';
-      // @ts-ignore
+
       const conn = await pool.connect();
       const result = await conn.query(sql_valid, [email, resetCode]);
       conn.release();
@@ -195,7 +217,7 @@ export class User {
   async checkVerifyCode(email: string): Promise<boolean> {
     try {
       const sql = 'SELECT resetCodeVerified from users where email=$1';
-      // @ts-ignore
+
       const conn = await pool.connect();
       const result = await conn.query(sql, [email]);
       conn.release();
@@ -212,7 +234,7 @@ export class User {
   ): Promise<boolean> {
     try {
       const sql = 'SELECT password from users where email=$1';
-      // @ts-ignore
+
       const conn = await pool.connect();
       const result = await conn.query(sql, [email]);
       conn.release();

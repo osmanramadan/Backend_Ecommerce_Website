@@ -13,14 +13,14 @@ export default class Cipher {
 
   decrypt = async (hashed: string, password: string): Promise<boolean> => {
     try {
-        const check = await bcrypt.compare(password + pepper, hashed);
-        
-        if (check) {
-            return true;
-        }
-        return false;
+      const check = await bcrypt.compare(password + pepper, hashed);
+
+      if (check) {
+        return true;
+      }
+      return false;
     } catch {
-        return false;
+      return false;
     }
-    }
+  };
 }

@@ -1,7 +1,5 @@
-
-
 export type subcategory = {
-    id?: number;
-    name?: string;
-    maincat?: string;
-  };
+  id?: number;
+  name?: string;
+  maincat?: string;
+};

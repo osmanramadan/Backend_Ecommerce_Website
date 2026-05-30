@@ -3,4 +3,4 @@ CREATE TABLE IF NOT EXISTS discountcoupon (
     name varchar(255),
     discount varchar(255),
     expire date
-)
+) 

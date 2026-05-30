@@ -7,7 +7,16 @@ const subcategoryobject = new SubCategory();
 export default class SubCategorycontroller {
   addsubcategory = async (req: Request, res: Response) => {
     try {
-      
+      if (!req.body.name) {
+        res.json({ error: 'Name of subcategory should be provided (name)' });
+        return;
+      }
+
+      if (!req.body.maincat) {
+        res.json({ error: 'Main category should be provided (maincat)' });
+        return;
+      }
+
       const subcategory: subcategory = {
         name: req.body.name,
         maincat: req.body.maincat
@@ -18,7 +27,7 @@ export default class SubCategorycontroller {
       );
 
       if (subexist) {
-        res.json({ status: 'subcate error' });
+        res.json({ status: 'exist', msg: 'subcategory already exist' });
         return;
       }
 
@@ -27,21 +36,28 @@ export default class SubCategorycontroller {
       );
 
       if (!exist) {
-        res.json({ status: 'cate error' });
+        res.status(404);
+        res.json({
+          status: 'main_category_not_found',
+          msg: 'main category does not exist'
+        });
         return;
       }
 
       const result = await subcategoryobject.create(subcategory);
       if (result) {
-        res.json({ status: 'success' });
+        res.json({ status: 'success', msg: 'subcategory added successfully' });
         return;
       } else {
-        res.json({ status: 'fail' });
+        res.json({ status: 'fail', msg: 'failed to add subcategory' });
         return;
       }
     } catch (err) {
       res.status(400);
-      res.json({ status: 'fail' });
+      res.json({
+        status: 'fail',
+        msg: 'An error occurred while adding the subcategory'
+      });
       return;
     }
   };
@@ -53,29 +69,47 @@ export default class SubCategorycontroller {
         res.json({ status: 'success', data: result });
         return;
       }
-      res.json({ status: 'fail' });
+      res.json({ status: 'fail', msg: 'Failed to retrieve subcategories' });
       return;
     } catch (err) {
       res.status(400);
-      res.json({ status: 'fail' });
+      res.json({
+        status: 'fail',
+        msg: 'An error occurred while retrieving subcategories'
+      });
       return;
     }
   };
 
   deletesubcategory = async (req: Request, res: Response) => {
     try {
-      const result = await subcategoryobject.deletesubcategory(req.body.id);
+      if (!req.body.name) {
+        res.json({ error: 'Name of subcategory should be provided (name)' });
+        return;
+      }
+
+      const result = await subcategoryobject.deletesubcategory(req.body.name);
 
       if (result) {
-        res.json({ status: 'success' });
+        res.json({
+          status: 'success',
+          msg: 'subcategory deleted successfully'
+        });
         return;
       } else {
-        res.json({ status: 'fail' });
+        res.status(404);
+        res.json({
+          status: 'fail',
+          msg: 'Subcategory not found or its name is false'
+        });
         return;
       }
     } catch (err) {
       res.status(400);
-      res.json({ status: 'fail' });
+      res.json({
+        status: 'fail',
+        msg: 'An error occurred while deleting the subcategory'
+      });
       return;
     }
   };

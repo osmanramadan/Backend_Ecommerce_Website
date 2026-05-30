@@ -13,81 +13,79 @@ export default class Couponcontroller {
         expire: req.body.expire
       };
 
-      const exist = await couponobject.checkcouponexist(req.body.name);
-
-      if (exist) {
-        res.json({ status: 'exist' });
-        return;
-      }
-
-      const re = await couponobject.create(coupon);
-      if (re) {
-        res.json({ status: 'success' });
+      const result = await couponobject.create(coupon);
+      if (result) {
+        res.json({
+          status: 'success',
+          msg: 'Coupon created successfully',
+          data: result
+        });
         return;
       } else {
-        res.json({ status: 'fail' });
+        res.json({ status: 'fail', msg: 'Error creating coupon' });
         return;
       }
     } catch (err) {
-      res.json({ status: 'fail' });
+      res.json({ status: 'fail', msg: 'Error creating coupon' });
       return;
     }
   };
 
   show = async (req: Request, res: Response) => {
     try {
-      const checkexist = await couponobject.checkcouponexist(req.params.name);
-      if (checkexist) {
-        const coupon = await couponobject.show(req.params.name);
+      const coupon = await couponobject.show(req.params.name);
 
-        if (coupon) {
-          res.json({ status: 'success', data: coupon });
-          return;
-        }
-
-        res.json({ status: 'fail' });
-        return;
-      } else {
-        res.json({ status: 'notfound' });
+      if (coupon) {
+        res.json({ status: 'success', msg: 'Coupon found', data: coupon });
         return;
       }
+
+      res.status(404);
+      res.json({ status: 'fail', data: [], msg: 'Coupon not found' });
+      return;
     } catch (err) {
       res.status(400);
-      res.json({ status: 'fail' });
+      res.json({ status: 'fail', msg: 'Error retrieving coupon' });
       return;
     }
   };
+
   index = async (_req: Request, res: Response) => {
     try {
-      const coupons = await couponobject.index();
+      const coupons: coupon[] | [] = await couponobject.index();
 
-      if (coupons) {
-        res.json({ status: 'success', data: coupons });
+      if (coupons.length > 0) {
+        res.json({ status: 'success', msg: 'Coupons found', data: coupons });
         return;
       }
-      res.json({ status: 'fail' });
+      res.status(404);
+      res.json({ status: 'success', data: [], msg: 'No coupons found' });
       return;
     } catch (err) {
       res.status(400);
-      res.json({ status: 'fail' });
+      res.json({ status: 'fail', msg: 'Error retrieving coupons' });
       return;
     }
   };
 
   deletecoupon = async (req: Request, res: Response) => {
     try {
-      const re = await couponobject.deletecoupon(req.body.id);
+      const result = await couponobject.deletecoupon(req.params.id);
 
-      if (re) {
-        res.json({ status: 'success' });
+      if (result) {
+        res.json({ status: 'success', msg: 'Coupon deleted successfully' });
         return;
       } else {
-        res.json({ status: 'fail' });
+        res.status(404);
+        res.json({
+          status: 'fail',
+          msg: 'Error deleting coupon , Or coupon not found'
+        });
         return;
       }
     } catch (err) {
       res.status(400);
-      res.json({ status: 'fail' });
+      res.json({ status: 'fail', msg: 'Error deleting coupon' });
       return;
     }
   };
@@ -100,18 +98,18 @@ export default class Couponcontroller {
         discount: req.body.discount,
         expire: req.body.expire
       };
-      const re = await couponobject.updatecoupon(coupon);
+      const result = await couponobject.updatecoupon(coupon);
 
-      if (re) {
-        res.json({ status: 'success' });
+      if (result) {
+        res.json({ status: 'success', msg: 'Coupon updated successfully' });
         return;
       } else {
-        res.json({ status: 'fail' });
+        res.json({ status: 'fail', msg: 'Error updating coupon' });
         return;
       }
     } catch (err) {
       res.status(400);
-      res.json({ status: 'fail' });
+      res.json({ status: 'fail', msg: 'Error updating coupon' });
       return;
     }
   };

@@ -1,101 +1,101 @@
 import { Request, Response } from 'express';
-import { User } from '../model/user';
 import { Address } from '../model/address';
 
-const userobject = new User();
 const addressobject = new Address();
 
 export default class Addresscontroller {
   addaddress = async (req: Request, res: Response) => {
     try {
-      const existemail = await userobject.emailExists(req.body.email);
-      if (existemail) {
-        const re = await addressobject.adduseraddress(
-          req.body.email,
-          req.body.addrtitle,
-          req.body.addrdetails,
-          req.body.phone
-        );
-        if (re) {
-          res.json({ status: 'success' });
-          return;
-        } else {
-          res.json({ status: 'fail' });
-          return;
-        }
+      const result = await addressobject.adduseraddress(
+        req.body.email,
+        req.body.addrtitle,
+        req.body.addrdetails,
+        req.body.phone
+      );
+      if (result) {
+        res.json({
+          status: 'success',
+          msg: 'Address added successfully',
+          data: result
+        });
+        return;
       } else {
-        res.json({ status: 'email fail' });
+        res.json({ status: 'fail', msg: 'Failed to add address' });
         return;
       }
     } catch (err) {
       res.status(400);
-      res.json({ status: 'fail' });
+      res.json({ status: 'fail', msg: 'Failed to add address' });
     }
   };
 
   viewuseraddress = async (req: Request, res: Response) => {
     try {
-      const existemail = await userobject.emailExists(
-        req.params.email as string
-      );
-      if (existemail) {
-        const data = await addressobject.viewuseraddress(
-          req.params.email as string
-        );
-        if (data) {
-          res.json({ status: 'success', data: data });
-          return;
-        } else {
-          res.json({ status: 'no addr' });
-          return;
-        }
+      const result = await addressobject.viewuseraddress(req.params.email);
+
+      if (result) {
+        res.json({ status: 'success', data: result });
+        return;
       } else {
-        res.json({ status: 'email fail' });
+        res.status(404);
+        res.json({
+          status: 'No address',
+          msg: 'No address found for this user'
+        });
         return;
       }
     } catch (err) {
       res.status(400);
-      res.json({ status: 'fail' });
+      res.json({ status: 'fail', msg: 'Failed to retrieve addresses' });
+      return;
     }
   };
 
   deleteuseraddress = async (req: Request, res: Response) => {
     try {
-      
-      const data = await addressobject.deleteuseraddress(req.body.id);
-      
+      const result = await addressobject.deleteuseraddress(req.body.addressId);
 
-      if (data) {
-        res.json({ status: 'success' });
+      if (result) {
+        res.json({ status: 'success', msg: 'Address deleted successfully' });
         return;
       } else {
-        res.json({ status: 'fail' });
+        res.status(404);
+        res.json({
+          status: 'No address',
+          msg: 'No address found with the provided ID'
+        });
         return;
       }
     } catch (err) {
       res.status(400);
-      res.json({ status: 'fail' });
+      res.json({ status: 'fail', msg: 'Failed to delete address' });
+      return;
     }
   };
+
   updateuseraddress = async (req: Request, res: Response) => {
     try {
-      const data = await addressobject.updateuseraddress(
+      const result = await addressobject.updateuseraddress(
         req.body.addrtitle,
         req.body.addrdetails,
         req.body.phone,
-        req.body.id
+        req.body.addressId
       );
 
-      if (data) {
-        res.json({ status: 'success' });
+      if (result) {
+        res.json({ status: 'success', msg: 'Address updated successfully' });
         return;
       } else {
-        res.json({ status: 'error' });
+        res.status(404);
+        res.json({
+          status: 'fail',
+          msg: 'No address found with the provided ID'
+        });
         return;
       }
     } catch (err) {
       res.status(400);
-      res.json({ status: 'fail' });
+      res.json({ status: 'fail', msg: 'Failed to update address' });
     }
   };
 }

@@ -5,19 +5,93 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-const TOKEN_SECRET:string = process.env.TOKEN_SECRET as string;
+const TOKEN_SECRET: string = process.env.TOKEN_SECRET as string;
 
-const verify:RequestHandler = async (req:express.Request, res:express.Response, next:express.NextFunction)=>{
+// verify user
+const verify: RequestHandler = async (
+  req: express.Request,
+  res: express.Response,
+  next: express.NextFunction
+) => {
+  try {
+    const authorizationHeader = req.headers.authorization as string;
 
-    try {
-        const authorizationHeader = req.headers.authorization as string;
-        const token = authorizationHeader.split(' ')[1];
-        jwt.verify(token, TOKEN_SECRET);
-        next();
-    } catch {
-        res.status(401);
-        res.json({access:"forbidden"});
+    const token = authorizationHeader.split(' ')[1];
+
+    const decoded = jwt.verify(token, TOKEN_SECRET) as {
+      userid: string;
+    };
+
+    req.body.userid = decoded.userid;
+
+    if (
+      req.params.userid &&
+      Number(req.params.userid) !== Number(req.body.userid)
+    ) {
+      res.status(403);
+
+      res.json({
+        access: 'forbidden',
+        msg: 'User only access his/her data'
+      });
+
+      return;
     }
 
+    next();
+  } catch (e) {
+    res.status(401);
+
+    res.json({
+      access: 'forbidden',
+      msg: 'Invalid token or token is not provided'
+    });
+
+    return;
+  }
 };
+
+// verify admin
+export const verifyAdmin: RequestHandler = async (
+  req: express.Request,
+  res: express.Response,
+  next: express.NextFunction
+) => {
+  try {
+    const authorizationHeader = req.headers.authorization as string;
+
+    const token = authorizationHeader.split(' ')[1];
+
+    const decoded = jwt.verify(token, TOKEN_SECRET) as {
+      userid: string;
+      role: string;
+    };
+
+    req.body.userid = decoded.userid;
+    req.body.role = decoded.role;
+
+    if (decoded.role !== 'admin_1/id=80226753244') {
+      res.status(403);
+
+      res.json({
+        access: 'forbidden',
+        msg: 'Admin access only'
+      });
+
+      return;
+    }
+
+    next();
+  } catch (e) {
+    res.status(401);
+
+    res.json({
+      access: 'forbidden',
+      msg: 'Invalid token or token is not provided'
+    });
+
+    return;
+  }
+};
+
 export default verify;

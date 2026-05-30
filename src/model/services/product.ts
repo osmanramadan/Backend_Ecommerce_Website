@@ -1,15 +1,9 @@
-// @ts-ignore
-
 import pool from '../../database_connection/db';
-import { popular, product } from '../../types/product';
-
-
-
+import { product } from '../../types/product';
 
 export class Productservices {
-  async productCate(cate: string): Promise<product[]> {
+  async productCate(cate: string): Promise<product[] | []> {
     try {
-      // @ts-ignore
       const conn = await pool.connect();
 
       const sql = 'SELECT * FROM products WHERE category=($1)';
@@ -23,19 +17,19 @@ export class Productservices {
       throw new Error(`can't get products. Error: ${err}`);
     }
   }
-  async mostpopular(): Promise<popular[]> {
+  async mostpopular(): Promise<product[] | []> {
     try {
-      // @ts-ignore
       const conn = await pool.connect();
-      const sql =
-        'SELECT pname as nameOfproduct , count(pname) as ordered FROM orders_product INNER JOIN products on orders_product.product_id=products.id group by products.pname order by count(pname)  desc limit 5';
+      const sql = `SELECT products.id,count(order_product.product_id) as ordered_num,products.ptitle, products.pdesc , products.price ,products.discount,products.priceafterdiscount , products.brand,
+        products.category,products.subcategory,products.coverimage,products.colors
+        FROM order_product INNER JOIN products on order_product.product_id=products.id group by products.id,products.ptitle,products.priceafterdiscount,products.price,products.discount, products.pdesc,products.brand,products.category,products.subcategory,products.coverimage,products.colors order by count(order_product.product_id)  desc limit 5`;
 
       const result = await conn.query(sql);
       const products = result.rows;
       conn.release();
-
       return products;
     } catch (err) {
+      console.error(err);
       throw new Error(` Error: ${err}`);
     }
   }

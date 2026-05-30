@@ -14,14 +14,12 @@ const corsoptions = {
 
 app.use(cors(corsoptions));
 
-
 app.use('/uploads', express.static(path.join(process.cwd(), 'uploads')));
 
 // this part is responsible for recieving data from frontend forms (data-form) and save it in the req.body
 app.use(bodyParser.urlencoded({ extended: false }));
 
 app.use(bodyParser.json());
-
 
 app.use(routes);
 

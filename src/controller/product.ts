@@ -14,9 +14,15 @@ export default class Productcontroller {
         const data: product[] = [];
 
         for (const value of allproducts) {
+          // const imagePath = path.join(
+          // __dirname,
+          //'../uploads/products',
+          //value.coverimage
+          //);
           const imagePath = path.join(
-            __dirname,
-            '../uploads/products',
+            process.cwd(),
+            'uploads',
+            'products',
             value.coverimage
           );
 
@@ -28,10 +34,16 @@ export default class Productcontroller {
 
             if (value.images && value.images.length > 0) {
               for (const img of value.images) {
+                // const imagePath = path.join(
+                // __dirname,
+                //'../uploads/products',
+                //img
+                //);
                 const imagePath = path.join(
-                  __dirname,
-                  '../uploads/products',
-                  img
+                  process.cwd(),
+                  'uploads',
+                  'products',
+                  value.coverimage
                 );
                 const imageData = await fs.promises.readFile(imagePath);
                 imagesData.push(imageData.toString('base64'));

@@ -13,6 +13,9 @@ const pool = new pg_1.Pool({
     database,
     user: POSTGRES_USER,
     password: POSTGRES_PASSWORD,
-    port: 5432
+    port: 5432,
+    ssl: {
+        rejectUnauthorized: false
+    }
 });
 exports.default = pool;

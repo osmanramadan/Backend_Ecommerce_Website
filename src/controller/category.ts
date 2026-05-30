@@ -39,9 +39,16 @@ export default class Categorycontroller {
         const data: category[] = [];
 
         for (const value of categories) {
+          //const imagePath = path.join(
+          //__dirname,
+          //'../uploads/categories',
+          //value.image as string
+          //);
+
           const imagePath = path.join(
-            __dirname,
-            '../uploads/categories',
+            process.cwd(),
+            'uploads',
+            'categories',
             value.image as string
           );
 

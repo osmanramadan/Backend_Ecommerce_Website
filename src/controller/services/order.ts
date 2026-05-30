@@ -36,12 +36,17 @@ export default class OrderServicesController {
               return;
             }
 
+            //   const imagePath = path.join(
+            //   __dirname,
+            // '../../uploads/products',
+            // productsData.coverimage
+            //);
             const imagePath = path.join(
-              __dirname,
-              '../../uploads/products',
+              process.cwd(),
+              'uploads',
+              'products',
               productsData.coverimage
             );
-
             try {
               const imageData = await fs.promises.readFile(imagePath);
 
@@ -111,9 +116,15 @@ export default class OrderServicesController {
               return;
             }
 
+            //    const imagePath = path.join(
+            //    __dirname,
+            //  '../../uploads/products',
+            // productsData.coverimage
+            //);
             const imagePath = path.join(
-              __dirname,
-              '../../uploads/products',
+              process.cwd(),
+              'uploads',
+              'products',
               productsData.coverimage
             );
 

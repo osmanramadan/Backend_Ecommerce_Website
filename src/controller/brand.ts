@@ -40,9 +40,15 @@ export default class Markcontroller {
         const data: mark[] = [];
 
         for (const value of brands) {
+          //const imagePath = path.join(
+          //   __dirname,
+          //'../uploads/brands',
+          //value.image as string
+          //);
           const imagePath = path.join(
-            __dirname,
-            '../uploads/brands',
+            process.cwd(),
+            'uploads',
+            'brands',
             value.image as string
           );
 

@@ -32,13 +32,24 @@ export default class Ordercontroller {
               });
               return;
             }
+            // uncomment this if you want to work locally as you like
+            //const imagePath = path.join(
+            //__dirname,
+            //'../uploads/products',
+            //productsData.coverimage
+            //);
 
+            // this for work on server
             const imagePath = path.join(
-              __dirname,
-              '../uploads/products',
+              process.cwd(),
+              'uploads',
+              'products',
               productsData.coverimage
             );
-
+            console.log(
+              imagePath,
+              '-----===========**&&&&&&&&&&&=========---------------'
+            );
             try {
               const imageData = await fs.promises.readFile(imagePath);
 
@@ -99,10 +110,16 @@ export default class Ordercontroller {
               return;
             }
 
-            const imagePath = path.join(
-              __dirname,
-              '../uploads/products',
+            //const imagePath = path.join(
+            //  __dirname,
+            //'../uploads/products',
 
+            // productINOrder.coverimage
+            // );
+            const imagePath = path.join(
+              process.cwd(),
+              'uploads',
+              'products',
               productINOrder.coverimage
             );
 

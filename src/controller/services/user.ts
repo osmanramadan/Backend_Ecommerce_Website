@@ -16,9 +16,16 @@ export default class UserServicesController {
         const data: product[] = [];
 
         for (const value of purchases) {
+          //const imagePath = path.join(
+          //__dirname,
+          //'../../uploads/products',
+          //value.coverimage
+          //);
+
           const imagePath = path.join(
-            __dirname,
-            '../../uploads/products',
+            process.cwd(),
+            'uploads',
+            'products',
             value.coverimage
           );
 

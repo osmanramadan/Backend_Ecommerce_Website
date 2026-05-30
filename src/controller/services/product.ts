@@ -17,9 +17,16 @@ export default class ProductServicesController {
         const data: product[] = [];
 
         for (const value of products) {
+          //   const imagePath = path.join(
+          //   __dirname,
+          // '../../uploads/products',
+          //value.coverimage
+          //);
+
           const imagePath = path.join(
-            __dirname,
-            '../../uploads/products',
+            process.cwd(),
+            'uploads',
+            'products',
             value.coverimage
           );
 
@@ -68,12 +75,17 @@ export default class ProductServicesController {
         const data: product[] = [];
 
         for (const value of products) {
+          // const imagePath = path.join(
+          // __dirname,
+          // '../../uploads/products',
+          //value.coverimage
+          //);
           const imagePath = path.join(
-            __dirname,
-            '../../uploads/products',
+            process.cwd(),
+            'uploads',
+            'products',
             value.coverimage
           );
-
           try {
             const imageData = await fs.promises.readFile(imagePath);
 

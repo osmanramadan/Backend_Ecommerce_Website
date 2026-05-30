@@ -19,6 +19,7 @@ export default class Productcontroller {
           //'../uploads/products',
           //value.coverimage
           //);
+          // i update this code , to get path correctly on server such as (render) , if you work local above line will work
           const imagePath = path.join(
             process.cwd(),
             'uploads',
@@ -43,7 +44,7 @@ export default class Productcontroller {
                   process.cwd(),
                   'uploads',
                   'products',
-                  value.coverimage
+                  img
                 );
                 const imageData = await fs.promises.readFile(imagePath);
                 imagesData.push(imageData.toString('base64'));
@@ -99,9 +100,16 @@ export default class Productcontroller {
 
       if (productbyid && typeof productbyid === 'object') {
         const data = [];
+
+        // const imagePath = path.join(
+        // __dirname,
+        //'../uploads/products',
+        //productbyid.coverimage as string
+        //);
         const imagePath = path.join(
-          __dirname,
-          '../uploads/products',
+          process.cwd(),
+          'uploads',
+          'products',
           productbyid.coverimage as string
         );
 
@@ -113,9 +121,15 @@ export default class Productcontroller {
           let rate = 0;
           if (productbyid.images && productbyid.images.length > 0) {
             for (const img of productbyid.images) {
+              // const imagePath = path.join(
+              // __dirname,
+              //'../uploads/products',
+              //img
+              //);
               const imagePath = path.join(
-                __dirname,
-                '../uploads/products',
+                process.cwd(),
+                'uploads',
+                'products',
                 img
               );
               const imageData = await fs.promises.readFile(imagePath);
@@ -174,9 +188,15 @@ export default class Productcontroller {
         const data: product[] = [];
 
         for (const value of items) {
+          //const imagePath = path.join(
+          //__dirname,
+          //'../uploads/products',
+          //value.coverimage
+          //);
           const imagePath = path.join(
-            __dirname,
-            '../uploads/products',
+            process.cwd(),
+            'uploads',
+            'products',
             value.coverimage
           );
 
@@ -189,9 +209,15 @@ export default class Productcontroller {
 
             if (value.images && value.images.length > 0) {
               for (const img of value.images) {
+                // const imagePath = path.join(
+                // __dirname,
+                //'../uploads/products',
+                //img
+                //);
                 const imagePath = path.join(
-                  __dirname,
-                  '../uploads/products',
+                  process.cwd(),
+                  'uploads',
+                  'products',
                   img
                 );
                 const imageData = await fs.promises.readFile(imagePath);

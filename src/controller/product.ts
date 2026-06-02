@@ -63,13 +63,16 @@ export default class Productcontroller {
 
             const rateProduct = { rate: rate };
             data.push({ ...value, ...rateProduct, ...imgsData, ...imgCover });
-          } catch (err) {
+          } catch (err: unknown) {
+              const error = err as Error;
+
             res.json({
               status: 'fail',
               msg:
                 'Failed to load image for product with id ' +
                 value.id +
-                ' or rate for product '
+                ' or rate for product ',
+                error: error.message
             });
             return;
           }
@@ -319,7 +322,11 @@ export default class Productcontroller {
 
   create = async (req: Request, res: Response) => {
     try {
-      const subcategory = req.body.subcategory.split(',');
+      
+      let subcategory: string[] = [];
+      if(req.body.subcategory){
+        subcategory = req.body.subcategory.split(',');
+      }
       const colors = req.body.colors.split(',');
 
       const data: product = {
@@ -348,15 +355,15 @@ export default class Productcontroller {
         res.json({ status: 'fail', msg: 'Failed to create product' });
         return;
       }
-    } catch (err) {
-      res.status(400);
-      res.json({
-        status: 'fail',
-        msg: 'Failed to create product',
-        error: err
-      });
-      return;
-    }
+   } catch (err: unknown) {
+  res.status(400);
+  res.json({
+    status: 'fail',
+    msg: 'Failed to create product',
+    error: err instanceof Error ? err.message : 'Unknown error'
+  });
+  return;
+}
   };
 
   createcomment = async (req: Request, res: Response) => {

@@ -13,7 +13,7 @@ const corsoptions = {
 };
 
 app.use(cors(corsoptions));
-
+// this part is added when upload project to server (render) to upload images and save it in the upload folder in the root of the project
 app.use('/uploads', express.static(path.join(process.cwd(), 'uploads')));
 
 // this part is responsible for recieving data from frontend forms (data-form) and save it in the req.body

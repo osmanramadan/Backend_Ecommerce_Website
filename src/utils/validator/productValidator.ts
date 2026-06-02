@@ -79,7 +79,7 @@ export const createProductValidator = [
     };
 
     if (!files.images || files.images.length === 0) {
-      throw new Error('Images are required');
+      throw new Error('Images are required ( images )');
     }
 
     for (const file of files.images) {
@@ -97,7 +97,7 @@ export const createProductValidator = [
     };
 
     if (!files.coverimage || files.coverimage.length === 0) {
-      throw new Error('Cover image is required');
+      throw new Error('Cover image is required (coverimage)');
     }
 
     if (!files.coverimage[0].mimetype.startsWith('image/')) {

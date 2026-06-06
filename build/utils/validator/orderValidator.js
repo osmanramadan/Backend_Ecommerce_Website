@@ -87,7 +87,7 @@ exports.createorderValidator = [
     validatormiddelware_1.validatorMiddleware
 ];
 exports.checkforuseridValidator = [
-    (0, express_validator_1.check)('userid')
+    (0, express_validator_1.param)('userid')
         .notEmpty()
         .withMessage('User id is required field (userid)')
         .isNumeric()
@@ -120,7 +120,7 @@ exports.updateorderstatusValidator = [
     validatormiddelware_1.validatorMiddleware
 ];
 exports.deleteorderValidator = [
-    (0, express_validator_1.check)('orderId')
+    (0, express_validator_1.param)('orderId')
         .notEmpty()
         .withMessage('Order id is required field (orderId)')
         .isNumeric()

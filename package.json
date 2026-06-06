@@ -6,8 +6,7 @@
     "author": "osman",
     "license": "ISC",
     "scripts": {
-        "prebuild": "rimraf build",
-        "build": "yarn prebuild && npx tsc",
+        "build": "npx rimraf build && npx tsc",
         "watch": "tsc-watch --esModuleInterop src/index.ts --outDir ./build --onSuccess \"node ./build/index.js\"",
         "prettier": "prettier --config .prettierrc.json src/**/*.ts --write",
         "lint": "eslint .  --fix --ext .ts",

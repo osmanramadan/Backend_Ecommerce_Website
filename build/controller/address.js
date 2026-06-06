@@ -10,26 +10,30 @@ class Addresscontroller {
                 if (result) {
                     res.json({
                         status: 'success',
-                        msg: 'Address added successfully',
-                        data: result
+                        msg: 'Address added successfully'
                     });
                     return;
                 }
                 else {
+                    res.status(400);
                     res.json({ status: 'fail', msg: 'Failed to add address' });
                     return;
                 }
             }
             catch (err) {
                 res.status(400);
-                res.json({ status: 'fail', msg: 'Failed to add address' });
+                res.json({ status: 'error', msg: 'Error occurred while adding address' });
             }
         };
         this.viewuseraddress = async (req, res) => {
             try {
                 const result = await addressobject.viewuseraddress(req.params.email);
-                if (result) {
-                    res.json({ status: 'success', data: result });
+                if (result && Array.isArray(result)) {
+                    res.json({
+                        status: 'success',
+                        addressCount: result.length,
+                        data: result
+                    });
                     return;
                 }
                 else {
@@ -43,7 +47,7 @@ class Addresscontroller {
             }
             catch (err) {
                 res.status(400);
-                res.json({ status: 'fail', msg: 'Failed to retrieve addresses' });
+                res.json({ status: 'error', msg: 'Failed to retrieve addresses' });
                 return;
             }
         };
@@ -65,7 +69,7 @@ class Addresscontroller {
             }
             catch (err) {
                 res.status(400);
-                res.json({ status: 'fail', msg: 'Failed to delete address' });
+                res.json({ status: 'error', msg: 'Failed to delete address' });
                 return;
             }
         };
@@ -87,7 +91,8 @@ class Addresscontroller {
             }
             catch (err) {
                 res.status(400);
-                res.json({ status: 'fail', msg: 'Failed to update address' });
+                res.json({ status: 'error', msg: 'Failed to update address' });
+                return;
             }
         };
     }

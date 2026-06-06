@@ -218,7 +218,7 @@ class Productcontroller {
             const colors = req.body.colors.split(',');
             //🍳 There is a problem here if  user want to update field , he should provide all other fields .
             const data = {
-                id: req.body.id,
+                id: req.body.productId,
                 ptitle: req.body.ptitle,
                 pdesc: req.body.pdesc,
                 price: req.body.price,

@@ -37,13 +37,15 @@ const users = express_1.default.Router();
 users.get('/', jwtmiddelware_1.verifyAdmin, usercontroller.index);
 users.post('/signup', authValidator_1.signupValidator, usercontroller.create);
 users.post('/login', authValidator_1.loginValidator, usercontroller.getuserbycredentials);
+//----
 users.post('/forgotPassword', authValidator_1.forgetPasswordValidator, usercontroller.forgetpassword);
 users.post('/verifyResetCode', authValidator_1.verifyPasswordValidator, usercontroller.verifyresetcode);
 users.post('/resetPassword', authValidator_1.resetPasswordValidator, usercontroller.resetpassword);
+//----
 users.put('/updateuserprofile', jwtmiddelware_1.default, authValidator_1.updateUserProfileValidator, usercontroller.updateuserprofile);
 users.put('/updateuserpassword', jwtmiddelware_1.default, authValidator_1.updateUserPasswordValidator, usercontroller.updateuserpassword);
-users.get('/:userid', authValidator_1.useridValidator, jwtmiddelware_1.default, usercontroller.show);
+users.get('/:userid', jwtmiddelware_1.default, authValidator_1.useridValidator, usercontroller.show);
 // This option is to allow users to delete their accounts but not others accounts
-users.delete('/:userid', authValidator_1.useridValidator, jwtmiddelware_1.default, usercontroller.delete);
-users.get('/purchases/:userid', authValidator_1.useridValidator, jwtmiddelware_1.default, usercontrollerservices.userpurchases);
+users.delete('/:userid', jwtmiddelware_1.default, authValidator_1.useridValidator, usercontroller.delete);
+users.get('/purchases/:userid', jwtmiddelware_1.default, authValidator_1.useridValidator, usercontrollerservices.userpurchases);
 exports.default = users;

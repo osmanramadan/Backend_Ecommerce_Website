@@ -20,15 +20,16 @@ class Usercontroller {
             }
             catch (e) {
                 res.status(400);
-                res.json({ status: 'fail' });
+                res.json({ status: 'error' });
                 return;
             }
         };
         this.show = async (req, res) => {
             try {
                 const userbyid = await userobject.show(req.params.userid);
+                delete userbyid.password;
                 if (userbyid) {
-                    res.json(userbyid);
+                    res.json({ status: 'success', data: userbyid });
                     return;
                 }
                 res.status(404);
@@ -37,7 +38,7 @@ class Usercontroller {
             }
             catch (err) {
                 res.status(400);
-                res.json({ status: 'fail' });
+                res.json({ status: 'error', msg: 'Error in getting user' });
                 return;
             }
         };
@@ -49,40 +50,33 @@ class Usercontroller {
                     return;
                 }
                 res.status(404);
-                res.json({ status: 'fail', msg: 'User not found' });
+                res.json({ status: 'fail', msg: 'User Not Found' });
                 return;
             }
             catch (err) {
                 res.status(400);
-                res.json({ status: 'fail' });
+                res.json({ status: 'error', msg: 'Error in deleting user' });
                 return;
             }
         };
         this.getuserbycredentials = async (req, res) => {
             try {
-                const existemail = await userobject.emailExists(req.body.email);
-                if (existemail) {
-                    const userbyemail = await userobject.getuserbycredentials(req.body.email, req.body.password);
-                    if (userbyemail) {
-                        const token = await (0, signtoken_1.default)(userbyemail);
-                        delete userbyemail.password;
-                        res.json({ data: userbyemail, token: token });
-                        return;
-                    }
-                    else {
-                        res.json({ error: 'Password wrong' });
-                        return;
-                    }
+                const userbyemail = await userobject.getuserbycredentials(req.body.email, req.body.password);
+                if (userbyemail) {
+                    const token = await (0, signtoken_1.default)(userbyemail);
+                    delete userbyemail.password;
+                    res.json({ status: 'success', data: userbyemail, token: token });
+                    return;
                 }
                 else {
-                    res.status(404);
-                    res.json({ error: 'Email not found' });
+                    res.status(401);
+                    res.json({ status: 'Wrong Password' });
                     return;
                 }
             }
             catch (err) {
                 res.status(400);
-                res.json({ status: 'fail' });
+                res.json({ status: 'error' });
                 return;
             }
         };
@@ -122,39 +116,20 @@ class Usercontroller {
                     passwordConfirm: req.body.passwordConfirm,
                     phone: req.body.phone
                 };
-                //@ if you uncomment these lines you should comment the validation in authValidator because it will do the same work and you will get error of validation because of the custom validation in authValidator
-                // const existemail = await userobject.emailExists(req.body.email);
-                // if (existemail) {
-                // res.json({ error: 'Email already exist' });
-                // return;
-                // }
-                // const existphone = await userobject.phoneExists(req.body.phone);
-                // if (existphone) {
-                // res.json({ error: 'Phone already exist' });
-                // return;
-                //  }
                 const newuser = await userobject.create(userquery);
                 const token = await (0, signtoken_1.default)(newuser);
-                res.json({ token: token });
+                res.json({ status: 'success', token: token });
                 return;
             }
             catch (err) {
                 res.status(400);
-                res.json({ status: 'fail' });
+                res.json({ status: 'error' });
                 return;
             }
         };
         this.forgetpassword = async (req, res) => {
             const { email } = req.body;
             try {
-                //@ if you uncomment these lines you should comment the validation in authValidator because it will do the same work and you will get error of validation because of the custom validation in authValidator
-                //const existemail = await userobject.emailExists(email);
-                //if (!existemail) {
-                //res.status(404);
-                //@ You can add field named msq to tell frontend that this message is for "email not found" error to handle it in frontend
-                //res.json({ status: 'fail' });
-                //return;
-                //}
                 const generateRandomSixDigitCode = () => {
                     const min = 100000; // Minimum value for a six-digit number
                     const max = 999999; // Maximum value for a six-digit number
@@ -177,7 +152,10 @@ class Usercontroller {
                 });
                 if (!updated) {
                     res.status(400);
-                    res.json({ status: 'fail to update' });
+                    res.json({
+                        status: 'fail',
+                        msg: 'Error in updating reset code of user in database'
+                    });
                     return;
                 }
                 const message = `Forgot your password ? Submit this reset password code:
@@ -195,7 +173,6 @@ class Usercontroller {
                 return;
             }
             catch (err) {
-                console.error(err);
                 await userobject.updateUserFields({
                     email: email,
                     passwordResetCode: undefined,
@@ -203,19 +180,12 @@ class Usercontroller {
                     resetCodeVerified: undefined
                 });
                 res.status(400);
-                res.json({ status: 'fail' });
+                res.json({ status: 'error', msg: 'Error in sending reset code to user' });
                 return;
             }
         };
         this.verifyresetcode = async (req, res) => {
             try {
-                //@ if you uncomment these lines you should comment the validation in authValidator because it will do the same work and you will get error of validation because of the custom validation in authValidator
-                //const existemail = await userobject.emailExists(req.body.email);
-                //if (!existemail) {
-                //res.status(404);
-                //res.json({ status: 'email not found' });
-                //return;
-                // }
                 const hashedResetCode = crypto_1.default
                     .createHash('sha256')
                     .update(req.body.resetCode)
@@ -223,18 +193,21 @@ class Usercontroller {
                 const result = await userobject.checkResetCode(req.body.email, hashedResetCode);
                 if (result === 'invalid code') {
                     res.status(400);
-                    res.json({ status: 'invalid code' });
+                    res.json({ status: 'invalid code', msg: 'Invalid reset code' });
                     return;
                 }
                 const check = await userobject.checkVerifyCode(req.body.email);
                 if (check) {
                     res.status(400);
-                    res.json({ status: 'already verified' });
+                    res.json({
+                        status: 'already verified',
+                        msg: 'Reset code already verified'
+                    });
                     return;
                 }
                 if (result === 'expired code') {
                     res.status(400);
-                    res.json({ status: 'expired code' });
+                    res.json({ status: 'expired code', msg: 'Reset code has expired' });
                     return;
                 }
                 const updated = await userobject.updateUserFields({
@@ -249,27 +222,22 @@ class Usercontroller {
             }
             catch (err) {
                 res.status(400);
-                res.json({ status: 'fail' });
+                res.json({ status: 'error', msg: 'Error in verifying reset code' });
                 return;
             }
         };
         this.resetpassword = async (req, res) => {
             try {
-                //@ if you uncomment these lines you should comment the validation in authValidator because it will do the same work and you will get error of validation because of the custom validation in authValidator
-                // const result = await userobject.emailExists(req.body.email);
-                // if (!result) {
-                // res.status(400);
-                // res.json({ status: 'fail' });
-                // return;
-                // }
                 const check = await userobject.checkVerifyCode(req.body.email);
                 if (!check) {
                     res.status(400);
-                    // You can add field named msq to tell frontend that this message is for "code not verified" error to handle it in frontend
-                    res.json({ status: 'fail' });
+                    res.json({
+                        status: 'fail',
+                        msg: 'Reset code not verified yet Or you have changed your password once you verified the code'
+                    });
                     return;
                 }
-                const hash = await cipher.encrypt(req.body.newpassword);
+                const hash = await cipher.encrypt(req.body.newPassword);
                 const updated = await userobject.updateUserFields({
                     email: req.body.email,
                     password: hash,
@@ -281,17 +249,24 @@ class Usercontroller {
                     const userData = await userobject.getuserbyemail(req.body.email);
                     if (userData && typeof userData === 'object') {
                         const token = await (0, signtoken_1.default)(userData);
-                        res.json({ status: 'success', token: token });
+                        res.json({
+                            status: 'success',
+                            msg: 'Password reset successfully',
+                            token: token
+                        });
                         return;
                     }
                 }
                 res.status(400);
-                res.json({ status: 'error', msg: 'Error in reset password' });
+                res.json({
+                    status: 'fail',
+                    msg: 'Error in updating new password in database'
+                });
                 return;
             }
             catch (err) {
                 res.status(400);
-                res.json({ status: 'fail', err: err });
+                res.json({ status: 'error', msg: 'Error in reset password' });
                 return;
             }
         };
@@ -300,8 +275,8 @@ class Usercontroller {
                 const data = {
                     email: req.body.email
                 };
-                if (req.body.username) {
-                    data.username = req.body.username;
+                if (req.body.slug) {
+                    data.username = req.body.slug;
                 }
                 if (req.body.phone) {
                     data.phone = req.body.phone;
@@ -309,17 +284,22 @@ class Usercontroller {
                 const updated = await userobject.updateUserFields(data);
                 if (updated) {
                     const userbyemail = await userobject.getuserbyemail(req.body.email);
-                    res.status(200);
-                    res.json({ status: 'success', data: userbyemail });
-                    return;
+                    if (userbyemail && typeof userbyemail === 'object') {
+                        delete userbyemail.password;
+                        res.json({ status: 'success', data: userbyemail });
+                        return;
+                    }
                 }
                 res.status(400);
-                res.json({ status: 'fail' });
+                res.json({
+                    status: 'fail',
+                    msg: 'Error in updating user profile in database'
+                });
                 return;
             }
             catch (err) {
                 res.status(400);
-                res.json({ status: 'fail' });
+                res.json({ status: 'error', msg: 'Error in updating user profile' });
             }
         };
         this.updateuserpassword = async (req, res) => {
@@ -327,7 +307,7 @@ class Usercontroller {
                 const updated = await userobject.updateuserpassword(req.body.email, req.body.oldpassword, req.body.newpassword);
                 if (updated) {
                     res.status(200);
-                    res.json({ status: 'success' });
+                    res.json({ status: 'success', msg: 'Password updated successfully' });
                     return;
                 }
                 else {
@@ -339,7 +319,7 @@ class Usercontroller {
             catch (err) {
                 res.status(400);
                 res.json({
-                    status: 'fail',
+                    status: 'error',
                     msg: 'An error occurred while updating the password'
                 });
                 return;

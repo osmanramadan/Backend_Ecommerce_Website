@@ -23,7 +23,7 @@ exports.createProductValidator = [
         .withMessage('Price must be greater than 0'),
     (0, express_validator_1.check)('discount')
         .optional()
-        // for now , i dont determine discount will be (by value,percentage)
+        // Discount will be (by percentage) 10 means 10% discount on the original price
         .isFloat({ min: 0, max: 100 })
         .withMessage('Discount must be between 0 and 100'),
     (0, express_validator_1.check)('priceafterdiscount')
@@ -81,17 +81,17 @@ exports.createProductValidator = [
     validatormiddelware_1.validatorMiddleware
 ];
 exports.showProductValidator = [
-    (0, express_validator_1.check)('id')
+    (0, express_validator_1.param)('id')
         .notEmpty()
-        .withMessage('Product id is required (id) ')
+        .withMessage('Product id is required as a URL parameter')
         .isInt()
         .withMessage('Product id must be an integer'),
     validatormiddelware_1.validatorMiddleware
 ];
 exports.deleteProductValidator = [
-    (0, express_validator_1.check)('id')
+    (0, express_validator_1.param)('id')
         .notEmpty()
-        .withMessage('Product id is required (id) ')
+        .withMessage('Product id is required as a URL parameter')
         .isInt()
         .withMessage('Product id must be an integer')
         .custom(async (val) => {
@@ -104,22 +104,47 @@ exports.deleteProductValidator = [
     validatormiddelware_1.validatorMiddleware
 ];
 exports.getProductsByCateValidator = [
-    (0, express_validator_1.check)('cate')
+    (0, express_validator_1.param)('cate')
         .notEmpty()
         .withMessage('Category is required')
         .isString()
-        .withMessage('Category must be a string'),
+        .withMessage('Category must be a string')
+        .custom(async (val) => {
+        const categoryExist = await categoryObject.checkcategoryexist(val);
+        if (!categoryExist) {
+            throw new Error('Category does not exist');
+        }
+        return true;
+    }),
     validatormiddelware_1.validatorMiddleware
 ];
 exports.updateProductValidator = [
-    (0, express_validator_1.check)('id')
+    (0, express_validator_1.check)('productId')
         .notEmpty()
-        .withMessage('Product id is required (id) ')
+        .withMessage('Product id is required (productId) ')
         .isInt()
-        .withMessage('Product id must be an integer'),
+        .withMessage('Product id must be an integer')
+        .custom(async (val) => {
+        const productExist = await productObject.show(val);
+        if (!productExist) {
+            throw new Error('Product does not exist');
+        }
+        return true;
+    }),
     (0, express_validator_1.check)('ptitle')
         .notEmpty()
-        .withMessage('Product title cannot be empty if provided (ptitle) '),
+        .withMessage('Product title cannot be empty if provided (ptitle) ')
+        .custom(async (val, { req }) => {
+        const productExist = await productObject.checkproductexist(val);
+        if (productExist) {
+            const product = await productObject.show(req.body.productId);
+            if (typeof product !== 'boolean' && product.ptitle === val) {
+                return true; // Allow if the title belongs to the same product being updated
+            }
+            throw new Error('Product title already exists choose another title');
+        }
+        return true;
+    }),
     (0, express_validator_1.check)('pdesc')
         .notEmpty()
         .withMessage('Product description cannot be empty if provided (pdesc) '),
@@ -210,9 +235,9 @@ exports.createCommentValidator = [
     validatormiddelware_1.validatorMiddleware
 ];
 exports.getProductCommentsValidator = [
-    (0, express_validator_1.check)('id')
+    (0, express_validator_1.param)('id')
         .notEmpty()
-        .withMessage('Product ID is required')
+        .withMessage('Product ID is required as a URL parameter')
         .isInt()
         .withMessage('Product ID must be an integer')
         .custom(async (val) => {
@@ -225,9 +250,9 @@ exports.getProductCommentsValidator = [
     validatormiddelware_1.validatorMiddleware
 ];
 exports.getProductStarsValidator = [
-    (0, express_validator_1.check)('id')
+    (0, express_validator_1.param)('id')
         .notEmpty()
-        .withMessage('Product ID is required')
+        .withMessage('Product ID is required as a URL parameter')
         .isInt()
         .withMessage('Product ID must be an integer')
         .custom(async (val) => {

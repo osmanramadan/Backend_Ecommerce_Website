@@ -15,11 +15,28 @@ const verify = async (req, res, next) => {
         const token = authorizationHeader.split(' ')[1];
         const decoded = jsonwebtoken_1.default.verify(token, TOKEN_SECRET);
         req.body.userid = decoded.userid;
+        req.body.tokenEmail = decoded.tokenEmail;
         if (req.params.userid &&
             Number(req.params.userid) !== Number(req.body.userid)) {
             res.status(403);
             res.json({
-                access: 'forbidden',
+                status: 'forbidden',
+                msg: 'User only access his/her data'
+            });
+            return;
+        }
+        if (req.params.email && req.params.email !== req.body.tokenEmail) {
+            res.status(403);
+            res.json({
+                status: 'forbidden',
+                msg: 'User only access his/her data'
+            });
+            return;
+        }
+        if (req.body.email && req.body.email !== req.body.tokenEmail) {
+            res.status(403);
+            res.json({
+                status: 'forbidden',
                 msg: 'User only access his/her data'
             });
             return;
@@ -29,7 +46,7 @@ const verify = async (req, res, next) => {
     catch (e) {
         res.status(401);
         res.json({
-            access: 'forbidden',
+            status: 'forbidden',
             msg: 'Invalid token or token is not provided'
         });
         return;
@@ -46,7 +63,7 @@ const verifyAdmin = async (req, res, next) => {
         if (decoded.role !== 'admin_1/id=80226753244') {
             res.status(403);
             res.json({
-                access: 'forbidden',
+                status: 'forbidden',
                 msg: 'Admin access only'
             });
             return;
@@ -56,7 +73,7 @@ const verifyAdmin = async (req, res, next) => {
     catch (e) {
         res.status(401);
         res.json({
-            access: 'forbidden',
+            status: 'forbidden',
             msg: 'Invalid token or token is not provided'
         });
         return;

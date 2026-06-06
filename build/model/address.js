@@ -26,6 +26,21 @@ class Address {
             throw new Error(`${err}`);
         }
     }
+    async checkaddressowner(addressId, email) {
+        try {
+            const sql = 'select * from user_address where id=$1 and addremail=$2';
+            const conn = await db_1.default.connect();
+            const result = await conn.query(sql, [addressId, email]);
+            conn.release();
+            if (result.rowCount) {
+                return true;
+            }
+            return false;
+        }
+        catch (err) {
+            throw new Error(`${err}`);
+        }
+    }
     async viewuseraddress(email) {
         try {
             const sql = 'SELECT * from user_address where addremail=$1';

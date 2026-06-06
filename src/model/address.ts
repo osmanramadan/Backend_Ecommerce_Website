@@ -29,6 +29,22 @@ export class Address {
     }
   }
 
+  async checkaddressowner(addressId: string, email: string): Promise<boolean> {
+    try {
+      const sql = 'select * from user_address where id=$1 and addremail=$2';
+
+      const conn = await pool.connect();
+      const result = await conn.query(sql, [addressId, email]);
+      conn.release();
+      if (result.rowCount) {
+        return true;
+      }
+      return false;
+    } catch (err) {
+      throw new Error(`${err}`);
+    }
+  }
+
   async viewuseraddress(email: string): Promise<address[] | boolean> {
     try {
       const sql = 'SELECT * from user_address where addremail=$1';

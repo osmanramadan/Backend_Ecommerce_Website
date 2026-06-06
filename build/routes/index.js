@@ -14,12 +14,12 @@ const subcategory_1 = __importDefault(require("./api/subcategory"));
 const coupon_1 = __importDefault(require("./api/coupon"));
 const routes = express_1.default.Router();
 routes.use('/api/v1/users', user_1.default);
-routes.use('/api/v1/orders', order_1.default);
-routes.use('/api/v1/products', product_1.default);
 routes.use('/api/v1/addresses', address_1.default);
+routes.use('/api/v1/products', product_1.default);
 routes.use('/api/v1/brand', mark_1.default);
 routes.use('/api/v1/category', category_1.default);
 routes.use('/api/v1/subcategory', subcategory_1.default);
+routes.use('/api/v1/orders', order_1.default);
 routes.use('/api/v1/coupon', coupon_1.default);
 routes.get('/', (_req, res) => {
     res.status(200);

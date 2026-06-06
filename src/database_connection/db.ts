@@ -20,9 +20,7 @@ const pool = new Pool({
   user: POSTGRES_USER,
   password: POSTGRES_PASSWORD,
   port: 5432,
-  ssl: {  // this for productions part deploy on render
-    rejectUnauthorized: false
-  }
+  ssl: false
 });
 
 export default pool;

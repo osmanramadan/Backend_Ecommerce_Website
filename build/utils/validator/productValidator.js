@@ -59,7 +59,7 @@ exports.createProductValidator = [
     (0, express_validator_1.check)('images').custom((value, { req }) => {
         const files = req.files;
         if (!files.images || files.images.length === 0) {
-            throw new Error('Images are required');
+            throw new Error('Images are required ( images )');
         }
         for (const file of files.images) {
             if (!file.mimetype.startsWith('image/')) {
@@ -71,7 +71,7 @@ exports.createProductValidator = [
     (0, express_validator_1.check)('coverimage').custom((value, { req }) => {
         const files = req.files;
         if (!files.coverimage || files.coverimage.length === 0) {
-            throw new Error('Cover image is required');
+            throw new Error('Cover image is required (coverimage)');
         }
         if (!files.coverimage[0].mimetype.startsWith('image/')) {
             throw new Error('Cover image must be an image');

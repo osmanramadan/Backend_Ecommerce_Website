@@ -22,6 +22,7 @@ const users: express.Router = express.Router();
 users.get('/', verifyAdmin, usercontroller.index);
 users.post('/signup', signupValidator, usercontroller.create);
 users.post('/login', loginValidator, usercontroller.getuserbycredentials);
+//----
 users.post(
   '/forgotPassword',
   forgetPasswordValidator,
@@ -37,6 +38,7 @@ users.post(
   resetPasswordValidator,
   usercontroller.resetpassword
 );
+//----
 users.put(
   '/updateuserprofile',
   verify,
@@ -49,15 +51,15 @@ users.put(
   updateUserPasswordValidator,
   usercontroller.updateuserpassword
 );
-users.get('/:userid', useridValidator, verify, usercontroller.show);
+users.get('/:userid',verify,useridValidator, usercontroller.show);
 
 // This option is to allow users to delete their accounts but not others accounts
-users.delete('/:userid', useridValidator, verify, usercontroller.delete);
+users.delete('/:userid',verify,useridValidator, usercontroller.delete);
 
 users.get(
   '/purchases/:userid',
-  useridValidator,
   verify,
+  useridValidator,
   usercontrollerservices.userpurchases
 );
 export default users;

@@ -48,7 +48,9 @@ class uploadImageController {
                         msg: 'Invalid upload route'
                     });
                 }
-                const pathimg = path_1.default.resolve(__dirname, `../../uploads/${folders[type]}`);
+                // to be suitable in production render server
+                //const pathimg = path.resolve(__dirname, `../../uploads/${folders[type]}`);
+                const pathimg = path_1.default.join(process.cwd(), 'uploads', folders[type]);
                 if (req.file) {
                     const ext = req.file.mimetype.split('/')[1];
                     const filename = `${folders[type]}-${(0, uuid_1.v4)()}-${Date.now()}.${ext}`;

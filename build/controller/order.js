@@ -28,7 +28,15 @@ class Ordercontroller {
                                 });
                                 return;
                             }
-                            const imagePath = path_1.default.join(__dirname, '../uploads/products', productsData.coverimage);
+                            // uncomment this if you want to work locally as you like
+                            //const imagePath = path.join(
+                            //__dirname,
+                            //'../uploads/products',
+                            //productsData.coverimage
+                            //);
+                            // this for work on server
+                            const imagePath = path_1.default.join(process.cwd(), 'uploads', 'products', productsData.coverimage);
+                            console.log(imagePath, '-----===========**&&&&&&&&&&&=========---------------');
                             try {
                                 const imageData = await fs_1.default.promises.readFile(imagePath);
                                 const imgCover = imageData.toString('base64');
@@ -81,7 +89,12 @@ class Ordercontroller {
                                 });
                                 return;
                             }
-                            const imagePath = path_1.default.join(__dirname, '../uploads/products', productINOrder.coverimage);
+                            //const imagePath = path.join(
+                            //  __dirname,
+                            //'../uploads/products',
+                            // productINOrder.coverimage
+                            // );
+                            const imagePath = path_1.default.join(process.cwd(), 'uploads', 'products', productINOrder.coverimage);
                             try {
                                 const imageData = await fs_1.default.promises.readFile(imagePath);
                                 const imgCover = imageData.toString('base64');

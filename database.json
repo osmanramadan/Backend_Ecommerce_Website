@@ -6,7 +6,9 @@
     "user": { "ENV": "POSTGRES_USER" },
     "password": { "ENV": "POSTGRES_PASSWORD" },
     "port": 5432,
-    "ssl": true
+        "ssl": {
+      "rejectUnauthorized": false
+    }
   },
 
   "test": {
@@ -16,6 +18,8 @@
     "user": { "ENV": "POSTGRES_USER" },
     "password": { "ENV": "POSTGRES_PASSWORD" },
     "port": 5432,
-    "ssl": true
+        "ssl": {
+      "rejectUnauthorized": false
+    }
   }
 }

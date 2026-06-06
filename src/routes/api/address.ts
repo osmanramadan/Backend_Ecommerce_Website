@@ -12,22 +12,22 @@ const AddressController = new Addresscontroller();
 const addresses: express.Router = express.Router();
 
 addresses.get(
-  '/user/:email',
+  '/:email',
   verify,
   getUserAddressValidator,
   AddressController.viewuseraddress
 );
 addresses.post('/', verify, addAddressValidator, AddressController.addaddress);
 addresses.delete(
-  '/',
+  '/:email',
   verify,
   deleteAddressValidator,
   AddressController.deleteuseraddress
 );
 addresses.put(
-  '/',
+  '/:email',
   verify,
-  updateAddressValidator,
+  updateAddressValidator, 
   AddressController.updateuseraddress
 );
 

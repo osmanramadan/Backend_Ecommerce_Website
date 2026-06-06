@@ -15,7 +15,12 @@ class UserServicesController {
                 if (purchases.length > 0) {
                     const data = [];
                     for (const value of purchases) {
-                        const imagePath = path_1.default.join(__dirname, '../../uploads/products', value.coverimage);
+                        //const imagePath = path.join(
+                        //__dirname,
+                        //'../../uploads/products',
+                        //value.coverimage
+                        //);
+                        const imagePath = path_1.default.join(process.cwd(), 'uploads', 'products', value.coverimage);
                         try {
                             const imageData = await fs_1.default.promises.readFile(imagePath);
                             const imgCover = imageData.toString('base64');

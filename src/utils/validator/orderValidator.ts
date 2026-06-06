@@ -1,4 +1,4 @@
-import { check } from 'express-validator';
+import { check, param } from 'express-validator';
 import { validatorMiddleware } from '../../authorization/middelware/validatormiddelware';
 
 import { Order } from '../../model/order';
@@ -122,7 +122,7 @@ export const createorderValidator = [
 ];
 
 export const checkforuseridValidator = [
-  check('userid')
+  param('userid')
     .notEmpty()
     .withMessage('User id is required field (userid)')
     .isNumeric()
@@ -162,7 +162,7 @@ export const updateorderstatusValidator = [
 ];
 
 export const deleteorderValidator = [
-  check('orderId')
+  param('orderId')
     .notEmpty()
     .withMessage('Order id is required field (orderId)')
     .isNumeric()

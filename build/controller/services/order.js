@@ -28,7 +28,12 @@ class OrderServicesController {
                                 });
                                 return;
                             }
-                            const imagePath = path_1.default.join(__dirname, '../../uploads/products', productsData.coverimage);
+                            //   const imagePath = path.join(
+                            //   __dirname,
+                            // '../../uploads/products',
+                            // productsData.coverimage
+                            //);
+                            const imagePath = path_1.default.join(process.cwd(), 'uploads', 'products', productsData.coverimage);
                             try {
                                 const imageData = await fs_1.default.promises.readFile(imagePath);
                                 const imgCover = imageData.toString('base64');
@@ -86,7 +91,12 @@ class OrderServicesController {
                                 });
                                 return;
                             }
-                            const imagePath = path_1.default.join(__dirname, '../../uploads/products', productsData.coverimage);
+                            //    const imagePath = path.join(
+                            //    __dirname,
+                            //  '../../uploads/products',
+                            // productsData.coverimage
+                            //);
+                            const imagePath = path_1.default.join(process.cwd(), 'uploads', 'products', productsData.coverimage);
                             try {
                                 const imageData = await fs_1.default.promises.readFile(imagePath);
                                 const imgCover = imageData.toString('base64');

@@ -40,7 +40,12 @@ class Markcontroller {
                 if (brands.length > 0) {
                     const data = [];
                     for (const value of brands) {
-                        const imagePath = path_1.default.join(__dirname, '../uploads/brands', value.image);
+                        //const imagePath = path.join(
+                        //   __dirname,
+                        //'../uploads/brands',
+                        //value.image as string
+                        //);
+                        const imagePath = path_1.default.join(process.cwd(), 'uploads', 'brands', value.image);
                         try {
                             const imageData = await fs_1.default.promises.readFile(imagePath);
                             const imgData = {

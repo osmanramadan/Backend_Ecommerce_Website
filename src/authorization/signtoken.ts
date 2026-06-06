@@ -9,9 +9,13 @@ const JWT_EXPIRES_IN: string = process.env.JWT_EXPIRES_IN as string;
 
 // generating token when signup and login
 const generatetoken = async (u: user): Promise<string> => {
-  const token = jwt.sign({ userid: u.id, role: u.role }, TOKEN_SECRET, {
-    expiresIn: JWT_EXPIRES_IN
-  });
+  const token = jwt.sign(
+    { userid: u.id, role: u.role, tokenEmail: u.email },
+    TOKEN_SECRET,
+    {
+      expiresIn: JWT_EXPIRES_IN
+    }
+  );
   return token;
 };
 

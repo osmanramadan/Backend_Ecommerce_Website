@@ -38,7 +38,7 @@ export default class UserServicesController {
           } catch (err) {
             res.json({
               status: 'fail',
-              msg: 'Failed to read product image',
+              msg: 'Failed to read product image' + value.id,
               error: err
             });
             return;
@@ -52,6 +52,7 @@ export default class UserServicesController {
         });
         return;
       }
+      res.status(404);
       res.json({
         status: 'success',
         msg: 'No purchases found',
@@ -62,7 +63,7 @@ export default class UserServicesController {
     } catch (err) {
       res.status(400);
       res.json({
-        status: 'fail',
+        status: 'error',
         error: `Failed to retrieve user purchases: ${err}`
       });
       return;

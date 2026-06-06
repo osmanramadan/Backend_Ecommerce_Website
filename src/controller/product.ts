@@ -64,7 +64,7 @@ export default class Productcontroller {
             const rateProduct = { rate: rate };
             data.push({ ...value, ...rateProduct, ...imgsData, ...imgCover });
           } catch (err: unknown) {
-              const error = err as Error;
+            const error = err as Error;
 
             res.json({
               status: 'fail',
@@ -72,7 +72,7 @@ export default class Productcontroller {
                 'Failed to load image for product with id ' +
                 value.id +
                 ' or rate for product ',
-                error: error.message
+              error: error.message
             });
             return;
           }
@@ -285,7 +285,7 @@ export default class Productcontroller {
     //🍳 There is a problem here if  user want to update field , he should provide all other fields .
 
     const data: product = {
-      id: req.body.id,
+      id: req.body.productId,
       ptitle: req.body.ptitle,
       pdesc: req.body.pdesc,
       price: req.body.price,
@@ -322,9 +322,8 @@ export default class Productcontroller {
 
   create = async (req: Request, res: Response) => {
     try {
-      
       let subcategory: string[] = [];
-      if(req.body.subcategory){
+      if (req.body.subcategory) {
         subcategory = req.body.subcategory.split(',');
       }
       const colors = req.body.colors.split(',');
@@ -355,15 +354,15 @@ export default class Productcontroller {
         res.json({ status: 'fail', msg: 'Failed to create product' });
         return;
       }
-   } catch (err: unknown) {
-  res.status(400);
-  res.json({
-    status: 'fail',
-    msg: 'Failed to create product',
-    error: err instanceof Error ? err.message : 'Unknown error'
-  });
-  return;
-}
+    } catch (err: unknown) {
+      res.status(400);
+      res.json({
+        status: 'fail',
+        msg: 'Failed to create product',
+        error: err instanceof Error ? err.message : 'Unknown error'
+      });
+      return;
+    }
   };
 
   createcomment = async (req: Request, res: Response) => {

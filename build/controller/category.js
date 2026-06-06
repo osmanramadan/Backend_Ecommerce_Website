@@ -39,7 +39,12 @@ class Categorycontroller {
                 if (categories.length > 0) {
                     const data = [];
                     for (const value of categories) {
-                        const imagePath = path_1.default.join(__dirname, '../uploads/categories', value.image);
+                        //const imagePath = path.join(
+                        //__dirname,
+                        //'../uploads/categories',
+                        //value.image as string
+                        //);
+                        const imagePath = path_1.default.join(process.cwd(), 'uploads', 'categories', value.image);
                         try {
                             const imageData = await fs_1.default.promises.readFile(imagePath);
                             const imgData = { imageData: imageData.toString('base64') };

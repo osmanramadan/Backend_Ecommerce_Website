@@ -15,7 +15,13 @@ class Productcontroller {
                 if (allproducts.length > 0) {
                     const data = [];
                     for (const value of allproducts) {
-                        const imagePath = path_1.default.join(__dirname, '../uploads/products', value.coverimage);
+                        // const imagePath = path.join(
+                        // __dirname,
+                        //'../uploads/products',
+                        //value.coverimage
+                        //);
+                        // i update this code , to get path correctly on server such as (render) , if you work local above line will work
+                        const imagePath = path_1.default.join(process.cwd(), 'uploads', 'products', value.coverimage);
                         try {
                             const imageData = await fs_1.default.promises.readFile(imagePath);
                             const imgCover = { imageCoverData: imageData.toString('base64') };
@@ -23,7 +29,12 @@ class Productcontroller {
                             let rate = 0;
                             if (value.images && value.images.length > 0) {
                                 for (const img of value.images) {
-                                    const imagePath = path_1.default.join(__dirname, '../uploads/products', img);
+                                    // const imagePath = path.join(
+                                    // __dirname,
+                                    //'../uploads/products',
+                                    //img
+                                    //);
+                                    const imagePath = path_1.default.join(process.cwd(), 'uploads', 'products', img);
                                     const imageData = await fs_1.default.promises.readFile(imagePath);
                                     imagesData.push(imageData.toString('base64'));
                                 }
@@ -37,11 +48,13 @@ class Productcontroller {
                             data.push(Object.assign(Object.assign(Object.assign(Object.assign({}, value), rateProduct), imgsData), imgCover));
                         }
                         catch (err) {
+                            const error = err;
                             res.json({
                                 status: 'fail',
                                 msg: 'Failed to load image for product with id ' +
                                     value.id +
-                                    ' or rate for product '
+                                    ' or rate for product ',
+                                error: error.message
                             });
                             return;
                         }
@@ -68,7 +81,12 @@ class Productcontroller {
                 const productbyid = await productobject.show(req.params.id);
                 if (productbyid && typeof productbyid === 'object') {
                     const data = [];
-                    const imagePath = path_1.default.join(__dirname, '../uploads/products', productbyid.coverimage);
+                    // const imagePath = path.join(
+                    // __dirname,
+                    //'../uploads/products',
+                    //productbyid.coverimage as string
+                    //);
+                    const imagePath = path_1.default.join(process.cwd(), 'uploads', 'products', productbyid.coverimage);
                     try {
                         const imageData = await fs_1.default.promises.readFile(imagePath);
                         const imgCover = { imageCoverData: imageData.toString('base64') };
@@ -76,7 +94,12 @@ class Productcontroller {
                         let rate = 0;
                         if (productbyid.images && productbyid.images.length > 0) {
                             for (const img of productbyid.images) {
-                                const imagePath = path_1.default.join(__dirname, '../uploads/products', img);
+                                // const imagePath = path.join(
+                                // __dirname,
+                                //'../uploads/products',
+                                //img
+                                //);
+                                const imagePath = path_1.default.join(process.cwd(), 'uploads', 'products', img);
                                 const imageData = await fs_1.default.promises.readFile(imagePath);
                                 imagesData.push(imageData.toString('base64'));
                             }
@@ -120,7 +143,12 @@ class Productcontroller {
                 if (items.length > 0) {
                     const data = [];
                     for (const value of items) {
-                        const imagePath = path_1.default.join(__dirname, '../uploads/products', value.coverimage);
+                        //const imagePath = path.join(
+                        //__dirname,
+                        //'../uploads/products',
+                        //value.coverimage
+                        //);
+                        const imagePath = path_1.default.join(process.cwd(), 'uploads', 'products', value.coverimage);
                         try {
                             const imageData = await fs_1.default.promises.readFile(imagePath);
                             const imgCover = { imageCoverData: imageData.toString('base64') };
@@ -128,7 +156,12 @@ class Productcontroller {
                             let rate = 0;
                             if (value.images && value.images.length > 0) {
                                 for (const img of value.images) {
-                                    const imagePath = path_1.default.join(__dirname, '../uploads/products', img);
+                                    // const imagePath = path.join(
+                                    // __dirname,
+                                    //'../uploads/products',
+                                    //img
+                                    //);
+                                    const imagePath = path_1.default.join(process.cwd(), 'uploads', 'products', img);
                                     const imageData = await fs_1.default.promises.readFile(imagePath);
                                     imagesData.push(imageData.toString('base64'));
                                 }
@@ -221,7 +254,10 @@ class Productcontroller {
         };
         this.create = async (req, res) => {
             try {
-                const subcategory = req.body.subcategory.split(',');
+                let subcategory = [];
+                if (req.body.subcategory) {
+                    subcategory = req.body.subcategory.split(',');
+                }
                 const colors = req.body.colors.split(',');
                 const data = {
                     ptitle: req.body.ptitle,
@@ -255,7 +291,7 @@ class Productcontroller {
                 res.json({
                     status: 'fail',
                     msg: 'Failed to create product',
-                    error: err
+                    error: err instanceof Error ? err.message : 'Unknown error'
                 });
                 return;
             }

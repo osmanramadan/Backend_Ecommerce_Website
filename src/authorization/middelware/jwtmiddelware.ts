@@ -20,9 +20,11 @@ const verify: RequestHandler = async (
 
     const decoded = jwt.verify(token, TOKEN_SECRET) as {
       userid: string;
+      tokenEmail: string;
     };
 
     req.body.userid = decoded.userid;
+    req.body.tokenEmail = decoded.tokenEmail;
 
     if (
       req.params.userid &&
@@ -31,7 +33,29 @@ const verify: RequestHandler = async (
       res.status(403);
 
       res.json({
-        access: 'forbidden',
+        status: 'forbidden',
+        msg: 'User only access his/her data'
+      });
+
+      return;
+    }
+
+    if (req.params.email && req.params.email !== req.body.tokenEmail) {
+      res.status(403);
+
+      res.json({
+        status: 'forbidden',
+        msg: 'User only access his/her data'
+      });
+
+      return;
+    }
+
+    if (req.body.email && req.body.email !== req.body.tokenEmail) {
+      res.status(403);
+
+      res.json({
+        status: 'forbidden',
         msg: 'User only access his/her data'
       });
 
@@ -43,7 +67,7 @@ const verify: RequestHandler = async (
     res.status(401);
 
     res.json({
-      access: 'forbidden',
+      status: 'forbidden',
       msg: 'Invalid token or token is not provided'
     });
 
@@ -74,7 +98,7 @@ export const verifyAdmin: RequestHandler = async (
       res.status(403);
 
       res.json({
-        access: 'forbidden',
+        status: 'forbidden',
         msg: 'Admin access only'
       });
 
@@ -86,7 +110,7 @@ export const verifyAdmin: RequestHandler = async (
     res.status(401);
 
     res.json({
-      access: 'forbidden',
+      status: 'forbidden',
       msg: 'Invalid token or token is not provided'
     });
 

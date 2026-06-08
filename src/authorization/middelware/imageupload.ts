@@ -161,12 +161,12 @@ export default class uploadImageController {
       }
 
       next();
-    } catch (err) {
+    } catch (err:unknown) {
       res.status(400);
       res.json({
         status: 'error',
         msg: 'Failed to upload image from validator part',
-        error: err
+        error: err instanceof Error ? err.message : 'Unknown error'
       });
       return;
     }

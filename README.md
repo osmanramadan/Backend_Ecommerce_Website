@@ -908,10 +908,10 @@ Two middleware levels are used across the API:
 
 | Method | Endpoint | Auth | Description |
 |---|---|---|---|
-| GET | `/` | — | Get all products (with images as base64 + rating) |
-| GET | `/:id` | — | Get a single product |
-| POST | `/` | 🔒 Admin | Create a product (multipart/form-data) |
-| PUT | `/` | 🔒 Admin | Update a product (multipart/form-data) |
+| GET | `/` | — | <a style="color:#CEB784" href="#allproducts">Get all products (with images as base64 + rating)</a>|
+| GET | `/:id` | — | <a style="color:#CEB784" href="#getoneproduct">Get a single product </a> |
+| POST | `/` | 🔒 Admin | <a style="color:#CEB784" href="#addproduct">Create a product (multipart/form-data)</a> |
+| PUT | `/` | 🔒 Admin |  <a style="color:#CEB784" href="#updateproduct">Update a product (multipart/form-data)</a>  |
 | DELETE | `/:id` | 🔒 Admin | Delete a product |
 | GET | `/newclothes` | — | Get products in `ملابس` category |
 | GET | `/mostpopular` | — | Get most popular products |
@@ -932,18 +932,18 @@ Two middleware levels are used across the API:
 | subcategory | string | optional, comma-separated   ex: "16 ram mobiles,cori7 cpu" | 
 | brand | string | required, must exist in productmark |
 | colors | string | required, comma-separated     ex:"red,black,orange,#F9F9F9" |
-| coverimage | file | required, image file |
+| coverimage | file | required, one image file |
 | images | file(s) | required, up to 3 image files |
 
 ---
 
-#### `GET /`
+#### <div id="allproducts">`GET /`</div>
 
-**Response `200`:**
+**Response `200` — success**
 ```json
 {
   "status": "success",
-  "productsCount": 2,
+  "productsCount": 1,
   "msg": "Products loaded successfully",
   "data": [
     {
@@ -966,16 +966,25 @@ Two middleware levels are used across the API:
   ]
 }
 ```
-**Response `404`:**
+**Response `404` — No products found**
 ```json
-{ "status": "success", "data": [] }
+{ "status": "success", "data": [] , "msg":"No products found" }
+```
+**Response `400` — error in loading an  image of one product Or its rate**
+```json
+{ "status": "fail", "msg": "Failed to load image of product with id  + product.id + or its rate" , "error":"error from try catch"}
 ```
 
+**Response `400` — unknown error**
+```json
+{ "status": "error", "msg": "Failed to load products" }
+```
+
+
 ---
+#### <div id="getoneproduct">`GET /:id`</div>
 
-#### `GET /:id`
-
-**Response `200`:**
+**Response `200` — success**
 ```json
 {
   "status": "success",
@@ -998,25 +1007,33 @@ Two middleware levels are used across the API:
   }
 }
 ```
-**Response `404`:**
+
+**Response `404` — product not found**
 ```json
-{ "status": "fail", "msg": "No product found with id 1" }
+{ "status": "fail", "msg": "No product found with id + product.id"  }
 ```
+
+**Response `400` — unknown error**
+```json
+{ "status": "error", "msg": "Failed to load product with id + product.id" }
+```
+
 **Response `400` — validation errors:**
 ```json
 {
   "errors": [
-    { "msg": "Product id is required as a URL parameter" },
-    { "msg": "Product id must be an integer" }
+    { "msg": "product id is required as a URL parameter" },
+    { "msg": "product id must be an integer" },
+    { "msg":"Product Not Found"}
   ]
 }
 ```
 
 ---
 
-#### `POST /` *(Admin)*
+#### <div id="addproduct">`POST /` *(Admin)*</div>
 
-**Response `200`:**
+**Response `200` — success**
 ```json
 {
   "status": "success",
@@ -1037,35 +1054,35 @@ Two middleware levels are used across the API:
   }
 }
 ```
-**Response `400`:**
+**Response `400` — unknown error**
 ```json
-{ "status": "fail", "msg": "Failed to create product" }
+{ "status": "error", "msg": "Failed to create product","error":"unknown error" or "error from try catch"}
 ```
 **Response `400` — validation errors:**
 ```json
 {
   "errors": [
-    { "msg": "Product title is required  (ptitle) " },
-    { "msg": "Product description is required (pdesc) " },
-    { "msg": "Price is required (price) " },
-    { "msg": "Price must be greater than 0" },
-    { "msg": "Discount must be between 0 and 100" },
-    { "msg": "Price after discount is required (priceafterdiscount) " },
-    { "msg": "Category is required (category) " },
-    { "msg": "Brand is required (brand) " },
-    { "msg": "Colors are required (colors) " },
-    { "msg": "Product already exists" },
-    { "msg": "Category does not exist , you should create it first" },
-    { "msg": "Brand does not exist , you should create it first" },
-    { "msg": "Images are required ( images )" },
-    { "msg": "Cover image is required (coverimage)" }
+    { "msg": "product title is required  (ptitle) " },
+    { "msg": "product already exists" },  // this error appears , when title exists in database
+    { "msg": "product description is required (pdesc) " },
+    { "msg": "price is required (price) " },
+    { "msg": "price must be greater than 0" },
+    { "msg": "discount must be between 0 and 100" },
+    { "msg": "price after discount is required (priceafterdiscount) " },
+    { "msg": "category is required (category) " },
+    { "msg": "brand is required (brand) " },
+    { "msg": "colors are required (colors) " },
+    { "msg": "category does not exist , you should create it first" },
+    { "msg": "brand does not exist , you should create it first" },
+    { "msg": "images are required ( images )" },
+    { "msg": "cover image is required (coverimage)" }
   ]
 }
 ```
 
 ---
 
-#### `PUT /` *(Admin)*
+#### <div id="updateproduct">`PUT /` *(Admin)*</div>
 
 **Request body (multipart/form-data):** same fields as create, plus `productId` (required in body)
 
@@ -1075,27 +1092,36 @@ Two middleware levels are used across the API:
 ```
 **Response `400`:**
 ```json
-{ "status": "fail", "msg": "Failed to update product" }
+{ "status": "fail", "msg": "Failed to update product fields in database" }
 ```
+**Response `400` — unknown error**
+```json
+{ "status": "error", "msg": "Error in updating product","error":"unknown error" or "error from try catch"}
+```
+
 **Response `400` — validation errors:**
 ```json
 {
   "errors": [
-    { "msg": "Product id is required (productId) " },
-    { "msg": "Product id must be an integer" },
-    { "msg": "Product does not exist" },
-    { "msg": "Product title cannot be empty if provided (ptitle) " },
-    { "msg": "Product title already exists choose another title" },
-    { "msg": "Product description cannot be empty if provided (pdesc) " },
-    { "msg": "Price cannot be empty if provided (price) " },
-    { "msg": "Price after discount cannot be empty if provided (priceafterdiscount) " },
-    { "msg": "Category cannot be empty if provided (category) " },
-    { "msg": "Brand cannot be empty if provided (brand) " },
-    { "msg": "Colors cannot be empty if provided (colors) " },
-    { "msg": "Category does not exist , you should create it first" },
-    { "msg": "Brand does not exist , you should create it first" },
-    { "msg": "Images are required" },
-    { "msg": "Cover image is required" }
+    { "msg": "product id is required (productId) " },
+    { "msg": "product id must be an integer" },
+    { "msg": "product does not exist" },  // when search for product id  in db
+    { "msg": "product title cannot be empty if provided (ptitle) " },
+    { "msg": "product title already exists choose another title" },
+    { "msg": "product description cannot be empty if provided (pdesc) " },
+    { "msg": "price cannot be empty if provided (price) " },
+    { "msg": "price must be greater than 0"}
+    { "msg": "price after discount cannot be empty if provided (priceafterdiscount) " },
+    { "msg": "price after discount must be greater than 0"}
+    { "msg": "category cannot be empty if provided (category) " },
+    { "msg": "category does not exist , you should create it first" },
+    { "msg": "brand cannot be empty if provided (brand) " },
+    { "msg": "brand does not exist , you should create it first" },
+    { "msg": "colors cannot be empty if provided (colors) " },
+    { "msg": "images are required" },
+    { "msg": "all files must be images" },
+    { "msg": "cover image must be an image"},
+    { "msg": "cover image is required" }
   ]
 }
 ```

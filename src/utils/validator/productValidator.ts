@@ -11,55 +11,55 @@ const categoryObject = new Category();
 const brandObject = new Mark();
 
 export const createProductValidator = [
+  
   check('ptitle')
     .notEmpty()
-    .withMessage('Product title is required  (ptitle) '),
+    .withMessage('product title is required  (ptitle) ')
+    .custom(async val => {
+    const productExist = await productObject.checkproductexist(val);
+
+    if (productExist) {
+      throw new Error('product already exists');
+    }
+
+    return true;
+  }), 
 
   check('pdesc')
     .notEmpty()
-    .withMessage('Product description is required (pdesc) '),
+    .withMessage('product description is required (pdesc) '),
 
   check('price')
     .notEmpty()
-    .withMessage('Price is required (price) ')
+    .withMessage('price is required (price) ')
     .isFloat({ gt: 0 })
-    .withMessage('Price must be greater than 0'),
+    .withMessage('price must be greater than 0'),
 
   check('discount')
     .optional()
     // Discount will be (by percentage) 10 means 10% discount on the original price
     .isFloat({ min: 0, max: 100 })
-    .withMessage('Discount must be between 0 and 100'),
+    .withMessage('discount must be between 0 and 100'),
 
   check('priceafterdiscount')
     .notEmpty()
-    .withMessage('Price after discount is required (priceafterdiscount) ')
+    .withMessage('price after discount is required (priceafterdiscount) ')
     .isFloat({ gt: 0 })
-    .withMessage('Price after discount must be greater than 0'),
+    .withMessage('price after discount must be greater than 0'),
 
-  check('category').notEmpty().withMessage('Category is required (category) '),
+  check('category').notEmpty().withMessage('category is required (category) '),
 
   check('subcategory').optional(),
 
-  check('brand').notEmpty().withMessage('Brand is required (brand) '),
+  check('brand').notEmpty().withMessage('brand is required (brand) '),
 
-  check('colors').notEmpty().withMessage('Colors are required (colors) '),
-
-  check('ptitle').custom(async val => {
-    const productExist = await productObject.checkproductexist(val);
-
-    if (productExist) {
-      throw new Error('Product already exists');
-    }
-
-    return true;
-  }),
+  check('colors').notEmpty().withMessage('colors are required (colors) '),
 
   check('category').custom(async val => {
     const categoryExist = await categoryObject.checkcategoryexist(val);
 
     if (!categoryExist) {
-      throw new Error('Category does not exist , you should create it first');
+      throw new Error('category does not exist , you should create it first');
     }
 
     return true;
@@ -68,7 +68,7 @@ export const createProductValidator = [
   check('brand').custom(async val => {
     const brandExist = await brandObject.checkbrandexist(val);
     if (!brandExist) {
-      throw new Error('Brand does not exist , you should create it first');
+      throw new Error('brand does not exist , you should create it first');
     }
 
     return true;
@@ -80,12 +80,12 @@ export const createProductValidator = [
     };
 
     if (!files.images || files.images.length === 0) {
-      throw new Error('Images are required ( images )');
+      throw new Error('images are required ( images )');
     }
 
     for (const file of files.images) {
       if (!file.mimetype.startsWith('image/')) {
-        throw new Error('All files must be images');
+        throw new Error('all files must be images');
       }
     }
 
@@ -98,11 +98,11 @@ export const createProductValidator = [
     };
 
     if (!files.coverimage || files.coverimage.length === 0) {
-      throw new Error('Cover image is required (coverimage)');
+      throw new Error('cover image is required (coverimage)');
     }
 
     if (!files.coverimage[0].mimetype.startsWith('image/')) {
-      throw new Error('Cover image must be an image');
+      throw new Error('cover image must be an image');
     }
 
     return true;
@@ -111,26 +111,18 @@ export const createProductValidator = [
   validatorMiddleware
 ];
 
-export const showProductValidator = [
+
+
+export const showOrDelProductValidator= [
   param('id')
     .notEmpty()
-    .withMessage('Product id is required as a URL parameter')
+    .withMessage('product id is required as a URL parameter')
     .isInt()
-    .withMessage('Product id must be an integer'),
-
-  validatorMiddleware
-];
-
-export const deleteProductValidator = [
-  param('id')
-    .notEmpty()
-    .withMessage('Product id is required as a URL parameter')
-    .isInt()
-    .withMessage('Product id must be an integer')
+    .withMessage('product id must be an integer')
     .custom(async val => {
       const productExist = await productObject.show(val);
       if (!productExist) {
-        throw new Error('Product does not exist');
+        throw new Error('Product Not Found');
       }
 
       return true;
@@ -161,13 +153,13 @@ export const getProductsByCateValidator = [
 export const updateProductValidator = [
   check('productId')
     .notEmpty()
-    .withMessage('Product id is required (productId) ')
+    .withMessage('product id is required (productId) ')
     .isInt()
-    .withMessage('Product id must be an integer')
+    .withMessage('product id must be an integer')
     .custom(async val => {
       const productExist = await productObject.show(val);
       if (!productExist) {
-        throw new Error('Product does not exist');
+        throw new Error('product does not exist');
       }
 
       return true;
@@ -175,7 +167,7 @@ export const updateProductValidator = [
 
   check('ptitle')
     .notEmpty()
-    .withMessage('Product title cannot be empty if provided (ptitle) ')
+    .withMessage('product title cannot be empty if provided (ptitle) ')
     .custom(async (val, { req }) => {
       const productExist: boolean = await productObject.checkproductexist(val);
       if (productExist) {
@@ -185,53 +177,53 @@ export const updateProductValidator = [
         if (typeof product !== 'boolean' && product.ptitle === val) {
           return true; // Allow if the title belongs to the same product being updated
         }
-        throw new Error('Product title already exists choose another title');
+        throw new Error('product title already exists choose another title');
       }
       return true;
     }),
 
   check('pdesc')
     .notEmpty()
-    .withMessage('Product description cannot be empty if provided (pdesc) '),
+    .withMessage('product description cannot be empty if provided (pdesc) '),
 
   check('price')
     .notEmpty()
-    .withMessage('Price cannot be empty if provided (price) ')
+    .withMessage('price cannot be empty if provided (price) ')
     .isFloat({ gt: 0 })
-    .withMessage('Price must be greater than 0'),
+    .withMessage('price must be greater than 0'),
 
   check('discount')
     .optional()
     .isFloat({ min: 0, max: 100 })
-    .withMessage('Discount must be between 0 and 100'),
+    .withMessage('discount must be between 0 and 100'),
 
   check('priceafterdiscount')
     .notEmpty()
     .withMessage(
-      'Price after discount cannot be empty if provided (priceafterdiscount) '
+      'price after discount cannot be empty if provided (priceafterdiscount) '
     )
     .isFloat({ gt: 0 })
-    .withMessage('Price after discount must be greater than 0'),
+    .withMessage('price after discount must be greater than 0'),
 
   check('category')
     .notEmpty()
-    .withMessage('Category cannot be empty if provided (category) '),
+    .withMessage('category cannot be empty if provided (category) '),
 
   check('subcategory').optional(),
 
   check('brand')
     .notEmpty()
-    .withMessage('Brand cannot be empty if provided (brand) '),
+    .withMessage('brand cannot be empty if provided (brand) '),
 
   check('colors')
     .notEmpty()
-    .withMessage('Colors cannot be empty if provided (colors) '),
+    .withMessage('colors cannot be empty if provided (colors) '),
 
   check('category').custom(async val => {
     const categoryExist = await categoryObject.checkcategoryexist(val);
 
     if (!categoryExist) {
-      throw new Error('Category does not exist , you should create it first');
+      throw new Error('category does not exist , you should create it first');
     }
 
     return true;
@@ -240,7 +232,7 @@ export const updateProductValidator = [
   check('brand').custom(async val => {
     const brandExist = await brandObject.checkbrandexist(val);
     if (!brandExist) {
-      throw new Error('Brand does not exist , you should create it first');
+      throw new Error('brand does not exist , you should create it first');
     }
 
     return true;
@@ -252,7 +244,7 @@ export const updateProductValidator = [
     };
 
     if (!files.images || files.images.length === 0) {
-      throw new Error('Images are required');
+      throw new Error('images are required');
     }
 
     for (const file of files.images) {
@@ -270,11 +262,11 @@ export const updateProductValidator = [
     };
 
     if (!files.coverimage || files.coverimage.length === 0) {
-      throw new Error('Cover image is required');
+      throw new Error('cover image is required');
     }
 
     if (!files.coverimage[0].mimetype.startsWith('image/')) {
-      throw new Error('Cover image must be an image');
+      throw new Error('cover image must be an image');
     }
 
     return true;

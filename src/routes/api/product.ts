@@ -10,11 +10,10 @@ const UploadImageController = new uploadImageController();
 import {
   createCommentValidator,
   createProductValidator,
-  deleteProductValidator,
   getProductCommentsValidator,
   getProductsByCateValidator,
   getProductStarsValidator,
-  showProductValidator,
+  showOrDelProductValidator,
   updateProductValidator
 } from '../../utils/validator/productValidator';
 import verify, {
@@ -30,21 +29,7 @@ products.post(
   UploadImageController.resizeimage,
   productcontroller.create
 );
-products.get('/newclothes', productcontroller.newclothes);
-products.get('/mostpopular', productcontrollerservices.mostpopular);
-products.get(
-  '/productcate/:cate',
-  getProductsByCateValidator,
-  productcontrollerservices.getproductsbycate
-);
-products.get('/:id', showProductValidator, productcontroller.show);
 
-products.delete(
-  '/:id',
-  verifyAdmin,
-  deleteProductValidator,
-  productcontroller.delete
-);
 products.put(
   '/',
   verifyAdmin,
@@ -53,6 +38,24 @@ products.put(
   UploadImageController.resizeimage,
   productcontroller.update
 );
+
+products.get('/:id', showOrDelProductValidator, productcontroller.show);
+
+products.delete(
+  '/:id',
+  verifyAdmin,
+  showOrDelProductValidator,
+  productcontroller.delete
+);
+
+products.get('/newclothes', productcontroller.newclothes);
+products.get('/mostpopular', productcontrollerservices.mostpopular);
+products.get(
+  '/productcate/:cate',
+  getProductsByCateValidator,
+  productcontrollerservices.getproductsbycate
+);
+
 
 products.post(
   '/comments',

@@ -19,7 +19,7 @@ export default class Productcontroller {
           //'../uploads/products',
           //value.coverimage
           //);
-          // i update this code , to get path correctly on server such as (render) , if you work local above line will work
+          // i update this code , to get path correctly on server such as (render) , if you work local above line will work , but uploads folder shouldnt be in the root of project but in src folder
           const imagePath = path.join(
             process.cwd(),
             'uploads',
@@ -65,13 +65,13 @@ export default class Productcontroller {
             data.push({ ...value, ...rateProduct, ...imgsData, ...imgCover });
           } catch (err: unknown) {
             const error = err as Error;
-
+            res.status(400);
             res.json({
               status: 'fail',
               msg:
-                'Failed to load image for product with id ' +
+                'Failed to load image of product with id ' +
                 value.id +
-                ' or rate for product ',
+                ' or its rate',
               error: error.message
             });
             return;
@@ -87,11 +87,11 @@ export default class Productcontroller {
         return;
       }
       res.status(404);
-      res.json({ status: 'success', data: [] });
+      res.json({ status: 'success', data: [], msg: 'No products found' });
       return;
     } catch (e) {
       res.status(400);
-      res.json({ status: 'fail', msg: 'Failed to load products' });
+      res.json({ status: 'error', msg: 'Failed to load products' });
     }
   };
 
@@ -175,10 +175,10 @@ export default class Productcontroller {
       });
       return;
     } catch (e) {
-      res.status(404);
+      res.status(400);
       return res.json({
-        status: 'fail',
-        msg: 'No product found with id ' + req.params.id
+        status: 'error',
+        msg: 'Failed to load product with id ' + req.params.id
       });
     }
   };
@@ -279,7 +279,15 @@ export default class Productcontroller {
   };
 
   update = async (req: Request, res: Response) => {
-    const subcategory = req.body.subcategory.split(',');
+    
+
+    try {
+   
+    let subcategory: string[] = [];
+    if (req.body.subcategory) {
+      subcategory = req.body.subcategory.split(',');
+    }
+
     const colors = req.body.colors.split(',');
 
     //🍳 There is a problem here if  user want to update field , he should provide all other fields .
@@ -299,28 +307,29 @@ export default class Productcontroller {
       coverimage: req.body.coverimage
     };
 
-    try {
       const updated = await productobject.updateproduct(data);
 
       if (updated) {
         res.json({ status: 'success', msg: 'Product updated successfully' });
         return;
       } else {
-        res.json({ status: 'fail', msg: 'Failed to update product' });
+        res.status(400);
+        res.json({ status: 'fail', msg: 'Failed to update product fields in database' });
         return;
       }
-    } catch (err) {
+    } catch (err:unknown) {
       res.status(400);
       res.json({
-        status: 'fail',
-        msg: 'Failed to update product',
-        error: err
+        status: 'error',
+        msg: 'Error in updating product',
+        error:  err instanceof Error ? err.message : 'unknown error'
       });
       return;
     }
   };
 
   create = async (req: Request, res: Response) => {
+
     try {
       let subcategory: string[] = [];
       if (req.body.subcategory) {
@@ -350,16 +359,17 @@ export default class Productcontroller {
           data: newproduct
         });
         return;
-      } else {
-        res.json({ status: 'fail', msg: 'Failed to create product' });
-        return;
       }
+      res.status(400);
+      res.json({ status: 'error', msg: 'Failed to create product', error: 'unknown error' });
+      return;
+
     } catch (err: unknown) {
       res.status(400);
       res.json({
-        status: 'fail',
+        status: 'error',
         msg: 'Failed to create product',
-        error: err instanceof Error ? err.message : 'Unknown error'
+        error: err instanceof Error ? err.message : 'unknown error'
       });
       return;
     }

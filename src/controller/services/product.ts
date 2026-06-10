@@ -35,10 +35,9 @@ export default class ProductServicesController {
 
             value.imageCoverData = imageData.toString('base64');
           } catch (err) {
-            res.status(500).json({
+            res.status(400).json({
               status: 'fail',
-              msg: 'Failed to read product image',
-              error: err
+              msg: 'Failed to read product image with id ' + value.id
             });
             return;
           }
@@ -54,15 +53,15 @@ export default class ProductServicesController {
         return;
       }
 
-      res.status(404).json({
+      return res.status(404).json({
         status: 'fail',
         msg: 'No products found in this category',
         data: []
       });
     } catch (e) {
-      res.status(400).json({
-        status: 'fail',
-        error: e
+      return res.status(400).json({
+        status: 'error',
+        msg: 'Failed to retrieve products by category'
       });
     }
   };
@@ -93,11 +92,10 @@ export default class ProductServicesController {
 
             value.imageCoverData = imgCover;
           } catch (err) {
-            res.status(500);
+            res.status(400);
             res.json({
               status: 'fail',
-              msg: 'Failed to read product image',
-              error: err
+              msg: 'Failed to read product image with id ' + value.id
             });
             return;
           }
@@ -119,7 +117,7 @@ export default class ProductServicesController {
       return;
     } catch (e) {
       res.status(400);
-      res.json({ status: 'fail' });
+      res.json({ status: 'error' , msg: 'Failed to retrieve most popular products'});
       return;
     }
   };

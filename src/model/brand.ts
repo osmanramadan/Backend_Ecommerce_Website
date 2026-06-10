@@ -32,7 +32,7 @@ export class Mark {
     }
   }
 
-  async deletemark(name: string) {
+  async deletemark(name: string): Promise<number> {
     try {
       const sql = 'delete FROM productmark WHERE name=($1)';
 
@@ -46,16 +46,18 @@ export class Mark {
     }
   }
 
-  async create(m: mark): Promise<mark> {
+  async create(m: mark): Promise<mark | boolean> {
     try {
       const sql =
         'INSERT INTO productmark (name,image) VALUES ($1, $2) RETURNING *';
 
       const conn = await pool.connect();
       const result = await conn.query(sql, [m.name, m.image]);
-      const marks = result.rows[0];
       conn.release();
-      return marks;
+      if(result.rowCount > 0){
+        return result.rows[0];
+      }
+      return false;
     } catch (err) {
       throw new Error(`Could not add new mark`);
     }

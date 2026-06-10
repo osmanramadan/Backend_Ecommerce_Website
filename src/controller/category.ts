@@ -19,12 +19,14 @@ export default class Categorycontroller {
         res.json({ status: 'success', msg: 'category added successfully' });
         return;
       } else {
-        res.json({ status: 'fail', msg: 'Failed to add category' });
+        res.status(400);
+        res.json({ status: 'error', msg: 'An error occurred while adding the category' });
         return;
       }
     } catch (err) {
+      res.status(400);
       res.json({
-        status: 'fail',
+        status: 'error',
         msg: 'An error occurred while adding the category'
       });
       return;
@@ -64,13 +66,17 @@ export default class Categorycontroller {
           }
         }
 
-        res.json({ status: 'success', data: data });
+        res.json({ status: 'success', categoriesCount: data.length, msg: 'Categories retrieved successfully', data: data });
         return;
       }
+      res.status(404);
+      res.json({ status: 'success', categoriesCount: 0, msg: 'No categories found', data: [] });
+      return;
+
     } catch (e) {
       res.status(400);
       res.json({
-        status: 'fail',
+        status: 'error',
         msg: 'An error occurred while retrieving categories'
       });
       return;
@@ -79,15 +85,7 @@ export default class Categorycontroller {
 
   deletecategory = async (req: Request, res: Response) => {
     try {
-      if (!req.body.name) {
-        res.json({ error: 'Name of category should be provided (name)' });
-        return;
-      }
-
-      const categoryexist = await categoryobject.checkcategoryexist(
-        req.body.name
-      );
-      if (categoryexist) {
+    
         // To Do : we should also delete the image of category from uploads folder .
         const result: boolean = await categoryobject.deletecategory(
           req.body.name
@@ -97,24 +95,18 @@ export default class Categorycontroller {
           res.json({ status: 'success', msg: 'category deleted successfully' });
           return;
         } else {
-          res.json({
-            status: 'fail',
-            msg: 'There is an error , category cant be deleted'
-          });
-          return;
-        }
-      } else {
-        res.status(404);
+          res.status(404);
         res.json({
-          status: 'Cat Not Exist',
-          msg: 'Category not found , it may be deleted or name isnt true'
+          status: 'fail',
+          msg: 'category not found , it may be deleted or name isnt true'
         });
         return;
-      }
+        }
+
     } catch (err) {
       res.status(400);
       res.json({
-        status: 'fail',
+        status: 'error',
         msg: 'An error occurred while deleting the category'
       });
       return;

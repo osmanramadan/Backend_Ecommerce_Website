@@ -21,15 +21,19 @@ class Markcontroller {
                     return;
                 }
                 else {
+                    // unknown error
+                    res.status(400);
                     res.json({
-                        status: 'fail',
+                        status: 'error',
                         msg: 'There was an error adding the brand'
                     });
                     return;
                 }
             }
             catch (err) {
-                res.json({ status: 'fail', msg: 'There was an error adding the brand' });
+                // this catch will work if user try to add brand with name already exist in db , but i handle this case in validator , but this is just for safety if there is any problem with validator , we will handle it here 
+                res.status(400);
+                res.json({ status: 'error', msg: 'There was an error adding the brand' });
                 return;
             }
         };
@@ -58,34 +62,32 @@ class Markcontroller {
                             data.push(Object.assign(Object.assign({}, value), { imageData: '' }));
                         }
                     }
-                    res.json({ status: 'success', data: data });
+                    res.json({ status: 'success', brandsCount: data.length, msg: 'Brands retrieved successfully', data: data });
                     return;
                 }
                 res.status(404);
-                res.json({ status: 'success', data: [] });
+                res.json({ status: 'success', brandsCount: 0, msg: 'No brands found', data: [] });
                 return;
             }
             catch (err) {
                 res.status(400);
-                res.json({ status: 'fail', msg: 'There was an error fetching brands' });
+                res.json({ status: 'error', msg: 'There was an error fetching brands' });
                 return;
             }
         };
         this.deletemark = async (req, res) => {
             try {
-                if (!req.body.name) {
-                    res.json({ error: 'Name of brand should be provided (name)' });
-                    return;
-                }
+                // To Do : we should also delete the image of brand from uploads folder .
                 const result = await markobject.deletemark(req.body.name);
                 if (result) {
                     res.json({ status: 'success', msg: 'Brand deleted successfully' });
                     return;
                 }
                 else {
+                    // this case will work if there is no brand with the name provided in req.body.name , but i handle this case in validator , but this is just for safety if there is any problem with validator , we will handle it here
                     res.status(404);
                     res.json({
-                        status: 'Brand not found',
+                        status: 'fail',
                         msg: 'The brand you are trying to delete does not exist'
                     });
                     return;
@@ -94,7 +96,7 @@ class Markcontroller {
             catch (err) {
                 res.status(400);
                 res.json({
-                    status: 'fail',
+                    status: 'error',
                     msg: 'There was an error deleting the brand'
                 });
                 return;

@@ -20,7 +20,7 @@ class Productcontroller {
                         //'../uploads/products',
                         //value.coverimage
                         //);
-                        // i update this code , to get path correctly on server such as (render) , if you work local above line will work
+                        // i update this code , to get path correctly on server such as (render) , if you work local above line will work , but uploads folder shouldnt be in the root of project but in src folder
                         const imagePath = path_1.default.join(process.cwd(), 'uploads', 'products', value.coverimage);
                         try {
                             const imageData = await fs_1.default.promises.readFile(imagePath);
@@ -49,11 +49,12 @@ class Productcontroller {
                         }
                         catch (err) {
                             const error = err;
+                            res.status(400);
                             res.json({
                                 status: 'fail',
-                                msg: 'Failed to load image for product with id ' +
+                                msg: 'Failed to load image of product with id ' +
                                     value.id +
-                                    ' or rate for product ',
+                                    ' or its rate',
                                 error: error.message
                             });
                             return;
@@ -68,12 +69,12 @@ class Productcontroller {
                     return;
                 }
                 res.status(404);
-                res.json({ status: 'success', data: [] });
+                res.json({ status: 'success', data: [], msg: 'No products found' });
                 return;
             }
             catch (e) {
                 res.status(400);
-                res.json({ status: 'fail', msg: 'Failed to load products' });
+                res.json({ status: 'error', msg: 'Failed to load products' });
             }
         };
         this.show = async (req, res) => {
@@ -130,10 +131,10 @@ class Productcontroller {
                 return;
             }
             catch (e) {
-                res.status(404);
+                res.status(400);
                 return res.json({
-                    status: 'fail',
-                    msg: 'No product found with id ' + req.params.id
+                    status: 'error',
+                    msg: 'Failed to load product with id ' + req.params.id
                 });
             }
         };
@@ -175,9 +176,10 @@ class Productcontroller {
                             data.push(Object.assign(Object.assign(Object.assign(Object.assign({}, value), rateProduct), imgCover), imgsData));
                         }
                         catch (err) {
+                            res.status(400);
                             res.json({
                                 status: 'fail',
-                                msg: 'Failed to load image for product with id ' + value.id
+                                msg: 'Failed to load image for product with id ' + value.id + 'or its rate'
                             });
                             return;
                         }
@@ -191,7 +193,7 @@ class Productcontroller {
             }
             catch (err) {
                 res.status(400);
-                res.json({ status: 'fail', msg: 'Failed to load products' });
+                res.json({ status: 'error', msg: 'Failed to load products' });
                 return;
             }
         };
@@ -203,51 +205,56 @@ class Productcontroller {
                     return;
                 }
                 else {
-                    res.json({ status: 'fail', msg: 'Failed to delete product' });
+                    res.status(404);
+                    res.json({ status: 'fail', msg: 'product not found' });
                     return;
                 }
             }
             catch (err) {
                 res.status(400);
-                res.json({ status: 'fail', msg: 'Failed to delete product' });
+                res.json({ status: 'error', msg: 'Failed to delete product' });
                 return;
             }
         };
         this.update = async (req, res) => {
-            const subcategory = req.body.subcategory.split(',');
-            const colors = req.body.colors.split(',');
-            //🍳 There is a problem here if  user want to update field , he should provide all other fields .
-            const data = {
-                id: req.body.productId,
-                ptitle: req.body.ptitle,
-                pdesc: req.body.pdesc,
-                price: req.body.price,
-                discount: req.body.discount,
-                priceafterdiscount: req.body.priceafterdiscount,
-                category: req.body.category,
-                subcategory: subcategory,
-                brand: req.body.brand,
-                colors: colors,
-                images: req.body.images,
-                coverimage: req.body.coverimage
-            };
             try {
+                let subcategory = [];
+                if (req.body.subcategory) {
+                    subcategory = req.body.subcategory.split(',');
+                }
+                const colors = req.body.colors.split(',');
+                //🍳 There is a problem here if  user want to update field , he should provide all other fields .
+                const data = {
+                    id: req.body.productId,
+                    ptitle: req.body.ptitle,
+                    pdesc: req.body.pdesc,
+                    price: req.body.price,
+                    discount: req.body.discount,
+                    priceafterdiscount: req.body.priceafterdiscount,
+                    category: req.body.category,
+                    subcategory: subcategory,
+                    brand: req.body.brand,
+                    colors: colors,
+                    images: req.body.images,
+                    coverimage: req.body.coverimage
+                };
                 const updated = await productobject.updateproduct(data);
                 if (updated) {
                     res.json({ status: 'success', msg: 'Product updated successfully' });
                     return;
                 }
                 else {
-                    res.json({ status: 'fail', msg: 'Failed to update product' });
+                    res.status(400);
+                    res.json({ status: 'fail', msg: 'Failed to update product fields in database' });
                     return;
                 }
             }
             catch (err) {
                 res.status(400);
                 res.json({
-                    status: 'fail',
-                    msg: 'Failed to update product',
-                    error: err
+                    status: 'error',
+                    msg: 'Error in updating product',
+                    error: err instanceof Error ? err.message : 'unknown error'
                 });
                 return;
             }
@@ -281,17 +288,16 @@ class Productcontroller {
                     });
                     return;
                 }
-                else {
-                    res.json({ status: 'fail', msg: 'Failed to create product' });
-                    return;
-                }
+                res.status(400);
+                res.json({ status: 'error', msg: 'Failed to create product', error: 'unknown error' });
+                return;
             }
             catch (err) {
                 res.status(400);
                 res.json({
-                    status: 'fail',
+                    status: 'error',
                     msg: 'Failed to create product',
-                    error: err instanceof Error ? err.message : 'Unknown error'
+                    error: err instanceof Error ? err.message : 'unknown error'
                 });
                 return;
             }
@@ -308,28 +314,30 @@ class Productcontroller {
                 if (newcomment) {
                     res.json({
                         status: 'success',
-                        Message: 'Comment added successfully',
+                        msg: 'Comment added successfully',
                         data: newcomment
                     });
                     return;
                 }
                 else {
-                    res.json({ status: 'fail', msg: 'Failed to add comment' });
+                    res.status(400);
+                    res.json({ status: 'error', msg: 'Failed to add comment' });
                     return;
                 }
             }
             catch (err) {
                 res.status(400);
-                res.json({ status: 'fail', msg: 'Failed to add comment' });
+                res.json({ status: 'error', msg: 'Failed to add comment' });
                 return;
             }
         };
         this.getproductcomments = async (req, res) => {
             try {
-                const comments = await productobject.showcomments(req.params.id);
-                if (comments) {
+                const comments = await productobject.showcomments(req.params.prodId);
+                if (comments && Array.isArray(comments) && comments.length > 0) {
                     res.json({
                         status: 'success',
+                        productCommentsCount: comments.length,
                         msg: 'Comments retrieved successfully',
                         data: comments
                     });
@@ -339,6 +347,7 @@ class Productcontroller {
                     res.status(404);
                     res.json({
                         status: 'fail',
+                        productCommentsCount: 0,
                         msg: 'Comments not found for the product',
                         data: []
                     });
@@ -347,17 +356,17 @@ class Productcontroller {
             }
             catch (e) {
                 res.status(400);
-                res.json({ status: 'fail', msg: 'Failed to get comments' });
+                res.json({ status: 'error', msg: 'Failed to get comments of product' });
                 return;
             }
         };
         this.getproductstars = async (req, res) => {
             try {
-                const proStars = await productobject.getproductstars(req.params.id);
+                const proStars = await productobject.getproductstars(req.params.prodId);
                 if (proStars.numstar && proStars.sumstar) {
                     res.json({
                         status: 'success',
-                        message: 'Stars retrieved successfully',
+                        msg: 'Stars retrieved successfully',
                         data: proStars,
                         rate: proStars.sumstar / proStars.numstar
                     });
@@ -371,7 +380,7 @@ class Productcontroller {
             }
             catch (e) {
                 res.status(400);
-                res.json({ status: 'fail', msg: 'Failed to get stars' });
+                res.json({ status: 'error', msg: 'Failed to get stars of product' });
                 return;
             }
         };

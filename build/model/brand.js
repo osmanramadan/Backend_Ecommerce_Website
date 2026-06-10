@@ -47,9 +47,11 @@ class Mark {
             const sql = 'INSERT INTO productmark (name,image) VALUES ($1, $2) RETURNING *';
             const conn = await db_1.default.connect();
             const result = await conn.query(sql, [m.name, m.image]);
-            const marks = result.rows[0];
             conn.release();
-            return marks;
+            if (result.rowCount > 0) {
+                return result.rows[0];
+            }
+            return false;
         }
         catch (err) {
             throw new Error(`Could not add new mark`);

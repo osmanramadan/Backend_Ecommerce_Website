@@ -95,7 +95,6 @@ class Product {
             return users;
         }
         catch (err) {
-            console.error(err);
             throw new Error(`Could not add new product: ${err}`);
         }
     }

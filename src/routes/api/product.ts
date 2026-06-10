@@ -10,9 +10,8 @@ const UploadImageController = new uploadImageController();
 import {
   createCommentValidator,
   createProductValidator,
-  getProductCommentsValidator,
   getProductsByCateValidator,
-  getProductStarsValidator,
+  productIdValidator,
   showOrDelProductValidator,
   updateProductValidator
 } from '../../utils/validator/productValidator';
@@ -39,7 +38,6 @@ products.put(
   productcontroller.update
 );
 
-products.get('/:id', showOrDelProductValidator, productcontroller.show);
 
 products.delete(
   '/:id',
@@ -56,6 +54,9 @@ products.get(
   productcontrollerservices.getproductsbycate
 );
 
+products.get('/:id', showOrDelProductValidator, productcontroller.show);
+
+
 
 products.post(
   '/comments',
@@ -64,13 +65,13 @@ products.post(
   productcontroller.createcomment
 );
 products.get(
-  '/comments/:id',
-  getProductCommentsValidator,
+  '/comments/:prodId',
+  productIdValidator,
   productcontroller.getproductcomments
 );
 products.get(
-  '/showstars/:id',
-  getProductStarsValidator,
+  '/showstars/:prodId',
+  productIdValidator,
   productcontroller.getproductstars
 );
 

@@ -14,5 +14,5 @@ const UploadImageController = new imageupload_1.default();
 mark.get('/', MarkController.index);
 // Note ✨ : Image is uploaded to same server (src/uploads) and this not profassional forproduction , later , we will use external server to save image
 mark.post('/', jwtmiddelware_1.verifyAdmin, UploadImageController.uploadimage, brandValidator_1.addBrandValidator, UploadImageController.resizeimage, MarkController.addmark);
-mark.delete('/', jwtmiddelware_1.verifyAdmin, MarkController.deletemark);
+mark.delete('/', jwtmiddelware_1.verifyAdmin, brandValidator_1.deleteBrandValidator, MarkController.deletemark);
 exports.default = mark;

@@ -173,14 +173,13 @@ npm run start
 |---|---|---|
 | id | SERIAL | PRIMARY KEY |
 | catname | VARCHAR(100) | NOT NULL, UNIQUE |
-| image | TEXT | optional |
+| image | TEXT | NOT NULL |
 
 ### `productsubcat` (Sub-Categories)
 | Column | Type | Notes |
 |---|---|---|
 | id | SERIAL | PRIMARY KEY |
 | name | VARCHAR(100) | NOT NULL, UNIQUE |
-| image | TEXT | optional |
 | productcat | VARCHAR(100) | NOT NULL, FK → productcat(catname) |
 
 ### `productmark` (Brands)
@@ -188,7 +187,7 @@ npm run start
 |---|---|---|
 | id | SERIAL | PRIMARY KEY |
 | name | VARCHAR(100) | NOT NULL, UNIQUE |
-| image | TEXT | optional |
+| image | TEXT | NOT NULL |
 
 ### `discountcoupon` (Coupons)
 | Column | Type | Notes |
@@ -241,7 +240,7 @@ Two middleware levels are used across the API:
 
 
 
-## 🔌 API Endpoints
+## 🔌 API Endpoints `/api/v1`
 
 ### 👤 Users `/users`
 
@@ -912,13 +911,13 @@ Two middleware levels are used across the API:
 | GET | `/:id` | — | <a style="color:#CEB784" href="#getoneproduct">Get a single product </a> |
 | POST | `/` | 🔒 Admin | <a style="color:#CEB784" href="#addproduct">Create a product (multipart/form-data)</a> |
 | PUT | `/` | 🔒 Admin |  <a style="color:#CEB784" href="#updateproduct">Update a product (multipart/form-data)</a>  |
-| DELETE | `/:id` | 🔒 Admin | Delete a product |
-| GET | `/newclothes` | — | Get products in `ملابس` category |
-| GET | `/mostpopular` | — | Get most popular products |
-| GET | `/productcate/:cate` | — | Get products by category |
-| POST | `/comments` | 🔒 User | Add a comment + star rating to a product |
-| GET | `/comments/:id` | — | Get all comments for a product |
-| GET | `/showstars/:id` | — | Get star rating summary for a product |
+| DELETE | `/:id` | 🔒 Admin | <a style="color:#CEB784" href="#delproduct">Delete a product </a> |
+| GET | `/newclothes` | — | <a style="color:#CEB784" href="#newclothes">Get products in `ملابس` category </a> |
+| GET | `/mostpopular` | — |<a style="color:#CEB784" href="#mostpopular">Get most popular products</a>  |
+| GET | `/productcate/:cate` | — |<a style="color:#CEB784" href="#getproductbycat"> Get products by category</a> |
+| POST | `/comments` | 🔒 User |  <a style="color:#CEB784" href="#addcommentwithrate">Add a comment + star rating to a product </a>|
+| GET | `/comments/:prodId` | — |<a style="color:#CEB784" href="#getcommentsofproduct"> Get all comments for a product </a>|  |
+| GET | `/showstars/:prodId` | — |<a style="color:#CEB784" href="#getproductrating"> Get star rating summary for a product </a>|
 
 #### Create / Update Product (multipart/form-data)
 | Field | Type | Notes 
@@ -1128,15 +1127,19 @@ Two middleware levels are used across the API:
 
 ---
 
-#### `DELETE /:id` *(Admin)*
+#### <div id="delproduct">`DELETE /:id` *(Admin)*</div>
 
-**Response `200`:**
+**Response `200` — success**
 ```json
 { "status": "success", "msg": "Product deleted successfully" }
 ```
-**Response `400`:**
+**Response `404` — product not exist**
 ```json
-{ "status": "fail", "msg": "Failed to delete product" }
+{ "status": "fail", "msg": "product not found" }
+```
+**Response `400` — unknown error**
+```json
+{ "status": "error", "msg": "Failed to delete product" }
 ```
 **Response `400` — validation errors:**
 ```json
@@ -1144,86 +1147,143 @@ Two middleware levels are used across the API:
   "errors": [
     { "msg": "Product id is required as a URL parameter" },
     { "msg": "Product id must be an integer" },
-    { "msg": "Product does not exist" }
+    { "msg": "Product Not Found" }
   ]
 }
 ```
 
 ---
 
-#### `GET /newclothes`
+#### <div id="newclothes">`GET /newclothes`</div>
 
-**Response `200`:**
+**Response `200` — success**
 ```json
 {
   "status": "success",
-  "productCount": 3,
+  "productCount": 1,
   "data": [
     {
       "id": 1,
       "ptitle": "T-Shirt",
       "rate": 4.0,
       "imageCoverData": "<base64_string>",
-      "imagesData": ["<base64_string>"]
+      "imagesData": ["<base64_string>"],
+      .....
+      other data of product
     }
   ]
 }
 ```
-**Response `404`:**
+
+**Response `400` — failure throw loading image and rate**
+```json
+{ "status": "fail", "msg": "Failed to load image for product with id  + product.id + or its rate" }
+```
+
+**Response `404` — no found products**
 ```json
 { "status": "success", "msg": "No products found", "data": [] }
 ```
 
+**Response `400` — unknown error**
+```json
+{ "status": "error", "msg": "Failed to load products" }
+```
 ---
 
-#### `GET /mostpopular`
+#### <div id="mostpopular">`GET /mostpopular`</div>
 
-**Response `200`:**
+**Response `200` — success**
 ```json
 {
   "status": "success",
-  "productsCount": 5,
+  "productsCount": 2,
   "data": [
     {
       "id": 1,
+      "ordered_num":2,
       "ptitle": "Popular Product",
-      "imageCoverData": "<base64_string>"
+      "imageCoverData": "<base64_string>",
+      other product details except images,imagesData
+    } ,
+    {
+      .....,
+      .....,
+      .....
     }
   ]
 }
 ```
-**Response `404`:**
+**Response `404` — there is no orders yet**
 ```json
 { "status": "fail", "msg": "No products in orders found yet", "data": [] }
 ```
 
+
+**Response `400` — failure in loading product image**
+```json
+{ "status": "fail", "msg": "Failed to read product image with id ' + product.id"}
+```
+
+
+**Response `400`  — unknown error**
+```json
+{ "status": "error", "msg": "Failed to retrieve most popular products"}
+```
+
 ---
 
-#### `GET /productcate/:cate`
+#### <div id="getproductbycat">`GET /productcate/:cate`</div>
 
-**Response `200`:**
+**Response `200` — success**
 ```json
 {
   "status": "success",
-  "productsCount": 3,
+  "productsCount": 1,
   "data": [
     {
       "id": 1,
       "ptitle": "Product Name",
       "category": "Electronics",
-      "imageCoverData": "<base64_string>"
+      "imageCoverData": "<base64_string>",
+      other product details except imagesData
     }
   ]
 }
 ```
-**Response `404`:**
+**Response `404` — no products for this cat**
 ```json
 { "status": "fail", "msg": "No products found in this category", "data": [] }
 ```
 
+
+
+**Response `400` — failure in loading product image**
+```json
+{ "status": "fail", "msg": "Failed to read product image with id  + product.id"}
+```
+
+
+**Response `400`  — unknown error**
+```json
+{ "status": "error", "msg": "Failed to retrieve products by category"}
+```
+
+
+**Response `400` — validation errors:**
+```json
+{
+  "errors": [
+    { "msg": "category is required" },
+    { "msg": "category must be a string" },
+    { "msg": "category does not exist'" },
+  ]
+}
+```
+
 ---
 
-#### `POST /comments`
+#### <div id="addcommentwithrate">`POST /comments`</div>
 
 **Request body:**
 ```json
@@ -1235,11 +1295,11 @@ Two middleware levels are used across the API:
 }
 ```
 
-**Response `200`:**
+**Response `200` — success**
 ```json
 {
   "status": "success",
-  "Message": "Comment added successfully",
+  "msg": "Comment added successfully",
   "data": {
     "id": 1,
     "prodid": 1,
@@ -1249,19 +1309,35 @@ Two middleware levels are used across the API:
   }
 }
 ```
-**Response `400`:**
+**Response `400` — unknown error**
 ```json
-{ "status": "fail", "msg": "Failed to add comment" }
+{ "status": "error", "msg": "Failed to add comment" }
+```
+
+**Response `400` — validation errors:**
+```json
+{
+  "errors": [
+    { "msg": "product ID is required" },
+    { "msg": "product does not exist" },
+    { "msg": "username is required" },
+    { "msg": "comment text is required" },
+    { "msg": "comment text must be a string" },
+    { "msg": "stars rating is required" },
+    { "msg": "stars rating must be an integer between 1 and 5" }
+  ]
+}
 ```
 
 ---
 
-#### `GET /comments/:id`
+#### <div id="getcommentsofproduct">`GET /comments/:prodId`</div>
 
-**Response `200`:**
+**Response `200` — success**
 ```json
 {
   "status": "success",
+  "productCommentsCount":1,
   "msg": "Comments retrieved successfully",
   "data": [
     {
@@ -1274,16 +1350,32 @@ Two middleware levels are used across the API:
   ]
 }
 ```
-**Response `404`:**
+**Response `404` — no comments**
 ```json
-{ "status": "fail", "msg": "Comments not found for the product", "data": [] }
+{ "status": "fail","productCommentsCount":0,"msg": "Comments not found for the product", "data": [] }
 ```
 
+**Response `400`  — unknown error**
+```json
+{ "status": "error", "msg": "Failed to get comments of product"}
+```
+
+
+**Response `400` — validation errors:**
+```json
+{
+  "errors": [
+    {"msg":"product ID is required as a URL parameter"},
+    {"msg":"product ID must be an integer"},
+    {"msg":"product does not exist"},
+  ]
+}
+```
 ---
 
-#### `GET /showstars/:id`
+#### <div id="getproductrating"> `GET /showstars/:prodId`</div>
 
-**Response `200`:**
+**Response `200` — success**
 ```json
 {
   "status": "success",
@@ -1292,9 +1384,26 @@ Two middleware levels are used across the API:
   "rate": 4.5
 }
 ```
-**Response `404`:**
+**Response `404` — no stars for product**
 ```json
 { "status": "No stars", "msg": "No stars found for the product" }
+```
+
+**Response `400`  — unknown error**
+```json
+{ "status": "error", "msg": "Failed to get stars of product"}
+```
+
+
+**Response `400` — validation errors:**
+```json
+{
+  "errors": [
+    {"msg":"product ID is required as a URL parameter"},
+    {"msg":"product ID must be an integer"},
+    {"msg":"product does not exist"},
+  ]
+}
 ```
 
 ---
@@ -1303,9 +1412,9 @@ Two middleware levels are used across the API:
 
 | Method | Endpoint | Auth | Description |
 |---|---|---|---|
-| GET | `/` | — | Get all brands (with image as base64) |
-| POST | `/` | 🔒 Admin | Add a new brand (multipart/form-data) |
-| DELETE | `/` | 🔒 Admin | Delete a brand by name |
+| GET | `/` | — | <a style="color:#CEB784" href="#allbrands">Get all brands (with image as base64) </a>|
+| POST | `/` | 🔒 Admin | <a style="color:#CEB784" href="#addbrand">Add a new brand (multipart/form-data)</a> |
+| DELETE | `/` | 🔒 Admin | <a style="color:#CEB784" href="#delbrand">Delete a brand by name </a>|
 
 #### Add Brand (multipart/form-data)
 | Field | Type | Notes |
@@ -1320,12 +1429,14 @@ Two middleware levels are used across the API:
 
 ---
 
-#### `GET /`
+#### <div id="allbrands">`GET /`</div>
 
-**Response `200`:**
+**Response `200` — success**
 ```json
 {
   "status": "success",
+  "brandsCount":1,
+  "msg":"Brands retrieved successfully",
   "data": [
     {
       "id": 1,
@@ -1336,46 +1447,80 @@ Two middleware levels are used across the API:
   ]
 }
 ```
-**Response `404`:**
+**Response `404`  — no brands found**
 ```json
-{ "status": "success", "data": [] }
+{ "status": "success"," brandsCount":0,"msg":"No brands found","data": [] }
+```
+
+**Response `400`  — unknown error**
+```json
+{ "status": "error", "msg": "There was an error fetching brands"}
 ```
 
 ---
 
-#### `POST /` *(Admin)*
+#### <div id="addbrand">`POST /` *(Admin)</div>*
 
-**Response `200`:**
+**Response `200`  — success**
 ```json
 { "status": "success", "msg": "Brand added successfully" }
 ```
-**Response `400`:**
+
+**Response `400`  — unknown error**
 ```json
-{ "status": "fail", "msg": "There was an error adding the brand" }
+{ "status": "error", "msg": "There was an error adding the brand"}
 ```
 
+**Response `400` — validation errors:**
+```json
+{
+  "errors": [
+    {"msg":"name of brand is required field  (name)"},
+    {"msg":"brand already exists"}, // this make 'unknown error' from appearing
+    {"msg":"image is required (image)"},
+    {"msg":"file must be an image"}
+  ]
+}
+```
 ---
 
-#### `DELETE /` *(Admin)*
+#### <div id="delbrand">`DELETE /` *(Admin)*</div>
 
-**Response `200`:**
+**Response `200` — success**
 ```json
 { "status": "success", "msg": "Brand deleted successfully" }
 ```
-**Response `404`:**
+**Response `404`  — brand not found in db**  
 ```json
-{ "status": "Brand not found", "msg": "The brand you are trying to delete does not exist" }
+{ "status": "fail", "msg": "The brand you are trying to delete does not exist" } // i handle this error in validation before request reach to controller, but this for more safety
 ```
 
+**Response `400`  — unknown error**
+```json
+{ "status": "error", "msg": "There was an error deleting the brand"}
+
+```
+
+**Response `400` — validation errors:**
+```json
+{
+  "errors": [
+    {"msg":"name of brand is required field  (name)"},
+    {"msg":"brand does not exist"}
+  ]
+}
+```
 ---
 
-### 📂 Categories `/category`
+
+
+### <div>📂 Categories `/category`</div>
 
 | Method | Endpoint | Auth | Description |
 |---|---|---|---|
-| GET | `/` | — | Get all categories (with image as base64) |
-| POST | `/` | 🔒 Admin | Add a new category (multipart/form-data) |
-| DELETE | `/` | 🔒 Admin | Delete a category by name |
+| GET | `/` | — |  <a style="color:#CEB784" href="#allcategories">Get all categories (with image as base64)</a> |
+| POST | `/` | 🔒 Admin | <a style="color:#CEB784" href="#addcategory"> Add a new category (multipart/form-data) </a> |
+| DELETE | `/` | 🔒 Admin | <a style="color:#CEB784" href="#delcategory">Delete a category by name  </a>|
 
 #### Add Category (multipart/form-data)
 | Field | Type | Notes |
@@ -1390,12 +1535,14 @@ Two middleware levels are used across the API:
 
 ---
 
-#### `GET /`
+#### <div id="allcategories">`GET /`</div>
 
-**Response `200`:**
+**Response `200` — success**
 ```json
 {
   "status": "success",
+  "categoriesCount":1,
+  "msg":"Categories retrieved successfully",
   "data": [
     {
       "id": 1,
@@ -1406,42 +1553,81 @@ Two middleware levels are used across the API:
   ]
 }
 ```
+**Response `404`  — no categories found**
+```json
+{ "status": "success"," categoriesCount":0,"msg":"No categories found","data": [] }
+```
+
+**Response `400`  — unknown error**
+```json
+{ "status": "error", "msg": "An error occurred while retrieving categories"}
+```
+
 
 ---
 
-#### `POST /` *(Admin)*
+#### <div id="addcategory">`POST /` *(Admin)*</div>
 
-**Response `200`:**
+**Response `200` — success**
 ```json
 { "status": "success", "msg": "category added successfully" }
 ```
-**Response `400`:**
+**Response `400` — unknown error**
 ```json
-{ "status": "fail", "msg": "Failed to add category" }
+{ "status": "error", "msg": "An error occurred while adding the category" }
 ```
+
+**Response `400` — validation errors:**
+```json
+{
+  "errors": [
+    {"msg":"name of category is required field  (name)"},
+    {"msg":"category already exists"}, // this make 'unknown error' from appearing
+    {"msg":"image is required (image)"},
+    {"msg":"file must be an image"}
+  ]
+}
+```
+
 
 ---
 
-#### `DELETE /` *(Admin)*
+#### <div id="delcategory">`DELETE /` *(Admin)*</div>
 
-**Response `200`:**
+**Response `200` — success**
 ```json
 { "status": "success", "msg": "category deleted successfully" }
 ```
-**Response `404`:**
+**Response `404`  — category not found in db**  
 ```json
-{ "status": "Cat Not Exist", "msg": "Category not found , it may be deleted or name isnt true" }
+{ "status": "fail", "msg": "category not found , it may be deleted or name isnt true" }// i handle this error in validation before request reach to controller, but this for more safety
 ```
 
+**Response `400`  — unknown error**
+```json
+{ "status": "error", "msg": "An error occurred while deleting the category"}
+
+```
+
+**Response `400` — validation errors:**
+```json
+{
+  "errors": [
+    {"msg":"name of category is required field  (name)"},
+    {"msg":"category does not exist"} // this stop appearing 404 response from controller
+  ]
+}
+```
 ---
+
 
 ### 📁 Sub-Categories `/subcategory`
 
 | Method | Endpoint | Auth | Description |
 |---|---|---|---|
-| GET | `/` | — | Get all sub-categories |
-| POST | `/` | 🔒 Admin | Add a new sub-category |
-| DELETE | `/` | 🔒 Admin | Delete a sub-category by name |
+| GET | `/` | — |<a style="color:#CEB784" href="#all-sub-categories"> Get all sub-categories  </a>   |
+| POST | `/` | 🔒 Admin | <a style="color:#CEB784" href="#add-sub-categories">Add a new sub-category  </a>  |
+| DELETE | `/` | 🔒 Admin |  <a style="color:#CEB784" href="#del-sub-categories">Delete a sub-category by name </a> |
 
 #### Add Sub-Category Body
 ```json
@@ -1458,64 +1644,121 @@ Two middleware levels are used across the API:
 
 ---
 
-#### `GET /`
+#### <div id="all-sub-categories">`GET /`</div>
 
-**Response `200`:**
+**Response `200` — success**
 ```json
 {
   "status": "success",
+  "subcategoriesCount": 1,
+  "msg": "subcategories retrieved successfully",
   "data": [
     {
       "id": 1,
       "name": "T-Shirts",
-      "image": null,
       "productcat": "ملابس"
     }
   ]
 }
+
 ```
+**Response `404`  — no sub-categories found**
+```json
+{ 
+  "status": "success",
+  "subcategoriesCount":0,
+  "msg":"No subcategories found",
+  "data": [] 
+}
+```
+
+**Response `400`  — unknown error**
+```json
+{ "status": "error", "msg": "An error occurred while retrieving subcategories"}
+```
+
+
 
 ---
 
-#### `POST /` *(Admin)*
+#### <div id="add-sub-categories">`POST /` *(Admin)*</div>
 
-**Response `200`:**
+
+**Response `200` — success**
 ```json
-{ "status": "success", "msg": "subcategory added successfully" }
+{ 
+  "status": "success", 
+  "msg": "subcategory added successfully",
+  "data": {
+      "id": 1,
+      "name": "16 ram devices",
+      "productcat": "mobiles"
+  }
+}
 ```
-**Response `200` — already exists:**
+
+**Response `400`  — unknown error**
 ```json
-{ "status": "exist", "msg": "subcategory already exist" }
+{ "status": "error", "msg": "An error occurred while adding the subcategory"}
 ```
-**Response `404` — main category not found:**
+
+**Response `400` — validation errors:**
 ```json
-{ "status": "main_category_not_found", "msg": "main category does not exist" }
+{
+  "errors": [
+    {"msg":"name of subcategory is required field  (name)"},
+    {"msg":"subcategory already exists"}, // this make 'unknown error' from appearing
+    {"msg":"main category should be provided (maincat)"},
+    {"msg":"main category does not exist"} // this make 'unknown error' from appearing
+  ]
+}
 ```
+
+
 
 ---
 
-#### `DELETE /` *(Admin)*
+#### <div id="del-sub-categories">`DELETE /` *(Admin)*</div>
 
-**Response `200`:**
+**Response `200` — success**
 ```json
 { "status": "success", "msg": "subcategory deleted successfully" }
+
 ```
-**Response `404`:**
+**Response `404`  — subcategory not found in db**  
 ```json
-{ "status": "fail", "msg": "Subcategory not found or its name is false" }
+{ "status": "fail", "msg": "subcategory not found , it may be deleted or name isnt true" }// i handle this error in validation before request reach to controller, but this for more safety
 ```
 
+**Response `400`  — unknown error**
+```json
+{ "status": "error", "msg": "An error occurred while deleting the subcategory"}
+
+```
+
+**Response `400` — validation errors:**
+```json
+{
+  "errors": [
+    {"msg":"name of subcategory is required field  (name)"},
+    {"msg":"subcategory does not exist"} // this stop appearing 404 response from controller
+  ]
+}
+```
 ---
+
+
+
 
 ### 🎟️ Coupons `/coupon`
 
 | Method | Endpoint | Auth | Description |
 |---|---|---|---|
-| GET | `/` | — | Get all coupons |
-| GET | `/:name` | — | Get a coupon by name |
-| POST | `/` | 🔒 Admin | Create a new coupon |
-| PUT | `/` | 🔒 Admin | Update a coupon |
-| DELETE | `/:id` | 🔒 Admin | Delete a coupon by ID |
+| GET | `/` | — | <a style="color:#CEB784" href="#all-coupons"> Get all coupons </a>   |
+| GET | `/:name` | — |  <a style="color:#CEB784" href="#get-coupon-byname">Get a coupon by name </a>  |
+| POST | `/` | 🔒 Admin |<a style="color:#CEB784" href="#add-coupon"> Create a new coupon </a>  |
+| PUT | `/` | 🔒 Admin | <a style="color:#CEB784" href="#update-coupon">Update a coupon </a>   |
+| DELETE | `/:id` | 🔒 Admin | <a style="color:#CEB784" href="#delete-coupon">Delete a coupon by ID  </a>  |
 
 #### Add Coupon Body
 ```json
@@ -1538,45 +1781,72 @@ Two middleware levels are used across the API:
 
 ---
 
-#### `GET /`
+#### <div id="all-coupons">`GET /`</div>
 
-**Response `200`:**
+**Response `200` — success**
 ```json
 {
   "status": "success",
-  "msg": "Coupons found",
+  "msg": "Coupons retrieved successfully",
+  "couponsCount":1,
   "data": [
     { "id": 1, "name": "SAVE20", "discount": "20", "expire": "2025-12-31" }
   ]
 }
 ```
-**Response `404`:**
+
+**Response `404` — No coupons**
 ```json
-{ "status": "success", "data": [], "msg": "No coupons found" }
+{ "status": "success", "msg": "No coupons found" , "couponsCount":0 , "data": [] }
 ```
+
+**Response `400`  — unknown error**
+```json
+{ "status": "error", "msg": "Error retrieving coupons"}
+
+```
+
 
 ---
 
-#### `GET /:name`
+#### <div id="get-coupon-byname">`GET /:name`</div>
 
-**Response `200`:**
+**Response `200` — success**
 ```json
 {
   "status": "success",
-  "msg": "Coupon found",
+  "msg": "Coupon retrieved successfully",
   "data": { "id": 1, "name": "SAVE20", "discount": "20", "expire": "2025-12-31" }
 }
 ```
-**Response `404`:**
+
+**Response `404` — Not exist**
 ```json
-{ "status": "fail", "data": [], "msg": "Coupon not found" }
+{ "status": "fail",  "msg": "Coupon not found" , "data": []}
+```
+
+**Response `400`  — unknown error**
+```json
+{ "status": "error", "msg": "Error retrieving coupon"}
+
+```
+
+**Response `400` — validation errors:**
+```json
+{
+  "errors": [
+    {"msg":"name of coupon is required field as a URL parameter"},
+    {"msg":"coupon with this name does not exist"} // this stop appearing ` response 404 `  from controller which appears above
+  ]
+}
 ```
 
 ---
 
-#### `POST /` *(Admin)*
+####  <div id="add-coupon">`POST /` *(Admin)*</div>
 
-**Response `200`:**
+**Response `200` — success**
+
 ```json
 {
   "status": "success",
@@ -1584,36 +1854,86 @@ Two middleware levels are used across the API:
   "data": { "id": 1, "name": "SAVE20", "discount": "20", "expire": "2025-12-31" }
 }
 ```
-**Response `400`:**
+
+**Response `400`  — unknown error**
 ```json
-{ "status": "fail", "msg": "Error creating coupon" }
+{ "status": "error", "msg": "Error creating coupon" }
 ```
 
+
+**Response `400` — validation errors:**
+```json
+{
+  "errors": [
+    {"msg":"name of coupon is required field  (name)"},
+    {"msg":"coupon with this name already exists"}, // this stop appearing ` unknown error `  from controller , which appears above
+    {"msg":"discount value is required field  (discount)"},
+    {"msg":"discount value must be a float between 0 and 100 (discount)"},
+    {"msg":"expiry date is required field  (expire)"}
+    {"msg":"expiry date must be a valid date (expire)"}
+
+  ]
+}
+```
 ---
 
-#### `PUT /` *(Admin)*
+####  <div id="update-coupon">`PUT /` *(Admin)*</div>
 
-**Response `200`:**
+**Response `200` — success**
 ```json
 { "status": "success", "msg": "Coupon updated successfully" }
 ```
-**Response `400`:**
+**Response `400` — unknown error**
 ```json
-{ "status": "fail", "msg": "Error updating coupon" }
+{ "status": "error", "msg": "Error updating coupon" }
 ```
 
+**Response `400` — validation errors:**
+```json
+{
+  "errors": [
+    {"msg":"coupon ID is required"},
+    {"msg":"coupon ID must be an integer"},
+    {"msg":"coupon with this ID does Not exist"}, // this stop appearing ` unknown error `  from controller , which appears above
+    {"msg":"name of coupon is required field  (name)"},
+    {"msg":"coupon with this name already exists"}, // this stop appearing ` unknown error `  from controller , which appears above
+    {"msg":"discount value is required field  (discount)"},
+    {"msg":"discount value must be a float between 0 and 100 (discount)"},
+    {"msg":"expiry date is required field  (expire)"}
+    {"msg":"expiry date must be a valid date (expire)"}
+
+  ]
+}
+```
 ---
 
-#### `DELETE /:id` *(Admin)*
+#### <div id="delete-coupon">`DELETE /:id` *(Admin)* </div>
 
-**Response `200`:**
+**Response `200` — success**
 ```json
 { "status": "success", "msg": "Coupon deleted successfully" }
 ```
-**Response `404`:**
+**Response `404` — Not found coupon with given ID**
 ```json
 { "status": "fail", "msg": "Error deleting coupon , Or coupon not found" }
 ```
+**Response `400`  — unknown error**
+```json
+{ "status": "error", "msg": "Error deleting coupon"}
+
+```
+
+**Response `400` — validation errors:**
+```json
+{
+  "errors": [
+    {"msg":"coupon ID is required as a URL parameter"},
+    {"msg":"coupon ID must be an integer"}
+    {"msg":"coupon with this ID does Not exist"} // this stop appearing ` response 404 `  from controller which appears above
+  ]
+}
+```
+
 
 ---
 
@@ -1676,9 +1996,9 @@ Two middleware levels are used across the API:
 
 ---
 
-#### `GET /` *(Admin)*
+#### `GET /` *(Admin)* <div id=""></div>
 
-**Response `200`:**
+**Response `200` — success**
 ```json
 {
   "status": "success",
@@ -1711,9 +2031,9 @@ Two middleware levels are used across the API:
 
 ---
 
-#### `GET /:userid`
+#### `GET /:userid` <div id=""></div>
 
-**Response `200`:**
+**Response `200` — success**
 ```json
 {
   "status": "success",
@@ -1742,9 +2062,9 @@ Two middleware levels are used across the API:
 
 ---
 
-#### `POST /`
+#### `POST /` <div id=""></div>
 
-**Response `200`:**
+**Response `200` — success**
 ```json
 {
   "status": "success",
@@ -1765,9 +2085,9 @@ Two middleware levels are used across the API:
 
 ---
 
-#### `POST /addproductTOorder`
+#### `POST /addproductTOorder` <div id=""></div>
 
-**Response `200`:**
+**Response `200` — success**
 ```json
 {
   "status": "success",
@@ -1782,9 +2102,9 @@ Two middleware levels are used across the API:
 
 ---
 
-#### `PUT /status` *(Admin)*
+#### `PUT /status` *(Admin)* <div id=""></div> 
 
-**Response `200`:**
+**Response `200` — success**
 ```json
 { "status": "success", "msg": "Order status updated successfully" }
 ```
@@ -1795,9 +2115,9 @@ Two middleware levels are used across the API:
 
 ---
 
-#### `DELETE /:orderId` *(Admin)*
+#### `DELETE /:orderId` *(Admin)* <div id=""></div>
 
-**Response `200`:**
+**Response `200` — success**
 ```json
 { "status": "success", "msg": "Order deleted successfully" }
 ```
@@ -1808,9 +2128,9 @@ Two middleware levels are used across the API:
 
 ---
 
-#### `GET /active/:userid`
+#### `GET /active/:userid` <div id=""></div>
 
-**Response `200`:**
+**Response `200` — success**
 ```json
 {
   "status": "success",
@@ -1831,9 +2151,9 @@ Two middleware levels are used across the API:
 
 ---
 
-#### `GET /complete/:userid`
+#### `GET /complete/:userid` <div id=""></div>
 
-**Response `200`:**
+**Response `200` — success**
 ```json
 {
   "status": "success",

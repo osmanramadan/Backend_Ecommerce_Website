@@ -2,7 +2,7 @@ import express from 'express';
 import Markcontroller from '../../controller/brand';
 import uploadImageController from '../../authorization/middelware/imageupload';
 import { verifyAdmin } from '../../authorization/middelware/jwtmiddelware';
-import { addBrandValidator } from '../../utils/validator/brandValidator';
+import { addBrandValidator, deleteBrandValidator } from '../../utils/validator/brandValidator';
 
 const MarkController = new Markcontroller();
 const mark: express.Router = express.Router();
@@ -20,6 +20,6 @@ mark.post(
   MarkController.addmark
 );
 
-mark.delete('/', verifyAdmin, MarkController.deletemark);
+mark.delete('/', verifyAdmin,deleteBrandValidator, MarkController.deletemark);
 
 export default mark;

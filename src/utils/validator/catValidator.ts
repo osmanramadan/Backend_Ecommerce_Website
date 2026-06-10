@@ -8,26 +8,42 @@ const categoryobject = new Category();
 export const addCategoryValidator = [
   check('name')
     .notEmpty()
-    .withMessage('Name of category is required field  (name)')
+    .withMessage('name of category is required field  (name)')
     .custom(async val => {
       const catexist = await categoryobject.checkcategoryexist(val);
       if (catexist) {
-        throw new Error(`Category already exists`);
+        throw new Error(`category already exists`);
       }
       return true;
     }),
 
   check('image').custom((value, { req }) => {
     if (!req.file) {
-      throw new Error('Image is required (image)');
+      throw new Error('image is required (image)');
     }
 
     if (!req.file.mimetype.startsWith('image/')) {
-      throw new Error('File must be an image');
+      throw new Error('file must be an image');
     }
 
     return true;
   }),
+
+  validatorMiddleware
+];
+
+
+export const deleteCategoryValidator = [
+  check('name')
+    .notEmpty()
+    .withMessage('name of category is required field  (name)')
+        .custom(async val => {
+      const categoryexist = await categoryobject.checkcategoryexist(val);
+      if (!categoryexist) {
+        throw new Error(`category does not exist`);
+      }
+      return true;
+    }),
 
   validatorMiddleware
 ];

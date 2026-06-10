@@ -17,20 +17,24 @@ export class Coupon {
     }
   }
 
-  async show(name: string): Promise<coupon> {
+  async show(name: string): Promise<coupon | boolean> {
     try {
       const sql = 'SELECT * FROM discountcoupon  WHERE name=($1)';
       const conn = await pool.connect();
 
       const result = await conn.query(sql, [name]);
       conn.release();
-      return result.rows[0];
+      if (result.rowCount){
+        return result.rows[0];
+      }
+      return false;
+
     } catch (err) {
       throw new Error(` Error: ${err}`);
     }
   }
 
-  async deletecoupon(id: string) {
+  async deletecoupon(id: string): Promise<number> {
     try {
       const sql = 'delete FROM  discountcoupon WHERE id=($1)';
       const conn = await pool.connect();

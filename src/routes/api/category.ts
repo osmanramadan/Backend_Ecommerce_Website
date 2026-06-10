@@ -2,7 +2,7 @@ import express from 'express';
 import Categorycontroller from '../../controller/category';
 import uploadImageController from '../../authorization/middelware/imageupload';
 import { verifyAdmin } from '../../authorization/middelware/jwtmiddelware';
-import { addCategoryValidator } from '../../utils/validator/catValidator';
+import { addCategoryValidator, deleteCategoryValidator } from '../../utils/validator/catValidator';
 
 const CategoryController = new Categorycontroller();
 const UploadImageController = new uploadImageController();
@@ -20,6 +20,6 @@ category.post(
   CategoryController.addcategory
 );
 
-category.delete('/', verifyAdmin, CategoryController.deletecategory);
+category.delete('/', verifyAdmin, deleteCategoryValidator, CategoryController.deletecategory);
 
 export default category;

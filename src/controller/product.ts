@@ -239,9 +239,10 @@ export default class Productcontroller {
             const rateProduct = { rate: rate };
             data.push({ ...value, ...rateProduct, ...imgCover, ...imgsData });
           } catch (err) {
+            res.status(400);
             res.json({
               status: 'fail',
-              msg: 'Failed to load image for product with id ' + value.id
+              msg: 'Failed to load image for product with id ' + value.id + 'or its rate'
             });
             return;
           }
@@ -255,7 +256,7 @@ export default class Productcontroller {
       return;
     } catch (err) {
       res.status(400);
-      res.json({ status: 'fail', msg: 'Failed to load products' });
+      res.json({ status: 'error', msg: 'Failed to load products' });
       return;
     }
   };
@@ -268,12 +269,13 @@ export default class Productcontroller {
         res.json({ status: 'success', msg: 'Product deleted successfully' });
         return;
       } else {
-        res.json({ status: 'fail', msg: 'Failed to delete product' });
+        res.status(404);
+        res.json({ status: 'fail', msg: 'product not found' });
         return;
       }
     } catch (err) {
       res.status(400);
-      res.json({ status: 'fail', msg: 'Failed to delete product' });
+      res.json({ status: 'error', msg: 'Failed to delete product' });
       return;
     }
   };
@@ -388,27 +390,29 @@ export default class Productcontroller {
       if (newcomment) {
         res.json({
           status: 'success',
-          Message: 'Comment added successfully',
+          msg: 'Comment added successfully',
           data: newcomment
         });
         return;
       } else {
-        res.json({ status: 'fail', msg: 'Failed to add comment' });
+        res.status(400);
+        res.json({ status: 'error', msg: 'Failed to add comment' });
         return;
       }
     } catch (err) {
       res.status(400);
-      res.json({ status: 'fail', msg: 'Failed to add comment' });
+      res.json({ status: 'error', msg: 'Failed to add comment' });
       return;
     }
   };
 
   getproductcomments = async (req: Request, res: Response) => {
     try {
-      const comments = await productobject.showcomments(req.params.id);
-      if (comments) {
+      const comments = await productobject.showcomments(req.params.prodId);
+      if (comments && Array.isArray(comments) && comments.length > 0) {
         res.json({
           status: 'success',
+          productCommentsCount: comments.length,
           msg: 'Comments retrieved successfully',
           data: comments
         });
@@ -417,6 +421,7 @@ export default class Productcontroller {
         res.status(404);
         res.json({
           status: 'fail',
+          productCommentsCount: 0,
           msg: 'Comments not found for the product',
           data: []
         });
@@ -424,7 +429,7 @@ export default class Productcontroller {
       }
     } catch (e) {
       res.status(400);
-      res.json({ status: 'fail', msg: 'Failed to get comments' });
+      res.json({ status: 'error', msg: 'Failed to get comments of product' });
       return;
     }
   };
@@ -432,14 +437,14 @@ export default class Productcontroller {
   getproductstars = async (req: Request, res: Response) => {
     try {
       const proStars: prodComment = await productobject.getproductstars(
-        req.params.id
+        req.params.prodId
       );
 
       if (proStars.numstar && proStars.sumstar) {
         res.json({
           status: 'success',
-          message: 'Stars retrieved successfully',
-          data: proStars,
+          msg: 'Stars retrieved successfully',
+          data: proStars,  // { sumstar: proStars.sumstar, numstar: proStars.numstar}
           rate: proStars.sumstar / proStars.numstar
         });
         return;
@@ -450,7 +455,7 @@ export default class Productcontroller {
       }
     } catch (e) {
       res.status(400);
-      res.json({ status: 'fail', msg: 'Failed to get stars' });
+      res.json({ status: 'error', msg: 'Failed to get stars of product' });
       return;
     }
   };

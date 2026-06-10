@@ -14,5 +14,5 @@ const category = express_1.default.Router();
 category.get('/', CategoryController.index);
 // Note ✨ : Image is uploaded to same server (src/uploads) and this not profassional forproduction , later , we will use external server to save image
 category.post('/', jwtmiddelware_1.verifyAdmin, UploadImageController.uploadimage, catValidator_1.addCategoryValidator, UploadImageController.resizeimage, CategoryController.addcategory);
-category.delete('/', jwtmiddelware_1.verifyAdmin, CategoryController.deletecategory);
+category.delete('/', jwtmiddelware_1.verifyAdmin, catValidator_1.deleteCategoryValidator, CategoryController.deletecategory);
 exports.default = category;

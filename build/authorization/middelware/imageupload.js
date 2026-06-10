@@ -80,9 +80,9 @@ class uploadImageController {
             catch (err) {
                 res.status(400);
                 res.json({
-                    status: 'fail',
+                    status: 'error',
                     msg: 'Failed to upload image from validator part',
-                    error: err
+                    error: err instanceof Error ? err.message : 'Unknown error'
                 });
                 return;
             }
@@ -144,7 +144,7 @@ class uploadImageController {
                     if (err.code === 'LIMIT_UNEXPECTED_FILE') {
                         return res.status(400).json({
                             status: 'error',
-                            message: 'Maximum 3 images are allowed'
+                            message: 'Maximum 3 images are allowed for images and 1 for coverimage'
                         });
                     }
                 }

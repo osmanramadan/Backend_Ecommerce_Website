@@ -134,14 +134,14 @@ export const showOrDelProductValidator= [
 export const getProductsByCateValidator = [
   param('cate')
     .notEmpty()
-    .withMessage('Category is required')
+    .withMessage('category is required')
     .isString()
-    .withMessage('Category must be a string')
+    .withMessage('category must be a string')
     .custom(async val => {
       const categoryExist = await categoryObject.checkcategoryexist(val);
 
       if (!categoryExist) {
-        throw new Error('Category does not exist');
+        throw new Error('category does not exist');
       }
 
       return true;
@@ -278,42 +278,42 @@ export const updateProductValidator = [
 export const createCommentValidator = [
   check('productId')
     .notEmpty()
-    .withMessage('Product ID is required')
+    .withMessage('product ID is required')
     .custom(async val => {
       const productExist = await productObject.show(val);
       if (!productExist) {
-        throw new Error('Product does not exist');
+        throw new Error('product does not exist');
       }
       return true;
     }),
 
-  check('username').notEmpty().withMessage('Username is required'),
+  check('username').notEmpty().withMessage('username is required'),
 
   check('text')
     .notEmpty()
-    .withMessage('Comment text is required')
+    .withMessage('comment text is required')
     .isString()
-    .withMessage('Comment text must be a string'),
+    .withMessage('comment text must be a string'),
 
   check('stars')
     .notEmpty()
-    .withMessage('Stars rating is required')
+    .withMessage('stars rating is required')
     .isInt({ min: 1, max: 5 })
-    .withMessage('Stars rating must be an integer between 1 and 5'),
+    .withMessage('stars rating must be an integer between 1 and 5'),
 
   validatorMiddleware
 ];
 
-export const getProductCommentsValidator = [
-  param('id')
+export const productIdValidator = [
+  param('prodId')
     .notEmpty()
-    .withMessage('Product ID is required as a URL parameter')
+    .withMessage('product ID is required as a URL parameter')
     .isInt()
-    .withMessage('Product ID must be an integer')
+    .withMessage('product ID must be an integer')
     .custom(async val => {
       const productExist = await productObject.show(val);
       if (!productExist) {
-        throw new Error('Product does not exist');
+        throw new Error('product does not exist');
       }
       return true;
     }),
@@ -321,19 +321,3 @@ export const getProductCommentsValidator = [
   validatorMiddleware
 ];
 
-export const getProductStarsValidator = [
-  param('id')
-    .notEmpty()
-    .withMessage('Product ID is required as a URL parameter')
-    .isInt()
-    .withMessage('Product ID must be an integer')
-    .custom(async val => {
-      const productExist = await productObject.show(val);
-      if (!productExist) {
-        throw new Error('Product does not exist');
-      }
-      return true;
-    }),
-
-  validatorMiddleware
-];

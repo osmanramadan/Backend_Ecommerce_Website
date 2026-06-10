@@ -21,13 +21,15 @@ class Categorycontroller {
                     return;
                 }
                 else {
-                    res.json({ status: 'fail', msg: 'Failed to add category' });
+                    res.status(400);
+                    res.json({ status: 'error', msg: 'An error occurred while adding the category' });
                     return;
                 }
             }
             catch (err) {
+                res.status(400);
                 res.json({
-                    status: 'fail',
+                    status: 'error',
                     msg: 'An error occurred while adding the category'
                 });
                 return;
@@ -55,14 +57,17 @@ class Categorycontroller {
                             data.push(Object.assign(Object.assign({}, value), { imageData: '' }));
                         }
                     }
-                    res.json({ status: 'success', data: data });
+                    res.json({ status: 'success', categoriesCount: data.length, msg: 'Categories retrieved successfully', data: data });
                     return;
                 }
+                res.status(404);
+                res.json({ status: 'success', categoriesCount: 0, msg: 'No categories found', data: [] });
+                return;
             }
             catch (e) {
                 res.status(400);
                 res.json({
-                    status: 'fail',
+                    status: 'error',
                     msg: 'An error occurred while retrieving categories'
                 });
                 return;
@@ -70,31 +75,17 @@ class Categorycontroller {
         };
         this.deletecategory = async (req, res) => {
             try {
-                if (!req.body.name) {
-                    res.json({ error: 'Name of category should be provided (name)' });
+                // To Do : we should also delete the image of category from uploads folder .
+                const result = await categoryobject.deletecategory(req.body.name);
+                if (result) {
+                    res.json({ status: 'success', msg: 'category deleted successfully' });
                     return;
-                }
-                const categoryexist = await categoryobject.checkcategoryexist(req.body.name);
-                if (categoryexist) {
-                    // To Do : we should also delete the image of category from uploads folder .
-                    const result = await categoryobject.deletecategory(req.body.name);
-                    if (result) {
-                        res.json({ status: 'success', msg: 'category deleted successfully' });
-                        return;
-                    }
-                    else {
-                        res.json({
-                            status: 'fail',
-                            msg: 'There is an error , category cant be deleted'
-                        });
-                        return;
-                    }
                 }
                 else {
                     res.status(404);
                     res.json({
-                        status: 'Cat Not Exist',
-                        msg: 'Category not found , it may be deleted or name isnt true'
+                        status: 'fail',
+                        msg: 'category not found , it may be deleted or name isnt true'
                     });
                     return;
                 }
@@ -102,7 +93,7 @@ class Categorycontroller {
             catch (err) {
                 res.status(400);
                 res.json({
-                    status: 'fail',
+                    status: 'error',
                     msg: 'An error occurred while deleting the category'
                 });
                 return;

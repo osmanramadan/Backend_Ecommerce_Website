@@ -13,8 +13,8 @@ export default class Couponcontroller {
         expire: req.body.expire
       };
 
-      const result = await couponobject.create(coupon);
-      if (result) {
+      const result : coupon = await couponobject.create(coupon);
+      if (result && typeof result === 'object') {
         res.json({
           status: 'success',
           msg: 'Coupon created successfully',
@@ -22,30 +22,34 @@ export default class Couponcontroller {
         });
         return;
       } else {
-        res.json({ status: 'fail', msg: 'Error creating coupon' });
+        res.status(400);
+        res.json({ status: 'error', msg: 'Error creating coupon' });
         return;
       }
     } catch (err) {
-      res.json({ status: 'fail', msg: 'Error creating coupon' });
+      res.status(400);
+      res.json({ status: 'error', msg: 'Error creating coupon' });
       return;
     }
   };
 
   show = async (req: Request, res: Response) => {
+
     try {
-      const coupon = await couponobject.show(req.params.name);
+
+      const coupon : coupon | boolean = await couponobject.show(req.params.name);
 
       if (coupon) {
-        res.json({ status: 'success', msg: 'Coupon found', data: coupon });
+        res.json({ status: 'success', msg: 'Coupon retrieved successfully', data: coupon });
         return;
       }
 
       res.status(404);
-      res.json({ status: 'fail', data: [], msg: 'Coupon not found' });
+      res.json({ status: 'fail', msg: 'Coupon not found' , data: []});
       return;
     } catch (err) {
       res.status(400);
-      res.json({ status: 'fail', msg: 'Error retrieving coupon' });
+      res.json({ status: 'error', msg: 'Error retrieving coupon' });
       return;
     }
   };
@@ -55,15 +59,15 @@ export default class Couponcontroller {
       const coupons: coupon[] | [] = await couponobject.index();
 
       if (coupons.length > 0) {
-        res.json({ status: 'success', msg: 'Coupons found', data: coupons });
+        res.json({ status: 'success', msg: 'Coupons retrieved successfully', couponsCount: coupons.length, data: coupons });
         return;
       }
       res.status(404);
-      res.json({ status: 'success', data: [], msg: 'No coupons found' });
+      res.json({ status: 'success',  msg: 'No coupons found',couponsCount:0 , data: [] });
       return;
     } catch (err) {
       res.status(400);
-      res.json({ status: 'fail', msg: 'Error retrieving coupons' });
+      res.json({ status: 'error', msg: 'Error retrieving coupons' });
       return;
     }
   };
@@ -85,7 +89,7 @@ export default class Couponcontroller {
       }
     } catch (err) {
       res.status(400);
-      res.json({ status: 'fail', msg: 'Error deleting coupon' });
+      res.json({ status: 'error', msg: 'Error deleting coupon' });
       return;
     }
   };
@@ -98,18 +102,19 @@ export default class Couponcontroller {
         discount: req.body.discount,
         expire: req.body.expire
       };
-      const result = await couponobject.updatecoupon(coupon);
+      const result : boolean = await couponobject.updatecoupon(coupon);
 
       if (result) {
         res.json({ status: 'success', msg: 'Coupon updated successfully' });
         return;
       } else {
-        res.json({ status: 'fail', msg: 'Error updating coupon' });
+        res.status(400);
+        res.json({ status: 'error', msg: 'Error updating coupon' });
         return;
       }
     } catch (err) {
       res.status(400);
-      res.json({ status: 'fail', msg: 'Error updating coupon' });
+      res.json({ status: 'error', msg: 'Error updating coupon' });
       return;
     }
   };

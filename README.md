@@ -242,7 +242,7 @@ Two middleware levels are used across the API:
 
 ## 🔌 API Endpoints `/api/v1`
 
-### 👤 Users `/users`
+###  <div id="users-endpoints">👤 Users `/users`</div> 
 
 | Method | Endpoint | Auth | Description |
 |---|---|---|---|
@@ -258,7 +258,7 @@ Two middleware levels are used across the API:
 | DELETE | `/:userid` | 🔒 User | <a style="color:#CEB784" href="#deluser">Delete own account </a>|
 | GET | `/purchases/:userid` | 🔒 User | <a style="color:#CEB784" href="#getuserpurchases">Get user's purchase history </a>|
 
-#### <div id="signup">`POST /signup`</div>
+#### <div id="signup">`POST /signup` <a  href="#users-endpoints" style="display:inline;padding:20px">🏠︎</a></div>
 
 **Request body:**
 ```json
@@ -301,7 +301,7 @@ Two middleware levels are used across the API:
 
 ---
 
-#### <div id="login">`POST /login`</div>
+#### <div id="login">`POST /login`<a  href="#users-endpoints" style="display:inline;padding:20px">🏠︎</a></div>
 
 **Request body:**
 ```json
@@ -355,7 +355,7 @@ Two middleware levels are used across the API:
 
 ---
 
-#### <div id="allusers">`GET /` *(Admin only)*</div>
+#### <div id="allusers">`GET /` *(Admin only)* <a  href="#users-endpoints" style="display:inline;padding:20px">🏠︎</a></div>
 
 **Response `200`  — success**
 ```json
@@ -382,7 +382,7 @@ Two middleware levels are used across the API:
 
 ---
 
-#### <div id="userbyid">`GET /:userid`</div>
+#### <div id="userbyid">`GET /:userid`  <a  href="#users-endpoints" style="display:inline;padding:20px">🏠︎</a></div>
 
 **Response `200`:**
 ```json
@@ -425,7 +425,7 @@ Two middleware levels are used across the API:
 
 ---
 
-#### <div id="deluser">`DELETE /:userid`</div>
+#### <div id="deluser">`DELETE /:userid` <a  href="#users-endpoints" style="display:inline;padding:20px">🏠︎</a></div>
 
 **Response `200`  — success**
 ```json
@@ -452,7 +452,7 @@ Two middleware levels are used across the API:
 
 ---
 
-#### <div id="forgetpassword">`POST /forgotPassword`</div>
+#### <div id="forgetpassword">`POST /forgotPassword` <a  href="#users-endpoints" style="display:inline;padding:20px">🏠︎</a></div>
 
 **Request body:**
 ```json
@@ -489,7 +489,7 @@ Two middleware levels are used across the API:
 
 ---
 
-#### <div id="verifyresetcode">`POST /verifyResetCode`</div>
+#### <div id="verifyresetcode">`POST /verifyResetCode`  <a  href="#users-endpoints" style="display:inline;padding:20px">🏠︎</a></div>
 
 **Request body:**
 ```json
@@ -536,7 +536,7 @@ Two middleware levels are used across the API:
 
 ---
 
-#### <div id="resetpassword"> `POST /resetPassword` </div>
+#### <div id="resetpassword"> `POST /resetPassword`  <a  href="#users-endpoints" style="display:inline;padding:20px">🏠︎</a></div>
 
 **Request body:**
 ```json
@@ -584,7 +584,7 @@ Two middleware levels are used across the API:
 
 ---
 
-#### <div id="updateuserprofile">`PUT /updateuserprofile`</div>
+#### <div id="updateuserprofile">`PUT /updateuserprofile`  <a  href="#users-endpoints" style="display:inline;padding:20px">🏠︎</a></div>
 
 **Request body:**
 ```json
@@ -636,7 +636,7 @@ Two middleware levels are used across the API:
 
 ---
 
-#### <div id="updateuserpassword">`PUT /updateuserpassword`</div>
+#### <div id="updateuserpassword">`PUT /updateuserpassword`  <a  href="#users-endpoints" style="display:inline;padding:20px">🏠︎</a></div>
 
 **Request body:**
 ```json
@@ -678,7 +678,7 @@ Two middleware levels are used across the API:
 
 ---
 
-#### <div id="getuserpurchases">`GET /purchases/:userid`</div>
+#### <div id="getuserpurchases">`GET /purchases/:userid`  <a  href="#users-endpoints" style="display:inline;padding:20px">🏠︎</a></div>
 
 **Response `200` — success**
 ```json
@@ -728,7 +728,7 @@ Two middleware levels are used across the API:
 
 ---
 
-### 📍 Addresses `/addresses`
+### <div id="addresses-endpoints">📍 Addresses `/addresses`</div> 
 
 | Method | Endpoint | Auth | Description |
 |---|---|---|---|
@@ -737,7 +737,7 @@ Two middleware levels are used across the API:
 | PUT | `/:email` | 🔒 User | <a style="color:#CEB784" href="#updateaddress">Update an address </a>|
 | DELETE | `/:email` | 🔒 User | <a style="color:#CEB784" href="#deladdress">Delete an address </a>|
 
-#### <div id="addaddress">`POST /`</div>
+#### <div id="addaddress">`POST /` <a  href="#addresses-endpoints" style="display:inline;padding:20px">🏠︎</a></div>
 
 **Request body:**
 ```json
@@ -783,7 +783,7 @@ Two middleware levels are used across the API:
 
 ---
 
-#### <div id="addressesofuser">`GET /:email`</div>
+#### <div id="addressesofuser">`GET /:email` <a  href="#addresses-endpoints" style="display:inline;padding:20px">🏠︎</a></div>
 
 **Response `200` — success**
 ```json
@@ -822,7 +822,7 @@ Two middleware levels are used across the API:
 
 ---
 
-#### <div id="updateaddress">`PUT /:email`</div>
+#### <div id="updateaddress">`PUT /:email`  <a  href="#addresses-endpoints" style="display:inline;padding:20px">🏠︎</a></div>
 
 **Request body:**
 ```json
@@ -867,7 +867,7 @@ Two middleware levels are used across the API:
 
 ---
 
-#### <div id="deladdress">`DELETE /:email`</div>
+#### <div id="deladdress">`DELETE /:email` <a  href="#addresses-endpoints" style="display:inline;padding:20px">🏠︎</a></div>
 
 **Request body:**
 ```json
@@ -903,7 +903,7 @@ Two middleware levels are used across the API:
 
 ---
 
-### 🛍️ Products `/products`
+### <div id="products-endpoints">🛍️ Products `/products`</div>  
 
 | Method | Endpoint | Auth | Description |
 |---|---|---|---|
@@ -936,7 +936,7 @@ Two middleware levels are used across the API:
 
 ---
 
-#### <div id="allproducts">`GET /`</div>
+#### <div id="allproducts">`GET /`<a  href="#products-endpoints" style="display:inline;padding:20px">🏠︎</a></div>
 
 **Response `200` — success**
 ```json
@@ -981,7 +981,7 @@ Two middleware levels are used across the API:
 
 
 ---
-#### <div id="getoneproduct">`GET /:id`</div>
+#### <div id="getoneproduct">`GET /:id`<a  href="#products-endpoints" style="display:inline;padding:20px">🏠︎</a></div>
 
 **Response `200` — success**
 ```json
@@ -1030,7 +1030,7 @@ Two middleware levels are used across the API:
 
 ---
 
-#### <div id="addproduct">`POST /` *(Admin)*</div>
+#### <div id="addproduct">`POST /` *(Admin)* <a  href="#products-endpoints" style="display:inline;padding:20px">🏠︎</a></div>
 
 **Response `200` — success**
 ```json
@@ -1081,7 +1081,7 @@ Two middleware levels are used across the API:
 
 ---
 
-#### <div id="updateproduct">`PUT /` *(Admin)*</div>
+#### <div id="updateproduct">`PUT /` *(Admin)* <a  href="#products-endpoints" style="display:inline;padding:20px">🏠︎</a></div>
 
 **Request body (multipart/form-data):** same fields as create, plus `productId` (required in body)
 
@@ -1127,7 +1127,7 @@ Two middleware levels are used across the API:
 
 ---
 
-#### <div id="delproduct">`DELETE /:id` *(Admin)*</div>
+#### <div id="delproduct">`DELETE /:id` *(Admin)* <a  href="#products-endpoints" style="display:inline;padding:20px">🏠︎</a></div>
 
 **Response `200` — success**
 ```json
@@ -1154,7 +1154,7 @@ Two middleware levels are used across the API:
 
 ---
 
-#### <div id="newclothes">`GET /newclothes`</div>
+#### <div id="newclothes">`GET /newclothes`<a  href="#products-endpoints" style="display:inline;padding:20px">🏠︎</a></div>
 
 **Response `200` — success**
 ```json
@@ -1233,7 +1233,7 @@ Two middleware levels are used across the API:
 
 ---
 
-#### <div id="getproductbycat">`GET /productcate/:cate`</div>
+#### <div id="getproductbycat">`GET /productcate/:cate` <a  href="#products-endpoints" style="display:inline;padding:20px">🏠︎</a></div>
 
 **Response `200` — success**
 ```json
@@ -1283,7 +1283,7 @@ Two middleware levels are used across the API:
 
 ---
 
-#### <div id="addcommentwithrate">`POST /comments`</div>
+#### <div id="addcommentwithrate">`POST /comments` <a  href="#products-endpoints" style="display:inline;padding:20px">🏠︎</a></div>
 
 **Request body:**
 ```json
@@ -1331,7 +1331,7 @@ Two middleware levels are used across the API:
 
 ---
 
-#### <div id="getcommentsofproduct">`GET /comments/:prodId`</div>
+#### <div id="getcommentsofproduct">`GET /comments/:prodId` <a  href="#products-endpoints" style="display:inline;padding:20px">🏠︎</a></div>
 
 **Response `200` — success**
 ```json
@@ -1373,7 +1373,7 @@ Two middleware levels are used across the API:
 ```
 ---
 
-#### <div id="getproductrating"> `GET /showstars/:prodId`</div>
+#### <div id="getproductrating"> `GET /showstars/:prodId` <a  href="#products-endpoints" style="display:inline;padding:20px">🏠︎</a></div>
 
 **Response `200` — success**
 ```json
@@ -1408,7 +1408,7 @@ Two middleware levels are used across the API:
 
 ---
 
-### 🏷️ Brands `/brand`
+### <div id="brands-endpoints">🏷️ Brands `/brand`</div> 
 
 | Method | Endpoint | Auth | Description |
 |---|---|---|---|
@@ -1429,7 +1429,7 @@ Two middleware levels are used across the API:
 
 ---
 
-#### <div id="allbrands">`GET /`</div>
+#### <div id="allbrands">`GET /` <a  href="#brands-endpoints" style="display:inline;padding:20px">🏠︎</a></div>
 
 **Response `200` — success**
 ```json
@@ -1459,7 +1459,7 @@ Two middleware levels are used across the API:
 
 ---
 
-#### <div id="addbrand">`POST /` *(Admin)</div>*
+#### <div id="addbrand">`POST /` *(Admin) <a  href="#brands-endpoints" style="display:inline;padding:20px">🏠︎</a></div>*
 
 **Response `200`  — success**
 ```json
@@ -1484,7 +1484,7 @@ Two middleware levels are used across the API:
 ```
 ---
 
-#### <div id="delbrand">`DELETE /` *(Admin)*</div>
+#### <div id="delbrand">`DELETE /` *(Admin)* <a  href="#brands-endpoints" style="display:inline;padding:20px">🏠︎</a></div>
 
 **Response `200` — success**
 ```json
@@ -1514,7 +1514,7 @@ Two middleware levels are used across the API:
 
 
 
-### <div>📂 Categories `/category`</div>
+### <div id="categories-endpoints">📂 Categories `/category`</div> 
 
 | Method | Endpoint | Auth | Description |
 |---|---|---|---|
@@ -1535,7 +1535,7 @@ Two middleware levels are used across the API:
 
 ---
 
-#### <div id="allcategories">`GET /`</div>
+#### <div id="allcategories">`GET /` <a  href="#categories-endpoints" style="display:inline;padding:20px">🏠︎</a></div>
 
 **Response `200` — success**
 ```json
@@ -1566,7 +1566,7 @@ Two middleware levels are used across the API:
 
 ---
 
-#### <div id="addcategory">`POST /` *(Admin)*</div>
+#### <div id="addcategory">`POST /` *(Admin)* <a  href="#categories-endpoints" style="display:inline;padding:20px">🏠︎</a></div>
 
 **Response `200` — success**
 ```json
@@ -1592,7 +1592,7 @@ Two middleware levels are used across the API:
 
 ---
 
-#### <div id="delcategory">`DELETE /` *(Admin)*</div>
+#### <div id="delcategory">`DELETE /` *(Admin)* <a  href="#categories-endpoints" style="display:inline;padding:20px">🏠︎</a></div>
 
 **Response `200` — success**
 ```json
@@ -1621,7 +1621,7 @@ Two middleware levels are used across the API:
 ---
 
 
-### 📁 Sub-Categories `/subcategory`
+### <div id="subcategories-endpoints">📁 Sub-Categories `/subcategory` </div>  
 
 | Method | Endpoint | Auth | Description |
 |---|---|---|---|
@@ -1644,7 +1644,7 @@ Two middleware levels are used across the API:
 
 ---
 
-#### <div id="all-sub-categories">`GET /`</div>
+#### <div id="all-sub-categories">`GET /` <a  href="#subcategories-endpoints" style="display:inline;padding:20px">🏠︎</a></div>
 
 **Response `200` — success**
 ```json
@@ -1681,7 +1681,7 @@ Two middleware levels are used across the API:
 
 ---
 
-#### <div id="add-sub-categories">`POST /` *(Admin)*</div>
+#### <div id="add-sub-categories">`POST /` *(Admin)* <a  href="#subcategories-endpoints" style="display:inline;padding:20px">🏠︎</a></div>
 
 
 **Response `200` — success**
@@ -1718,7 +1718,7 @@ Two middleware levels are used across the API:
 
 ---
 
-#### <div id="del-sub-categories">`DELETE /` *(Admin)*</div>
+#### <div id="del-sub-categories">`DELETE /` *(Admin)* <a  href="#subcategories-endpoints" style="display:inline;padding:20px">🏠︎</a></div>
 
 **Response `200` — success**
 ```json
@@ -1750,7 +1750,7 @@ Two middleware levels are used across the API:
 
 
 
-### 🎟️ Coupons `/coupon`
+### <div id="coupons-endpoints">🎟️ Coupons `/coupon`</div> 
 
 | Method | Endpoint | Auth | Description |
 |---|---|---|---|
@@ -1781,7 +1781,7 @@ Two middleware levels are used across the API:
 
 ---
 
-#### <div id="all-coupons">`GET /`</div>
+#### <div id="all-coupons">`GET /`<a  href="#coupons-endpoints" style="display:inline;padding:20px">🏠︎</a></div>
 
 **Response `200` — success**
 ```json
@@ -1809,7 +1809,7 @@ Two middleware levels are used across the API:
 
 ---
 
-#### <div id="get-coupon-byname">`GET /:name`</div>
+#### <div id="get-coupon-byname">`GET /:name`<a  href="#coupons-endpoints" style="display:inline;padding:20px">🏠︎</a></div>
 
 **Response `200` — success**
 ```json
@@ -1843,7 +1843,7 @@ Two middleware levels are used across the API:
 
 ---
 
-####  <div id="add-coupon">`POST /` *(Admin)*</div>
+####  <div id="add-coupon">`POST /` *(Admin)*<a  href="#coupons-endpoints" style="display:inline;padding:20px">🏠︎</a></div>
 
 **Response `200` — success**
 
@@ -1877,7 +1877,7 @@ Two middleware levels are used across the API:
 ```
 ---
 
-####  <div id="update-coupon">`PUT /` *(Admin)*</div>
+####  <div id="update-coupon">`PUT /` *(Admin)*<a  href="#coupons-endpoints" style="display:inline;padding:20px">🏠︎</a></div>
 
 **Response `200` — success**
 ```json
@@ -1907,7 +1907,7 @@ Two middleware levels are used across the API:
 ```
 ---
 
-#### <div id="delete-coupon">`DELETE /:id` *(Admin)* </div>
+#### <div id="delete-coupon">`DELETE /:id` *(Admin)* <a  href="#coupons-endpoints" style="display:inline;padding:20px">🏠︎</a></div>
 
 **Response `200` — success**
 ```json
@@ -1937,7 +1937,7 @@ Two middleware levels are used across the API:
 
 ---
 
-### 📦 Orders <div id="orders-endpints">`/orders`</div>
+### <div id="orders-endpoints">📦 Orders  `/orders`</div>
 
 | Method | Endpoint | Auth | Description |
 |---|---|---|---|
@@ -1997,7 +1997,7 @@ Two middleware levels are used across the API:
 
 ---
 
-####  <div id="allorders">`GET /` *(Admin)* <a  href="#orders-endpints" style="display:inline;padding:20px">🏠︎</a></div> 
+####  <div id="allorders">`GET /` *(Admin)* <a  href="#orders-endpoints" style="display:inline;padding:20px">🏠︎</a></div> 
 
 **Response `200` — success**
 ```json
@@ -2055,7 +2055,7 @@ Two middleware levels are used across the API:
 
 ---
 
-####  <div id="getuserorders">`GET /:userid`<a  href="#orders-endpints" style="display:inline;padding:20px">🏠︎</a></div>
+####  <div id="getuserorders">`GET /:userid`<a  href="#orders-endpoints" style="display:inline;padding:20px">🏠︎</a></div>
 
 **Response `200` — success**
 ```json
@@ -2122,7 +2122,7 @@ Two middleware levels are used across the API:
 
 ---
 
-#### <div id="createorder">`POST /` <a  href="#orders-endpints" style="display:inline;padding:20px">🏠︎</a></div>
+#### <div id="createorder">`POST /` <a  href="#orders-endpoints" style="display:inline;padding:20px">🏠︎</a></div>
 
 **Response `200` — success**
 ```json
@@ -2185,7 +2185,7 @@ Two middleware levels are used across the API:
 
 ---
 
-####  <div id="addorderproduct">`POST /addproductTOorder`<a  href="#orders-endpints" style="display:inline;padding:20px">🏠︎</a></div>
+####  <div id="addorderproduct">`POST /addproductTOorder`<a  href="#orders-endpoints" style="display:inline;padding:20px">🏠︎</a></div>
 
 **Response `200` — success**
 ```json
@@ -2219,7 +2219,7 @@ Two middleware levels are used across the API:
 
 ---
 
-#### <div id="updateorderstatus"> `PUT /status` *(Admin)*<a  href="#orders-endpints" style="display:inline;padding:20px">🏠︎</a></div> 
+#### <div id="updateorderstatus"> `PUT /status` *(Admin)*<a  href="#orders-endpoints" style="display:inline;padding:20px">🏠︎</a></div> 
 
 **Response `200` — success**
 ```json
@@ -2250,7 +2250,7 @@ Two middleware levels are used across the API:
 
 ---
 
-#### <div id="delorder">`DELETE /:orderId` *(Admin)* <a  href="#orders-endpints" style="display:inline;padding:20px">🏠︎</a></div>
+#### <div id="delorder">`DELETE /:orderId` *(Admin)* <a  href="#orders-endpoints" style="display:inline;padding:20px">🏠︎</a></div>
 
 
 **Response `200` — success**
@@ -2285,7 +2285,7 @@ Two middleware levels are used across the API:
 
 ---
 
-#### <div id="getactiveorders">`GET /active/:userid` <a  href="#orders-endpints" style="display:inline;padding:20px">🏠︎</a></div>
+#### <div id="getactiveorders">`GET /active/:userid` <a  href="#orders-endpoints" style="display:inline;padding:20px">🏠︎</a></div>
 
 
 **Response `200` — success**
@@ -2356,7 +2356,7 @@ Two middleware levels are used across the API:
 
 ---
 
-#### <div id="getcompletedorders">`GET /complete/:userid`<a  href="#orders-endpints" style="display:inline;padding:20px">🏠︎</a></div>
+#### <div id="getcompletedorders">`GET /complete/:userid`<a  href="#orders-endpoints" style="display:inline;padding:20px">🏠︎</a></div>
 
 
 

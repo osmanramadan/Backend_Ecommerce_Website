@@ -12,7 +12,7 @@ const productobject = new Product();
 export default class Ordercontroller {
   index = async (_req: Request, res: Response) => {
     try {
-      const orders: order[] = await orderobject.index();
+      const orders: order[] | [] = await orderobject.index();
 
       if (orders.length > 0) {
         const data: order[] = [];
@@ -46,10 +46,7 @@ export default class Ordercontroller {
               'products',
               productsData.coverimage
             );
-            console.log(
-              imagePath,
-              '-----===========**&&&&&&&&&&&=========---------------'
-            );
+
             try {
               const imageData = await fs.promises.readFile(imagePath);
 
@@ -57,38 +54,41 @@ export default class Ordercontroller {
 
               productsData.imageCoverData = imgCover;
             } catch (err) {
+              res.status(400);
               res.json({
                 status: 'fail',
-                msg: 'Failed to read product image',
-                error: err
+                msg: 'Failed to read product cover image for product with id ' + productId,
+                error: err instanceof Error ? err.message : 'unknown error'
               });
               return;
             }
 
             items.push(productsData);
           }
-          value.items = items;
           data.push(value);
+          value.items = items;
         }
         res.json({ status: 'success', ordersCount: data.length, data: data });
         return;
       }
       res.status(404);
-      res.json({ status: 'success', data: [], msg: 'No orders found' });
+      res.json({ status: 'success', ordersCount: 0 , msg: 'No orders found', data: [] });
       return;
     } catch (err) {
       res.status(400);
       res.json({
-        status: 'fail',
+        status: 'error',
         msg: 'Failed to retrieve orders',
-        error: err
+        error:err instanceof Error ? err.message : 'unknown error'
       });
       return;
     }
   };
 
   show = async (req: Request, res: Response) => {
+
     try {
+      //Note : req.body.userid=req.params.userid
       const orderbyuser: order[] | [] = await orderobject.show(req.body.userid);
 
       if (orderbyuser.length > 0) {
@@ -130,10 +130,11 @@ export default class Ordercontroller {
 
               productINOrder.imageCoverData = imgCover;
             } catch (err) {
+              res.status(400);
               res.json({
                 status: 'fail',
-                msg: 'Failed to read product image',
-                error: err
+                msg: 'Failed to read product cover image for product with id ' + productId,
+                error: err instanceof Error ? err.message : 'unknown error'
               });
               return;
             }
@@ -149,16 +150,17 @@ export default class Ordercontroller {
       res.status(404);
       res.json({
         status: 'success',
-        data: [],
-        msg: 'No orders found for this user'
+        ordersCount: 0,
+        msg: 'No orders found for this user',
+        data: []
       });
       return;
     } catch (err) {
       res.status(400);
       res.json({
-        status: 'fail',
+        status: 'error',
         msg: 'Failed to retrieve orders for the user',
-        error: err
+        error: err instanceof Error ? err.message : 'unknown error'
       });
       return;
     }
@@ -166,19 +168,19 @@ export default class Ordercontroller {
 
   delete = async (req: Request, res: Response) => {
     try {
-      const deleted = await orderobject.deleteorder(
+      const deleted : boolean= await orderobject.deleteorder(
         parseInt(req.params.orderId)
       );
       if (deleted) {
         res.json({ status: 'success', msg: 'Order deleted successfully' });
         return;
       }
-      res.status(400);
-      res.json({ status: 'fail', msg: 'Failed to delete order' });
+      res.status(404);
+      res.json({ status: 'fail', msg: 'order not found' });
       return;
     } catch (err) {
       res.status(400);
-      res.json({ status: 'fail', msg: 'Failed to delete order', error: err });
+      res.json({ status: 'error', msg: 'Failed to delete order'});
       return;
     }
   };
@@ -197,12 +199,12 @@ export default class Ordercontroller {
         return;
       }
       res.status(400);
-      res.json({ status: 'fail', msg: 'Failed to update order status' });
+      res.json({ status: 'error', msg: 'Failed to update order status' });
       return;
     } catch (err) {
       res.status(400);
       res.json({
-        status: 'fail',
+        status: 'error',
         msg: 'Failed to update order status',
         error: err
       });
@@ -232,11 +234,11 @@ export default class Ordercontroller {
         return;
       }
       res.status(400);
-      res.json({ status: 'fail', msg: 'Order not created' });
+      res.json({ status: 'error', msg: 'Failed to create order' });
       return;
     } catch (err) {
       res.status(400);
-      res.json({ status: 'fail', msg: 'Order not created', error: err });
+      res.json({ status: 'error', msg: 'Failed to create order'});
       return;
     }
   };
@@ -265,14 +267,13 @@ export default class Ordercontroller {
         return;
       }
       res.status(400);
-      res.json({ status: 'fail', msg: 'Failed to add product to order' });
+      res.json({ status: 'error', msg: 'Failed to add product to order' });
       return;
     } catch (err) {
       res.status(400);
       res.json({
-        status: 'fail',
-        msg: 'Failed to add product to order',
-        error: err
+        status: 'error',
+        msg: 'Failed to add product to order'
       });
       return;
     }

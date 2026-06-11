@@ -117,7 +117,10 @@ export default class ProductServicesController {
       return;
     } catch (e) {
       res.status(400);
-      res.json({ status: 'error' , msg: 'Failed to retrieve most popular products'});
+      res.json({
+        status: 'error',
+        msg: 'Failed to retrieve most popular products'
+      });
       return;
     }
   };

@@ -36,7 +36,7 @@ export const deleteBrandValidator = [
   check('name')
     .notEmpty()
     .withMessage('name of brand is required field  (name)')
-        .custom(async val => {
+    .custom(async val => {
       const brandexist = await brandobject.checkbrandexist(val);
       if (!brandexist) {
         throw new Error(`brand does not exist`);

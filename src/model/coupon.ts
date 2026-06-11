@@ -24,11 +24,10 @@ export class Coupon {
 
       const result = await conn.query(sql, [name]);
       conn.release();
-      if (result.rowCount){
+      if (result.rowCount) {
         return result.rows[0];
       }
       return false;
-
     } catch (err) {
       throw new Error(` Error: ${err}`);
     }

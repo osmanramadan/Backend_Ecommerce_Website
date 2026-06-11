@@ -14,30 +14,30 @@ const userobject = new User();
 export const createorderValidator = [
   check('userid')
     .notEmpty()
-    .withMessage('User id is required field (userid)')
+    .withMessage('user id is required field (userid)')
     .isNumeric()
-    .withMessage('User id must be a number')
+    .withMessage('user id must be a number')
     .custom(async value => {
       const user = await userobject.show(value);
       if (!user) {
-        throw new Error('User not found');
+        throw new Error('user not found');
       }
     }),
 
   check('items')
     .isArray({ min: 1 })
     .withMessage(
-      'Items are required and must be an array with at least one item'
+      'items are required and must be an array with at least one item'
     )
     .custom(async items => {
       for (const productId of items) {
         if (isNaN(productId)) {
-          throw new Error(`Product id ${productId} must be a number`);
+          throw new Error(`product id ${productId} must be a number`);
         }
 
         const productExists = await productobject.show(productId);
         if (!productExists) {
-          throw new Error('Product not found with id ' + productId);
+          throw new Error('product not found with id ' + productId);
         }
       }
 
@@ -46,15 +46,15 @@ export const createorderValidator = [
 
   check('price')
     .notEmpty()
-    .withMessage('Price is required field (price)')
+    .withMessage('price is required field (price)')
     .isNumeric()
-    .withMessage('Price must be a number'),
+    .withMessage('price must be a number'),
 
   check('address')
     .notEmpty()
-    .withMessage('Address is required field (address)')
+    .withMessage('address is required field (address)')
     .isArray({ min: 1 })
-    .withMessage('Address must be an array with at least one item')
+    .withMessage('address must be an array with at least one item')
     .custom(value => {
       if (
         !value.every((item: address) => {
@@ -73,7 +73,7 @@ export const createorderValidator = [
         })
       ) {
         throw new Error(
-          'Each address item must be a valid object with non-empty values'
+          'each address item must be a valid object with non-empty values'
         );
       }
 
@@ -82,9 +82,9 @@ export const createorderValidator = [
 
   check('userinfo')
     .notEmpty()
-    .withMessage('User info is required field (userinfo)')
+    .withMessage('user info is required field (userinfo)')
     .isArray({ min: 1 })
-    .withMessage('User info must be an array with at least one item')
+    .withMessage('user info must be an array with at least one item')
     .custom(value => {
       if (
         !value.every((item: user) => {
@@ -103,7 +103,7 @@ export const createorderValidator = [
         })
       ) {
         throw new Error(
-          'Each userinfo item must be a valid object with non-empty values'
+          'each userinfo item must be a valid object with non-empty values'
         );
       }
 
@@ -112,10 +112,10 @@ export const createorderValidator = [
 
   check('status')
     .notEmpty()
-    .withMessage('Order status is required field (status)')
+    .withMessage('order status is required field (status)')
     .isIn(['complete', 'waiting', 'cancle'])
     .withMessage(
-      'Order status must be one of the following: complete, waiting, cancle'
+      'order status must be one of the following: complete, waiting, cancle'
     ),
 
   validatorMiddleware
@@ -124,13 +124,13 @@ export const createorderValidator = [
 export const checkforuseridValidator = [
   param('userid')
     .notEmpty()
-    .withMessage('User id is required field (userid)')
+    .withMessage('user id is required field (userid)')
     .isNumeric()
-    .withMessage('User id must be a number')
+    .withMessage('user id must be a number')
     .custom(async value => {
       const user = await userobject.show(value);
       if (!user) {
-        throw new Error('User not found');
+        throw new Error('user not found');
       }
     }),
 
@@ -140,22 +140,22 @@ export const checkforuseridValidator = [
 export const updateorderstatusValidator = [
   check('orderId')
     .notEmpty()
-    .withMessage('Order id is required field (orderId)')
+    .withMessage('order id is required field (orderId)')
     .isNumeric()
-    .withMessage('Order id must be a number')
+    .withMessage('order id must be a number')
     .custom(async value => {
       const orderExists = await orderobject.checkorderexist(value);
       if (!orderExists) {
-        throw new Error('Order not found');
+        throw new Error('order not found');
       }
     }),
 
   check('status')
     .notEmpty()
-    .withMessage('Order status is required field (status)')
+    .withMessage('order status is required field (status)')
     .isIn(['complete', 'waiting', 'cancle'])
     .withMessage(
-      'Order status must be one of the following: complete, waiting, cancle'
+      'order status must be one of the following: complete, waiting, cancle'
     ),
 
   validatorMiddleware
@@ -164,13 +164,13 @@ export const updateorderstatusValidator = [
 export const deleteorderValidator = [
   param('orderId')
     .notEmpty()
-    .withMessage('Order id is required field (orderId)')
+    .withMessage('order id is required field (orderId)')
     .isNumeric()
-    .withMessage('Order id must be a number')
+    .withMessage('order id must be a number')
     .custom(async value => {
       const orderExists = await orderobject.checkorderexist(value);
       if (!orderExists) {
-        throw new Error('Order not found');
+        throw new Error('order not found');
       }
     }),
 
@@ -180,33 +180,33 @@ export const deleteorderValidator = [
 export const addproductTOorderValidator = [
   check('orderId')
     .notEmpty()
-    .withMessage('Order id is required field (orderId)')
+    .withMessage('order id is required field (orderId)')
     .isNumeric()
-    .withMessage('Order id must be a number')
-    .custom(async value => {
-      const orderExists = await orderobject.checkorderexist(value);
+    .withMessage('order id must be a number')
+    .custom(async (value, { req }) => {
+      const orderExists = await orderobject.checkuserorderexist(req.body.userid,value);
       if (!orderExists) {
-        throw new Error('Order not found');
+        throw new Error('order not found Or does not belong to you');
       }
     }),
 
   check('productId')
     .notEmpty()
-    .withMessage('Product id is required field (productId)')
+    .withMessage('product id is required field (productId)')
     .isNumeric()
-    .withMessage('Product id must be a number')
+    .withMessage('product id must be a number')
     .custom(async value => {
       const productExists = await productobject.show(value);
       if (!productExists) {
-        throw new Error('Product not found');
+        throw new Error('product not found');
       }
     }),
 
   check('quantity')
     .notEmpty()
-    .withMessage('Quantity is required field (quantity)')
+    .withMessage('quantity is required field (quantity)')
     .isNumeric()
-    .withMessage('Quantity must be a number'),
+    .withMessage('quantity must be a number'),
 
   validatorMiddleware
 ];

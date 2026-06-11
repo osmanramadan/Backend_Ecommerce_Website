@@ -27,7 +27,7 @@ addresses.delete(
 addresses.put(
   '/:email',
   verify,
-  updateAddressValidator, 
+  updateAddressValidator,
   AddressController.updateuseraddress
 );
 

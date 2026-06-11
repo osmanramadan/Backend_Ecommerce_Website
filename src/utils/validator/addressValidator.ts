@@ -90,7 +90,6 @@ export const deleteAddressValidator = [
 ];
 
 export const updateAddressValidator = [
-  
   param('email')
     .notEmpty()
     .withMessage('email required field')
@@ -104,7 +103,7 @@ export const updateAddressValidator = [
       return true;
     }),
 
-    check('addressId')
+  check('addressId')
     .notEmpty()
     .withMessage('address ID is required field (addressId)')
     .isInt()

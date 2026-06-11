@@ -8,39 +8,39 @@ const categoryobject = new Category();
 const subcategoryobject = new SubCategory();
 
 export const addSubCategoryValidator = [
-    
   check('name')
     .notEmpty()
     .withMessage('name of subcategory is required field  (name)')
     .custom(async val => {
       const subcatexist = await subcategoryobject.checksubcategoryexist(val);
-        if (subcatexist) {
+      if (subcatexist) {
         throw new Error(`subcategory already exists`);
-        }
-        return true;
+      }
+      return true;
     }),
 
   check('maincat')
     .notEmpty()
     .withMessage('main category should be provided (maincat)')
     .custom(async val => {
-        const categoryexist = await categoryobject.checkcategoryexist(val);
-        if (!categoryexist) {
+      const categoryexist = await categoryobject.checkcategoryexist(val);
+      if (!categoryexist) {
         throw new Error(`main category does not exist`);
-        }
-        return true;
+      }
+      return true;
     }),
 
   validatorMiddleware
 ];
 
-
 export const deleteSubCategoryValidator = [
   check('name')
     .notEmpty()
     .withMessage('name of subcategory is required field  (name)')
-        .custom(async val => {
-      const subcategoryexist = await subcategoryobject.checksubcategoryexist(val);
+    .custom(async val => {
+      const subcategoryexist = await subcategoryobject.checksubcategoryexist(
+        val
+      );
       if (!subcategoryexist) {
         throw new Error(`subcategory does not exist`);
       }

@@ -20,7 +20,10 @@ export default class Categorycontroller {
         return;
       } else {
         res.status(400);
-        res.json({ status: 'error', msg: 'An error occurred while adding the category' });
+        res.json({
+          status: 'error',
+          msg: 'An error occurred while adding the category'
+        });
         return;
       }
     } catch (err) {
@@ -66,13 +69,22 @@ export default class Categorycontroller {
           }
         }
 
-        res.json({ status: 'success', categoriesCount: data.length, msg: 'Categories retrieved successfully', data: data });
+        res.json({
+          status: 'success',
+          categoriesCount: data.length,
+          msg: 'Categories retrieved successfully',
+          data: data
+        });
         return;
       }
       res.status(404);
-      res.json({ status: 'success', categoriesCount: 0, msg: 'No categories found', data: [] });
+      res.json({
+        status: 'success',
+        categoriesCount: 0,
+        msg: 'No categories found',
+        data: []
+      });
       return;
-
     } catch (e) {
       res.status(400);
       res.json({
@@ -85,24 +97,22 @@ export default class Categorycontroller {
 
   deletecategory = async (req: Request, res: Response) => {
     try {
-    
-        // To Do : we should also delete the image of category from uploads folder .
-        const result: boolean = await categoryobject.deletecategory(
-          req.body.name
-        );
+      // To Do : we should also delete the image of category from uploads folder .
+      const result: boolean = await categoryobject.deletecategory(
+        req.body.name
+      );
 
-        if (result) {
-          res.json({ status: 'success', msg: 'category deleted successfully' });
-          return;
-        } else {
-          res.status(404);
+      if (result) {
+        res.json({ status: 'success', msg: 'category deleted successfully' });
+        return;
+      } else {
+        res.status(404);
         res.json({
           status: 'fail',
           msg: 'category not found , it may be deleted or name isnt true'
         });
         return;
-        }
-
+      }
     } catch (err) {
       res.status(400);
       res.json({

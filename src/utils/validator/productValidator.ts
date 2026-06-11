@@ -11,19 +11,18 @@ const categoryObject = new Category();
 const brandObject = new Mark();
 
 export const createProductValidator = [
-  
   check('ptitle')
     .notEmpty()
     .withMessage('product title is required  (ptitle) ')
     .custom(async val => {
-    const productExist = await productObject.checkproductexist(val);
+      const productExist = await productObject.checkproductexist(val);
 
-    if (productExist) {
-      throw new Error('product already exists');
-    }
+      if (productExist) {
+        throw new Error('product already exists');
+      }
 
-    return true;
-  }), 
+      return true;
+    }),
 
   check('pdesc')
     .notEmpty()
@@ -111,9 +110,7 @@ export const createProductValidator = [
   validatorMiddleware
 ];
 
-
-
-export const showOrDelProductValidator= [
+export const showOrDelProductValidator = [
   param('id')
     .notEmpty()
     .withMessage('product id is required as a URL parameter')
@@ -320,4 +317,3 @@ export const productIdValidator = [
 
   validatorMiddleware
 ];
-

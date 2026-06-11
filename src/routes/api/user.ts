@@ -51,10 +51,10 @@ users.put(
   updateUserPasswordValidator,
   usercontroller.updateuserpassword
 );
-users.get('/:userid',verify,useridValidator, usercontroller.show);
+users.get('/:userid', verify, useridValidator, usercontroller.show);
 
 // This option is to allow users to delete their accounts but not others accounts
-users.delete('/:userid',verify,useridValidator, usercontroller.delete);
+users.delete('/:userid', verify, useridValidator, usercontroller.delete);
 
 users.get(
   '/purchases/:userid',

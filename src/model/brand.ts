@@ -54,7 +54,7 @@ export class Mark {
       const conn = await pool.connect();
       const result = await conn.query(sql, [m.name, m.image]);
       conn.release();
-      if(result.rowCount > 0){
+      if (result.rowCount > 0) {
         return result.rows[0];
       }
       return false;

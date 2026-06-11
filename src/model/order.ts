@@ -31,6 +31,26 @@ export class Order {
       throw new Error(`Could not find order with ${userid}. Error: ${err}`);
     }
   }
+  
+  async checkuserorderexist(userid: number, orderId: number): Promise<boolean> {
+
+    try {
+      const sql = 'SELECT * FROM  orders WHERE user_id=($1) AND id=($2)';
+      const conn = await pool.connect();
+
+      const result = await conn.query(sql, [userid, orderId]);
+      const orders = result.rows;
+      conn.release();
+      if (orders.length) {
+        return true;
+      }
+      return false;
+    } catch (err) {
+      throw new Error(
+        `Could not check order existence for user ${userid} and order ${orderId}. Error: ${err}`
+      );
+    }
+  }
 
   async checkorderexist(orderId: number): Promise<boolean> {
     try {
@@ -52,6 +72,8 @@ export class Order {
     }
   }
 
+  
+
   async create(o: order): Promise<order | boolean> {
     try {
       const sql =
@@ -68,10 +90,9 @@ export class Order {
         o.price
       ]);
 
-      const orders = result.rows;
       conn.release();
       if (result.rowCount) {
-        return orders[0];
+        return result.rows[0];
       }
       return false;
     } catch (err) {
@@ -79,14 +100,17 @@ export class Order {
     }
   }
 
-  async deleteorder(id: number) {
+  async deleteorder(id: number): Promise<boolean> {
     try {
       const sql = 'delete FROM orders WHERE id=($1)';
       const conn = await pool.connect();
 
       const result = await conn.query(sql, [id]);
       conn.release();
-      return result.rowCount;
+      if (result.rowCount) {
+        return true;
+      }
+      return false;
     } catch (err) {
       throw new Error(`Could not delete order with ${id}. Error: ${err}`);
     }

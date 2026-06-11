@@ -38,7 +38,6 @@ products.put(
   productcontroller.update
 );
 
-
 products.delete(
   '/:id',
   verifyAdmin,
@@ -55,8 +54,6 @@ products.get(
 );
 
 products.get('/:id', showOrDelProductValidator, productcontroller.show);
-
-
 
 products.post(
   '/comments',

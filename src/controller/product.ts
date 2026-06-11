@@ -242,7 +242,10 @@ export default class Productcontroller {
             res.status(400);
             res.json({
               status: 'fail',
-              msg: 'Failed to load image for product with id ' + value.id + 'or its rate'
+              msg:
+                'Failed to load image for product with id ' +
+                value.id +
+                'or its rate'
             });
             return;
           }
@@ -281,33 +284,30 @@ export default class Productcontroller {
   };
 
   update = async (req: Request, res: Response) => {
-    
-
     try {
-   
-    let subcategory: string[] = [];
-    if (req.body.subcategory) {
-      subcategory = req.body.subcategory.split(',');
-    }
+      let subcategory: string[] = [];
+      if (req.body.subcategory) {
+        subcategory = req.body.subcategory.split(',');
+      }
 
-    const colors = req.body.colors.split(',');
+      const colors = req.body.colors.split(',');
 
-    //🍳 There is a problem here if  user want to update field , he should provide all other fields .
+      //🍳 There is a problem here if  user want to update field , he should provide all other fields .
 
-    const data: product = {
-      id: req.body.productId,
-      ptitle: req.body.ptitle,
-      pdesc: req.body.pdesc,
-      price: req.body.price,
-      discount: req.body.discount,
-      priceafterdiscount: req.body.priceafterdiscount,
-      category: req.body.category,
-      subcategory: subcategory,
-      brand: req.body.brand,
-      colors: colors,
-      images: req.body.images,
-      coverimage: req.body.coverimage
-    };
+      const data: product = {
+        id: req.body.productId,
+        ptitle: req.body.ptitle,
+        pdesc: req.body.pdesc,
+        price: req.body.price,
+        discount: req.body.discount,
+        priceafterdiscount: req.body.priceafterdiscount,
+        category: req.body.category,
+        subcategory: subcategory,
+        brand: req.body.brand,
+        colors: colors,
+        images: req.body.images,
+        coverimage: req.body.coverimage
+      };
 
       const updated = await productobject.updateproduct(data);
 
@@ -316,22 +316,24 @@ export default class Productcontroller {
         return;
       } else {
         res.status(400);
-        res.json({ status: 'fail', msg: 'Failed to update product fields in database' });
+        res.json({
+          status: 'fail',
+          msg: 'Failed to update product fields in database'
+        });
         return;
       }
-    } catch (err:unknown) {
+    } catch (err: unknown) {
       res.status(400);
       res.json({
         status: 'error',
         msg: 'Error in updating product',
-        error:  err instanceof Error ? err.message : 'unknown error'
+        error: err instanceof Error ? err.message : 'unknown error'
       });
       return;
     }
   };
 
   create = async (req: Request, res: Response) => {
-
     try {
       let subcategory: string[] = [];
       if (req.body.subcategory) {
@@ -363,9 +365,12 @@ export default class Productcontroller {
         return;
       }
       res.status(400);
-      res.json({ status: 'error', msg: 'Failed to create product', error: 'unknown error' });
+      res.json({
+        status: 'error',
+        msg: 'Failed to create product',
+        error: 'unknown error'
+      });
       return;
-
     } catch (err: unknown) {
       res.status(400);
       res.json({
@@ -444,7 +449,7 @@ export default class Productcontroller {
         res.json({
           status: 'success',
           msg: 'Stars retrieved successfully',
-          data: proStars,  // { sumstar: proStars.sumstar, numstar: proStars.numstar}
+          data: proStars, // { sumstar: proStars.sumstar, numstar: proStars.numstar}
           rate: proStars.sumstar / proStars.numstar
         });
         return;

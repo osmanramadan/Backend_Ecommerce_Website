@@ -32,12 +32,11 @@ export const addCategoryValidator = [
   validatorMiddleware
 ];
 
-
 export const deleteCategoryValidator = [
   check('name')
     .notEmpty()
     .withMessage('name of category is required field  (name)')
-        .custom(async val => {
+    .custom(async val => {
       const categoryexist = await categoryobject.checkcategoryexist(val);
       if (!categoryexist) {
         throw new Error(`category does not exist`);

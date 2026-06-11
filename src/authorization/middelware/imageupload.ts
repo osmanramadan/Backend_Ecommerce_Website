@@ -79,7 +79,8 @@ export default class uploadImageController {
           if (err.code === 'LIMIT_UNEXPECTED_FILE') {
             return res.status(400).json({
               status: 'error',
-              message: 'Maximum 3 images are allowed for images and 1 for coverimage'
+              message:
+                'Maximum 3 images are allowed for images and 1 for coverimage'
             });
           }
         }
@@ -161,7 +162,7 @@ export default class uploadImageController {
       }
 
       next();
-    } catch (err:unknown) {
+    } catch (err: unknown) {
       res.status(400);
       res.json({
         status: 'error',

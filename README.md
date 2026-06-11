@@ -1937,18 +1937,18 @@ Two middleware levels are used across the API:
 
 ---
 
-### 📦 Orders `/orders`
+### 📦 Orders <div id="orders-endpints">`/orders`</div>
 
 | Method | Endpoint | Auth | Description |
 |---|---|---|---|
-| GET | `/` | 🔒 Admin | Get all orders |
-| GET | `/:userid` | 🔒 User | Get orders for a user |
-| POST | `/` | 🔒 User | Create a new order |
-| POST | `/addproductTOorder` | 🔒 User | Add a product to an existing order |
-| PUT | `/status` | 🔒 Admin | Update order status |
-| DELETE | `/:orderId` | 🔒 Admin | Delete an order |
-| GET | `/active/:userid` | 🔒 User | Get active (waiting) orders for a user |
-| GET | `/complete/:userid` | 🔒 User | Get completed orders for a user |
+| GET | `/` | 🔒 Admin | <a style="color:#CEB784" href="#allorders">Get all orders </a>|
+| GET | `/:userid` | 🔒 User |  <a style="color:#CEB784" href="#getuserorders">Get orders for a user</a>|
+| POST | `/` | 🔒 User | <a style="color:#CEB784" href="#createorder">Create a new order </a> |
+| POST | `/addproductTOorder` | 🔒 User | <a style="color:#CEB784" href="#addorderproduct">Add a product to an existing order </a> |
+| PUT | `/status` | 🔒 Admin | <a style="color:#CEB784" href="#updateorderstatus">Update order status </a> |
+| DELETE | `/:orderId` | 🔒 Admin | <a style="color:#CEB784" href="#delorder">Delete an order </a>|
+| GET | `/active/:userid` | 🔒 User |  <a style="color:#CEB784" href="#getactiveorders">Get active (waiting) orders for a user</a> |
+| GET | `/complete/:userid` | 🔒 User |<a style="color:#CEB784" href="#getcompletedorders"> Get completed orders for a user </a>|
 
 #### Create Order Body
 ```json
@@ -1956,13 +1956,14 @@ Two middleware levels are used across the API:
   "items": [1, 2, 3],
   "price": "299.99",
   "status": "waiting",
-  "address": [
+  "address": [ //Note ⚠ untile now , i dont determine the address object shape only {have no determined keys} , In db from kind jsonb[]
     {
       "country": "Egypt",
       "city": "Damietta",
       "street": "El-Geish St",
       "building": "12A",
-      "postal_code": "34511"
+      "postal_code": "34511",
+      "phone":"01008236721"
     }
   ],
   "userinfo": [
@@ -1978,7 +1979,7 @@ Two middleware levels are used across the API:
 #### Add Product to Order Body
 ```json
 {
-  "orderId": 1,
+  "orderId": 1 ,
   "productId": 5,
   "quantity": 2
 }
@@ -1996,7 +1997,7 @@ Two middleware levels are used across the API:
 
 ---
 
-#### `GET /` *(Admin)* <div id=""></div>
+####  <div id="allorders">`GET /` *(Admin)* <a  href="#orders-endpints" style="display:inline;padding:20px">🏠︎</a></div> 
 
 **Response `200` — success**
 ```json
@@ -2004,34 +2005,57 @@ Two middleware levels are used across the API:
   "status": "success",
   "ordersCount": 2,
   "data": [
-    {
+    { // start first order 
       "id": 1,
-      "user_id": 1,
-      "order_status": "waiting",
-      "price": "299.99",
       "userinfo": [{ "name": "John Doe", "email": "john@example.com", "phone": "01012345678" }],
-      "address": [{ "country": "Egypt", "city": "Damietta", "street": "El-Geish St" }],
+      "address": [{ "country": "Egypt", "city": "Damietta", "street": "El-Geish St","phone":"01008236721"}],//Note ⚠ untile now , i dont determine the address object shape {have no determined keys} , In db from kind jsonb[]
       "items": [
         {
           "id": 1,
           "ptitle": "Product Name",
           "price": "99.99",
           "coverimage": "cover.jpg",
-          "imageCoverData": "<base64_string>"
+          "imageCoverData": "<base64_string>",
+          .....
+          other product details except imagesData
         }
-      ]
-    }
+      ],
+      "user_id": 1,
+      "order_status": "waiting",
+      "price": "299.99"
+    } // end first order 
   ]
 }
 ```
-**Response `404`:**
+
+**Response `404`  — No orders found**
 ```json
-{ "status": "success", "data": [], "msg": "No orders found" }
+{ "status": "success" ,"ordersCount": 0,"msg": "No orders found" , "data": []}
+```
+
+
+**Response `400`  —  failure in loading product image cover in one product of items**
+```json
+{ "status": "fail" ,"msg": "Failed to read product cover image for product with id + productId,","error":"error.message from `try catch` Or unknown error"}
+```
+
+
+
+**Response `404`  — not found product Id in  order details items**
+```json
+{ "status": "fail", "msg": "Product with id  +  product.productId  + not found"}
+
+```
+
+**Response `400`  — unknown error**
+```json
+{ "status": "error", "msg": "Failed to retrieve orders","error":"error.message from `try catch` Or unknown error"}
+
 ```
 
 ---
 
-#### `GET /:userid` <div id=""></div>
+####  <div id="getuserorders">`GET /:userid`<a  href="#orders-endpints" style="display:inline;padding:20px">🏠︎</a></div>
 
 **Response `200` — success**
 ```json
@@ -2039,30 +2063,66 @@ Two middleware levels are used across the API:
   "status": "success",
   "ordersCount": 1,
   "data": [
-    {
+    { // start order
       "id": 1,
+      "userinfo": [{ "name": "John Doe", "email": "john@example.com", "phone": "01012345678" }],
+      "address": [{ "country": "Egypt", "city": "Damietta", "street": "El-Geish St","phone":"01008236721"}],//Note ⚠ untile now , i dont determine the address object shape {have no determined keys}
+      "items": [
+               {
+                "id": 1,
+                "ptitle": "Product Name",
+                "price": "99.99",
+                "coverimage": "cover.jpg",
+                "imageCoverData": "<base64_string>",
+                .....
+                other product details except imagesData
+               }
+          ],
       "user_id": 1,
       "order_status": "waiting",
       "price": "299.99",
-      "items": [
-        {
-          "id": 1,
-          "ptitle": "Product Name",
-          "imageCoverData": "<base64_string>"
-        }
-      ]
-    }
+    } // end order
   ]
 }
 ```
 **Response `404`:**
 ```json
-{ "status": "success", "data": [], "msg": "No orders found for this user" }
+{ "status": "success","ordersCount": 0, "msg": "No orders found for this user" , "data": []}
+```
+
+
+**Response `400`  —  failure in loading product image cover in one product of items**
+```json
+{ "status": "fail" ,"msg": "Failed to read product cover image for product with id + productId,","error":"error.message from `try catch` Or unknown error"}
+```
+
+
+**Response `404`  — not found product Id in  order details items**
+```json
+{ "status": "fail", "msg": "Product with id  +  product.productId  + not found"}
+
+```
+
+**Response `400`  — unknown error**
+```json
+{ "status": "error", "msg": "Failed to retrieve orders for the user","error":"error.message from `try catch` Or unknown error"}
+
+```
+
+**Response `400` — validation errors:**
+```json
+{
+  "errors": [
+    {"msg":"user id is required field (userid)"}
+    {"msg":"user id must be a number"}
+    {"msg":"user not found"}
+  ]
+}
 ```
 
 ---
 
-#### `POST /` <div id=""></div>
+#### <div id="createorder">`POST /` <a  href="#orders-endpints" style="display:inline;padding:20px">🏠︎</a></div>
 
 **Response `200` — success**
 ```json
@@ -2071,6 +2131,18 @@ Two middleware levels are used across the API:
   "msg": "Order created successfully",
   "data": {
     "id": 1,
+    "userinfo":[{
+                "name": "John Doe",
+                "email": "john@example.com",
+                "phone": "01012345678"
+            }],
+    "address":[{ //Note ⚠ untile now , i dont determine the address object shape {have no determined keys}
+                "city": "Damietta",
+                "street": "El-Geish St",
+                "country": "Egypt",
+                "building": "12A",
+                "postal_code": "34511"
+            }],
     "user_id": 1,
     "order_status": "waiting",
     "price": "299.99",
@@ -2078,14 +2150,42 @@ Two middleware levels are used across the API:
   }
 }
 ```
-**Response `400`:**
+
+
+**Response `400`  — unknown error**
 ```json
-{ "status": "fail", "msg": "Order not created" }
+{ "status": "error", "msg": "Failed to create order"}
+
 ```
+
+**Response `400` — validation errors:**
+```json
+{
+  "errors": [
+    {"msg":"user id is required field (userid)"},
+    {"msg":"user id must be a number"},
+    {"msg":"user not found"},
+    {"msg":"items are required and must be an array with at least one item"},
+    {"msg":"product id + productId must be a number"},
+    {"msg":"product not found with id ' + productId"},
+    {"msg":"price is required field (price)"},
+    {"msg":"price must be a number"},
+    {"msg":"address is required field (address)"},
+    {"msg":"address must be an array with at least one item"},
+    {"msg":"each address item must be a valid object with non-empty values"},
+    {"msg":"user info is required field (userinfo)"},
+    {"msg":"user info must be an array with at least one item"},
+    {"msg":"each userinfo item must be a valid object with non-empty values"},
+    {"msg":"order status is required field (status)"},
+    {"msg":"order status must be one of the following: complete, waiting, cancle"},
+  ]
+}
+```
+
 
 ---
 
-#### `POST /addproductTOorder` <div id=""></div>
+####  <div id="addorderproduct">`POST /addproductTOorder`<a  href="#orders-endpints" style="display:inline;padding:20px">🏠︎</a></div>
 
 **Response `200` — success**
 ```json
@@ -2095,83 +2195,236 @@ Two middleware levels are used across the API:
   "data": { "id": 1, "order_id": 1, "product_id": 5, "quantity": 2 }
 }
 ```
-**Response `400`:**
+**Response `400`  — unknown error**
 ```json
 { "status": "fail", "msg": "Failed to add product to order" }
 ```
 
+**Response `400` — validation errors:**
+```json
+{
+  "errors": [
+    {"msg":"order id is required field (orderId)"}
+    {"msg":"order id must be a number"}
+    {"msg":"order not found Or does not belong to you"}
+    {"msg":"product id is required field (productId)"}
+    {"msg":"product id must be a number"}
+    {"msg":"product not found"}
+    {"msg":"quantity is required field (quantity)"}
+    {"msg":"quantity must be a number"}
+  ]
+}
+```
+
+
 ---
 
-#### `PUT /status` *(Admin)* <div id=""></div> 
+#### <div id="updateorderstatus"> `PUT /status` *(Admin)*<a  href="#orders-endpints" style="display:inline;padding:20px">🏠︎</a></div> 
 
 **Response `200` — success**
 ```json
 { "status": "success", "msg": "Order status updated successfully" }
 ```
-**Response `400`:**
+
+
+**Response `400`  — unknown error**
 ```json
-{ "status": "fail", "msg": "Failed to update order status" }
+{ "status": "error", "msg": "Failed to update order status" }
 ```
+
+
+**Response `400` — validation errors:**
+```json
+{
+  "errors": [
+    {"msg":"order id is required field (orderId)"}
+    {"msg":"order id must be a number"}
+    {"msg":"order not found"}
+    {"msg":"order status is required field (status)"}
+    {"msg":"order status must be one of the following: complete, waiting, cancle"}
+
+  ]
+}
+```
+
 
 ---
 
-#### `DELETE /:orderId` *(Admin)* <div id=""></div>
+#### <div id="delorder">`DELETE /:orderId` *(Admin)* <a  href="#orders-endpints" style="display:inline;padding:20px">🏠︎</a></div>
+
 
 **Response `200` — success**
 ```json
 { "status": "success", "msg": "Order deleted successfully" }
 ```
-**Response `400`:**
+
+
+**Response `404`  — order not found**   
 ```json
-{ "status": "fail", "msg": "Failed to delete order" }
+{ "status": "fail", "msg": "order not found" }// i stop this error from appearing in validation before reach to controller (this response is from controller)
 ```
+
+
+**Response `400` — unknown error**
+```json
+{ "status": "error", "msg": "Failed to delete order" }
+```
+
+
+**Response `400` — validation errors:**
+```json
+{
+  "errors": [
+    {"msg":"order id is required field (orderId)"}
+    {"msg":"order id must be a number"}
+    {"msg":"order not found"}
+  ]
+}
+```
+
 
 ---
 
-#### `GET /active/:userid` <div id=""></div>
+#### <div id="getactiveorders">`GET /active/:userid` <a  href="#orders-endpints" style="display:inline;padding:20px">🏠︎</a></div>
+
 
 **Response `200` — success**
+
 ```json
 {
   "status": "success",
+  "msg":"Active orders retrieved successfully",
   "ordersCount": 1,
   "data": [
-    {
+    { // start first order 
       "id": 1,
+      "userinfo": [{ "name": "John Doe", "email": "john@example.com", "phone": "01012345678" }],
+      "address": [{ "country": "Egypt", "city": "Damietta", "street": "El-Geish St","phone":"01008236721"}],//Note ⚠ untile now , i dont determine the address object shape {have no determined keys} , In db from kind jsonb[]
+      "items": [
+            {
+              "id": 1,
+              "ptitle": "Product Name",
+              "price": "99.99",
+              "coverimage": "cover.jpg",
+              "imageCoverData": "<base64_string>",
+              .....
+              other product details except imagesData
+            }
+        ],
+      "user_id": 1,
       "order_status": "waiting",
-      "items": [{ "id": 1, "ptitle": "Product Name", "imageCoverData": "<base64_string>" }]
-    }
+      "price": "299.99"
+    } // end first order 
   ]
 }
 ```
-**Response `404`:**
+
+**Response `404`  — No active orders found**
 ```json
-{ "status": "success", "msg": "No Orders Found", "ordersCount": 0, "data": [] }
+{ "status": "success" ,"msg": "No Active Orders Found","ordersCount": 0,"data": []}
+```
+
+
+**Response `400`  —  failure in loading product image cover in one product of items**
+```json
+{ "status": "fail" ,"msg": "Failed to read product cover image for product with id + productId,","error":"error.message from `try catch` Or unknown error"}
+```
+
+
+**Response `404`  — not found product Id in  order details items**
+```json
+{ "status": "fail", "msg": "Product with id  +  product.productId  + not found"}
+
+```
+
+**Response `400`  — unknown error**
+```json
+{ "status": "error", "msg": "Failed to retrieve active orders","error":"error.message from `try catch` Or unknown error"}
+
+```
+
+**Response `400` — validation errors:**
+```json
+{
+  "errors": [  //  userid also exist and come from token in middleware before go to validation part
+    {"msg":"user id is required field (userid)"}
+    {"msg":"user id must be a number"}
+    {"msg":"user not found"}
+  ]
+}
 ```
 
 ---
 
-#### `GET /complete/:userid` <div id=""></div>
+#### <div id="getcompletedorders">`GET /complete/:userid`<a  href="#orders-endpints" style="display:inline;padding:20px">🏠︎</a></div>
+
+
 
 **Response `200` — success**
+
 ```json
 {
   "status": "success",
+  "msg":"Complete orders retrieved successfully",
   "ordersCount": 1,
   "data": [
-    {
+    { // start first order 
       "id": 1,
+      "userinfo": [{ "name": "John Doe", "email": "john@example.com", "phone": "01012345678" }],
+      "address": [{ "country": "Egypt", "city": "Damietta", "street": "El-Geish St","phone":"01008236721"}],//Note ⚠ untile now , i dont determine the address object shape {have no determined keys} , In db from kind jsonb[]
+      "items": [
+            {
+              "id": 1,
+              "ptitle": "Product Name",
+              "price": "99.99",
+              "coverimage": "cover.jpg",
+              "imageCoverData": "<base64_string>",
+              .....
+              other product details except imagesData
+            }
+        ],
+      "user_id": 1,
       "order_status": "complete",
-      "items": [{ "id": 1, "ptitle": "Product Name", "imageCoverData": "<base64_string>" }]
-    }
+      "price": "299.99"
+    } // end first order 
   ]
 }
 ```
-**Response `200` — none found:**
+
+**Response `404`  — No complete orders found**
 ```json
-{ "status": "success", "ordersCount": 0, "data": [] }
+{ "status": "success" ,"msg": "No Complete Orders Found","ordersCount": 0,"data": []}
 ```
 
+
+**Response `400`  —  failure in loading product image cover in one product of items**
+```json
+{ "status": "fail" ,"msg": "Failed to read product cover image for product with id + productId,","error":"error.message from `try catch` Or unknown error"}
+```
+
+
+**Response `404`  — not found product Id in  order details items**
+```json
+{ "status": "fail", "msg": "Product with id  +  product.productId  + not found"}
+
+```
+
+**Response `400`  — unknown error**
+```json
+{ "status": "error", "msg": "Failed to retrieve complete orders","error":"error.message from `try catch` Or unknown error"}
+
+```
+
+**Response `400` — validation errors:**
+```json
+{
+  "errors": [  //  userid also exist and come from token in middleware before go to validation part
+    {"msg":"user id is required field (userid)"}
+    {"msg":"user id must be a number"}
+    {"msg":"user not found"}
+  ]
+}
+```
 ---
 
 ## 🖼️ Image Handling

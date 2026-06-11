@@ -31,7 +31,7 @@ export const addCouponValidator = [
       return true;
     }),
 
-    check('discount')
+  check('discount')
     .notEmpty()
     .withMessage('discount value is required field  (discount)')
     .isFloat({ min: 0, max: 100 })
@@ -69,7 +69,7 @@ export const updateCouponValidator = [
     .isInt()
     .withMessage('coupon ID must be an integer')
     .custom(async val => {
-      const coupon : boolean = await couponobject.checkcouponexistbyid(val);
+      const coupon: boolean = await couponobject.checkcouponexistbyid(val);
       if (!coupon) {
         throw new Error('coupon with this ID does Not exist');
       }
@@ -80,8 +80,12 @@ export const updateCouponValidator = [
     .notEmpty()
     .withMessage('name of coupon is required field  (name)')
     .custom(async (val, { req }) => {
-      const coupon : coupon | boolean = await couponobject.show(val);
-      if (coupon && typeof coupon === 'object' && Number(coupon.id) !== Number(req.body.id)) {
+      const coupon: coupon | boolean = await couponobject.show(val);
+      if (
+        coupon &&
+        typeof coupon === 'object' &&
+        Number(coupon.id) !== Number(req.body.id)
+      ) {
         throw new Error('coupon with this name already exists');
       }
       return true;

@@ -54,10 +54,11 @@ export default class OrderServicesController {
 
               productsData.imageCoverData = imgCover;
             } catch (err) {
+              res.status(400);
               res.json({
                 status: 'fail',
-                msg: 'Failed to read product image',
-                error: err
+                msg: 'Failed to read product cover image for product with id ' + productId,
+                error: err instanceof Error ? err.message : 'unknown error'
               });
               return;
             }
@@ -67,13 +68,13 @@ export default class OrderServicesController {
           value.items = items;
           data.push(value);
         }
-        res.json({ status: 'success', ordersCount: data.length, data: data });
+        res.json({ status: 'success', msg: 'Active orders retrieved successfully', ordersCount: data.length, data: data });
         return;
       }
       res.status(404);
       res.json({
         status: 'success',
-        msg: 'No Orders Found',
+        msg: 'No Active Orders Found',
         ordersCount: 0,
         data: []
       });
@@ -82,8 +83,8 @@ export default class OrderServicesController {
       res.status(400);
       res.json({
         status: 'fail',
-        msg: 'Failed to retrieve orders',
-        error: err
+        msg: 'Failed to retrieve active orders',
+        error: err instanceof Error ? err.message : 'unknown error'
       });
       return;
     }
@@ -135,10 +136,11 @@ export default class OrderServicesController {
 
               productsData.imageCoverData = imgCover;
             } catch (err) {
+              res.status(400);
               res.json({
                 status: 'fail',
-                msg: 'Failed to read product image',
-                error: err
+                msg: 'Failed to read product cover image for product with id ' + productId,
+                error: err instanceof Error ? err.message : 'unknown error'
               });
               return;
             }
@@ -148,16 +150,25 @@ export default class OrderServicesController {
           value.items = items;
           data.push(value);
         }
+        
+        res.json({ status: 'success', msg: 'Complete orders retrieved successfully', ordersCount: data.length, data: data });
+        return;
       }
-
-      res.json({ status: 'success', ordersCount: data.length, data: data });
+      res.status(404);
+      res.json({
+        status: 'success',
+        msg: 'No Complete Orders Found',
+        ordersCount: 0,
+        data: []
+      });
       return;
+
     } catch (err) {
       res.status(400);
       res.json({
-        status: 'fail',
-        msg: 'Failed to retrieve orders',
-        error: err
+        status: 'error',
+        msg: 'Failed to retrieve complete orders',
+        error: err instanceof Error ? err.message : 'unknown error'
       });
       return;
     }

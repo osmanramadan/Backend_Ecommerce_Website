@@ -231,12 +231,81 @@ Two middleware levels are used across the API:
 - **`verify`** — validates the JWT and ensures the user can only access their own data (compares `req.params.userid` with the token's `userid`)
 - **`verifyAdmin`** — validates the JWT and checks that the role is `admin_1/id=80226753244`; blocks all others with `403 Forbidden`
 
----
+
 
 ## ⚠️ validationError
 
 - validation errors of endpoints will be in this form :  { validationError: errors.array()[0].msg } , with `status code :400` .
 
+
+
+
+## 🔒 Middleware
+
+
+### 1). first middleware : `verify` for 🔒 User
+
+```mermaid
+flowchart TD
+    A[Client Request] --> B[Verify JWT Token]
+
+    B -->|Invalid Token| C[401 Unauthorized]
+    B -->|Valid Token| D[Check User Ownership]
+
+    D -->|User ID / Email Mismatch With Token Info| E[403 Forbidden]
+    D -->|Authorized| F[Route Controller]
+
+    F --> G[Business Logic]
+    G --> H[Response]
+```
+
+
+**Response `403`  — forbidden due to access other users data**
+```json
+  {
+        "status": "forbidden",
+        "msg": "User only access his/her data"
+  }
+```
+**Response `401`  — user token invalid or missing**
+```json
+  {
+      "status": "forbidden",
+      "msg": "Invalid token or token is not provided (Unauthorized)"
+  }
+```
+
+### 2). second middleware : `verifyAdmin` for 🔒 Admin 
+
+```mermaid
+flowchart TD
+    A[Client Request] --> B[Verify JWT Token]
+
+    B -->|Invalid Token| C[401 Unauthorized]
+    B -->|Valid Token| D[Check Admin Role]
+
+    D -->|Not Admin| E[403 Forbidden]
+    D -->|Admin Authorized| F[Route Controller]
+
+    F --> G[Business Logic]
+    G --> H[Response]
+```
+
+**Response `403` — forbidden due to insufficient privileges**
+```json
+{
+    "status": "forbidden",
+    "msg": "Admin access only"
+}
+```
+
+**Response `401` — admin token invalid or missing**
+```json
+{
+    "status": "forbidden",
+    "msg": "Invalid token or token is not provided (Unauthorized)"
+}
+```
 
 
 

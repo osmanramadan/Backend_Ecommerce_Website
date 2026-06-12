@@ -68,7 +68,7 @@ const verify: RequestHandler = async (
 
     res.json({
       status: 'forbidden',
-      msg: 'Invalid token or token is not provided'
+      msg: 'Invalid token or token is not provided (Unauthorized)'
     });
 
     return;
@@ -111,7 +111,7 @@ export const verifyAdmin: RequestHandler = async (
 
     res.json({
       status: 'forbidden',
-      msg: 'Invalid token or token is not provided'
+      msg: 'Invalid token or token is not provided (Unauthorized)'
     });
 
     return;

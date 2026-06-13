@@ -439,11 +439,11 @@ flowchart TD
     F --> I[Generate Cover Filename]
     G --> J[Generate Image Filenames]
 
-    H --> K[Save Image]
+    H --> K[Save Image/s]
     I --> K
     J --> K
 
-    K --> L[Attach Filenames To Request]
+    K --> L[Attach Filename/s To Request]
 
     L -->|Processing Failed| M[500 Internal Server Error]
     L -->|Success| N[Route Controller]

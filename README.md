@@ -107,7 +107,7 @@ SALT_ROUNDS=10
 ### Database Setup
 
 ```bash
-npm resetdb
+npm run resetdb
 ```
 
 ### Run in Development
@@ -206,15 +206,15 @@ npm run start
 | items | VARCHAR(2000)[] | Array of product IDs , NOT NULL|
 | user_id | INT | FK → users(id) , NOT NULL |
 | order_status | ENUM |`'waiting'` \| `'complete'` \| `'cancle'`, DEFAULT `'waiting'` , NOT NULL |
-| price | VARCHAR(255) , NOT NULL| |
+| price | VARCHAR(255) | NOT NULL |
 
 ### `order_product`
 | Column | Type | Notes |
 |---|---|---|
 | id | SERIAL | PRIMARY KEY |
-| order_id | INT  , NOT NULL | FK → orders(id) |
-| product_id | INT  , NOT NULL  | FK → products(id) |
-| quantity | INT , NOT NULL | |
+| order_id | INT  | FK → orders(id) , NOT NULL |
+| product_id | INT   | FK → products(id) , NOT NULL |
+| quantity | INT  | NOT NULL |
 
 ---
 
@@ -228,14 +228,9 @@ Authorization: Bearer <token>
 
 Two middleware levels are used across the API:
 
-- **`verify`** — validates the JWT and ensures the user can only access their own data (compares `req.params.userid` with the token's `userid`)
+- **`verify`** — validates the JWT and ensures the user can only access their own data (compares `req.params.userid` with the token's `userid` or email)
 - **`verifyAdmin`** — validates the JWT and checks that the role is `admin_1/id=80226753244`; blocks all others with `403 Forbidden`
 
-
-
-## ⚠️ validationError
-
-- validation errors of endpoints will be in this form :  { validationError: errors.array()[0].msg } , with `status code :400` .
 
 
 
@@ -464,6 +459,12 @@ flowchart TD
     "msg": "Failed to upload image | images from validator part"
 }
 ```
+
+## ⚠️ validationError
+
+- validation errors of endpoints will be in this form :  { validationError: errors.array()[0].msg } , with `status code :400` .
+
+
 
 ## 🔌 API Endpoints `/api/v1`
 

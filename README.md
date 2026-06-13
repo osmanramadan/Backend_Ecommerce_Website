@@ -128,6 +128,9 @@ npm run start
 
 ## 🗄️ Database Schema
 
+
+![Database Schema](./docs/database_schema.jpg)
+
 ### `users`
 | Column | Type | Notes |
 |---|---|---|

@@ -29,16 +29,22 @@ export default class uploadImageController {
     return (req: Request, res: Response, next: NextFunction) => {
       upload(req, res, err => {
         if (err instanceof multer.MulterError) {
-          return res.status(400).json({
+          return res.status(413).json({
             status: 'error',
             message: 'Only one image is allowed'
           });
         }
 
         if (err) {
-          return res.status(400).json({
+          return res.status(415).json({
             status: 'error',
             message: err.message
+          });
+        }
+        if (!req.file) {
+          return res.status(422).json({
+            status: 'error',
+            message: 'image is required (image)'
           });
         }
 
@@ -77,7 +83,7 @@ export default class uploadImageController {
       upload(req, res, err => {
         if (err instanceof multer.MulterError) {
           if (err.code === 'LIMIT_UNEXPECTED_FILE') {
-            return res.status(400).json({
+            return res.status(413).json({
               status: 'error',
               message:
                 'Maximum 3 images are allowed for images and 1 for coverimage'
@@ -86,9 +92,27 @@ export default class uploadImageController {
         }
 
         if (err) {
-          return res.status(400).json({
+          return res.status(415).json({
             status: 'error',
             message: err.message
+          });
+        }
+
+        const files = req.files as {
+          [fieldname: string]: Express.Multer.File[];
+        };
+
+        if (!files?.images || files.images.length === 0) {
+          return res.status(422).json({
+            status: 'error',
+            message: 'images are required (images)'
+          });
+        }
+
+        if (!files?.coverimage || files.coverimage.length === 0) {
+          return res.status(422).json({
+            status: 'error',
+            message: 'cover image is required (coverimage)'
           });
         }
 
@@ -109,7 +133,7 @@ export default class uploadImageController {
       };
 
       if (!type || !folders[type]) {
-        return res.status(400).json({
+        return res.status(422).json({
           status: 'error',
           msg: 'Invalid upload route'
         });
@@ -163,10 +187,11 @@ export default class uploadImageController {
 
       next();
     } catch (err: unknown) {
-      res.status(400);
+      //500 Internal Server Error
+      res.status(500);
       res.json({
         status: 'error',
-        msg: 'Failed to upload image from validator part',
+        msg: 'Failed to upload image | images from validator part',
         error: err instanceof Error ? err.message : 'Unknown error'
       });
       return;

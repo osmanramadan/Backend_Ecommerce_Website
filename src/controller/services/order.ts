@@ -57,7 +57,9 @@ export default class OrderServicesController {
               res.status(400);
               res.json({
                 status: 'fail',
-                msg: 'Failed to read product cover image for product with id ' + productId,
+                msg:
+                  'Failed to read product cover image for product with id ' +
+                  productId,
                 error: err instanceof Error ? err.message : 'unknown error'
               });
               return;
@@ -68,7 +70,12 @@ export default class OrderServicesController {
           value.items = items;
           data.push(value);
         }
-        res.json({ status: 'success', msg: 'Active orders retrieved successfully', ordersCount: data.length, data: data });
+        res.json({
+          status: 'success',
+          msg: 'Active orders retrieved successfully',
+          ordersCount: data.length,
+          data: data
+        });
         return;
       }
       res.status(404);
@@ -139,7 +146,9 @@ export default class OrderServicesController {
               res.status(400);
               res.json({
                 status: 'fail',
-                msg: 'Failed to read product cover image for product with id ' + productId,
+                msg:
+                  'Failed to read product cover image for product with id ' +
+                  productId,
                 error: err instanceof Error ? err.message : 'unknown error'
               });
               return;
@@ -150,8 +159,13 @@ export default class OrderServicesController {
           value.items = items;
           data.push(value);
         }
-        
-        res.json({ status: 'success', msg: 'Complete orders retrieved successfully', ordersCount: data.length, data: data });
+
+        res.json({
+          status: 'success',
+          msg: 'Complete orders retrieved successfully',
+          ordersCount: data.length,
+          data: data
+        });
         return;
       }
       res.status(404);
@@ -162,7 +176,6 @@ export default class OrderServicesController {
         data: []
       });
       return;
-
     } catch (err) {
       res.status(400);
       res.json({

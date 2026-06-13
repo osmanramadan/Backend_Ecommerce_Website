@@ -184,7 +184,10 @@ export const addproductTOorderValidator = [
     .isNumeric()
     .withMessage('order id must be a number')
     .custom(async (value, { req }) => {
-      const orderExists = await orderobject.checkuserorderexist(req.body.userid,value);
+      const orderExists = await orderobject.checkuserorderexist(
+        req.body.userid,
+        value
+      );
       if (!orderExists) {
         throw new Error('order not found Or does not belong to you');
       }

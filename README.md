@@ -307,7 +307,163 @@ flowchart TD
 }
 ```
 
+### 3). third middleware : `uploadimage` for (upload category,brand image) — Single Image Upload
 
+```mermaid
+flowchart TD
+    A[Client Request] --> B[Validate Uploaded File]
+
+    B -->|More Than One Image| C[413 Payload Too Large]
+    B -->|Non Image File| D[415 Unsupported Media Type]
+    B -->|Image Missing| E[422 Unprocessable Entity]
+
+    B -->|Valid Image| F[Next Middleware]
+
+    F --> G[Image Processing/Resize , `resizeimage` middleware]
+    G --> H[Route Controller]
+    H --> I[Response]
+```
+
+**Response `413` — more than one image uploaded**
+```json
+{
+    "status": "error",
+    "message": "Only one image is allowed"
+}
+```
+
+**Response `415` — invalid file type**
+```json
+{
+    "status": "error",
+    "message": "Only image files are allowed"
+}
+```
+
+**Response `422` — required image missing**
+```json
+{
+    "status": "error",
+    "message": "image is required (image)"
+}
+```
+### 4). fourth middleware : `uploadMultimages` for (upload product images) — Multiple Images Upload
+
+```mermaid
+flowchart TD
+    A[Client Request] --> B[Validate Uploaded Files]
+
+    B -->|More Than Allowed Images| C[413 Payload Too Large]
+    B -->|Non Image File| D[415 Unsupported Media Type]
+
+    B -->|Images Missing| E[422 Unprocessable Entity]
+    B -->|Cover Image Missing| F[422 Unprocessable Entity]
+
+    B -->|Valid Files| G[Next Middleware]
+
+    G --> H[Image Processing/Resize , `resizeimage` middleware]
+    H --> I[Route Controller]
+    I --> J[Response]
+```
+
+**Response `413` — exceeded upload limits**
+```json
+{
+    "status": "error",
+    "message": "Maximum 3 images are allowed for images and 1 for coverimage"
+}
+```
+
+**Response `415` — invalid file type**
+```json
+{
+    "status": "error",
+    "message": "Only image files are allowed"
+}
+```
+
+**Response `422` — product images missing**
+```json
+{
+    "status": "error",
+    "message": "images are required (images)"
+}
+```
+
+**Response `422` — cover image missing**
+```json
+{
+    "status": "error",
+    "message": "cover image is required (coverimage)"
+}
+```
+### 5). fifth middleware : `resizeimage` for (product,brand,category) —  Image Processing ⚙️
+
+```mermaid
+flowchart TD
+    A[Validated Upload By Multer] --> B[Detect Upload Route]
+
+    B -->|Invalid Route| C[422 Unprocessable Entity]
+
+    B -->|Valid Route| D["Process Images Using Sharp"]
+
+    D -->|Processing Failed| E[500 Internal Server Error]
+    D -->|Success| F[Generate Unique Filenames]
+
+    F --> G[Store Images]
+    G --> H[Attach Filenames To Request]
+    H --> I[Route Controller]
+```
+--- 
+<div align="center">
+
+### Another flowchart to drive the idea to you
+
+</div>
+
+---
+
+```mermaid
+flowchart TD
+    A[Validated Upload] --> B[Detect Upload Route]
+
+    B -->|Invalid Route| C[422 Unprocessable Entity]
+
+    B -->|Valid Route| D{Upload Type?}
+
+    D -->|req.file| E[Process Single Image]
+    D -->|coverimage| F[Process Cover Image]
+    D -->|images| G[Process Product Images]
+
+    E --> H[Generate Filename]
+    F --> I[Generate Cover Filename]
+    G --> J[Generate Image Filenames]
+
+    H --> K[Save Image]
+    I --> K
+    J --> K
+
+    K --> L[Attach Filenames To Request]
+
+    L -->|Processing Failed| M[500 Internal Server Error]
+    L -->|Success| N[Route Controller]
+```
+
+**Response `422` — invalid upload route which taken from reqest link**
+```json
+{
+    "status": "error",
+    "msg": "Invalid upload route"
+}
+```
+
+**Response `500` — image processing failed (folder of imgs not found,server refuse uploading ...etc)**
+```json
+{
+    "status": "error",
+    "msg": "Failed to upload image | images from validator part"
+}
+```
 
 ## 🔌 API Endpoints `/api/v1`
 

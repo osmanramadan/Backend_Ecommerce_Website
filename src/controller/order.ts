@@ -57,7 +57,9 @@ export default class Ordercontroller {
               res.status(400);
               res.json({
                 status: 'fail',
-                msg: 'Failed to read product cover image for product with id ' + productId,
+                msg:
+                  'Failed to read product cover image for product with id ' +
+                  productId,
                 error: err instanceof Error ? err.message : 'unknown error'
               });
               return;
@@ -72,21 +74,25 @@ export default class Ordercontroller {
         return;
       }
       res.status(404);
-      res.json({ status: 'success', ordersCount: 0 , msg: 'No orders found', data: [] });
+      res.json({
+        status: 'success',
+        ordersCount: 0,
+        msg: 'No orders found',
+        data: []
+      });
       return;
     } catch (err) {
       res.status(400);
       res.json({
         status: 'error',
         msg: 'Failed to retrieve orders',
-        error:err instanceof Error ? err.message : 'unknown error'
+        error: err instanceof Error ? err.message : 'unknown error'
       });
       return;
     }
   };
 
   show = async (req: Request, res: Response) => {
-
     try {
       //Note : req.body.userid=req.params.userid
       const orderbyuser: order[] | [] = await orderobject.show(req.body.userid);
@@ -133,7 +139,9 @@ export default class Ordercontroller {
               res.status(400);
               res.json({
                 status: 'fail',
-                msg: 'Failed to read product cover image for product with id ' + productId,
+                msg:
+                  'Failed to read product cover image for product with id ' +
+                  productId,
                 error: err instanceof Error ? err.message : 'unknown error'
               });
               return;
@@ -168,7 +176,7 @@ export default class Ordercontroller {
 
   delete = async (req: Request, res: Response) => {
     try {
-      const deleted : boolean= await orderobject.deleteorder(
+      const deleted: boolean = await orderobject.deleteorder(
         parseInt(req.params.orderId)
       );
       if (deleted) {
@@ -180,7 +188,7 @@ export default class Ordercontroller {
       return;
     } catch (err) {
       res.status(400);
-      res.json({ status: 'error', msg: 'Failed to delete order'});
+      res.json({ status: 'error', msg: 'Failed to delete order' });
       return;
     }
   };
@@ -238,7 +246,7 @@ export default class Ordercontroller {
       return;
     } catch (err) {
       res.status(400);
-      res.json({ status: 'error', msg: 'Failed to create order'});
+      res.json({ status: 'error', msg: 'Failed to create order' });
       return;
     }
   };

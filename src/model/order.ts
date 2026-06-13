@@ -31,9 +31,8 @@ export class Order {
       throw new Error(`Could not find order with ${userid}. Error: ${err}`);
     }
   }
-  
-  async checkuserorderexist(userid: number, orderId: number): Promise<boolean> {
 
+  async checkuserorderexist(userid: number, orderId: number): Promise<boolean> {
     try {
       const sql = 'SELECT * FROM  orders WHERE user_id=($1) AND id=($2)';
       const conn = await pool.connect();
@@ -71,8 +70,6 @@ export class Order {
       );
     }
   }
-
-  
 
   async create(o: order): Promise<order | boolean> {
     try {

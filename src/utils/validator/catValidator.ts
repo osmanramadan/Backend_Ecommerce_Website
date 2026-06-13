@@ -19,11 +19,11 @@ export const addCategoryValidator = [
 
   check('image').custom((value, { req }) => {
     if (!req.file) {
-      throw new Error('image is required (image)');
+      throw new Error('image is required (image)'); // this handled in uploadimage middleware , but it is her for more safety .
     }
 
     if (!req.file.mimetype.startsWith('image/')) {
-      throw new Error('file must be an image');
+      throw new Error('file must be an image'); // this handled in uploadimage middleware , but it is her for more safety .
     }
 
     return true;

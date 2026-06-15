@@ -73,7 +73,7 @@ export default class Ordercontroller {
         res.json({ status: 'success', ordersCount: data.length, data: data });
         return;
       }
-      res.status(404);
+
       res.json({
         status: 'success',
         ordersCount: 0,
@@ -155,7 +155,7 @@ export default class Ordercontroller {
         res.json({ status: 'success', ordersCount: data.length, data: data });
         return;
       }
-      res.status(404);
+      
       res.json({
         status: 'success',
         ordersCount: 0,

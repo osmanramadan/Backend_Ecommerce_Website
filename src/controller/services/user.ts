@@ -52,7 +52,7 @@ export default class UserServicesController {
         });
         return;
       }
-      res.status(404);
+
       res.json({
         status: 'success',
         msg: 'No purchases found',

@@ -54,7 +54,7 @@ export default class SubCategorycontroller {
         });
         return;
       }
-      res.status(404);
+      res.status(200);
       res.json({
         status: 'success',
         subcategoriesCount: 0,

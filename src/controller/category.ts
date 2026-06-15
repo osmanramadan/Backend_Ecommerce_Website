@@ -77,7 +77,6 @@ export default class Categorycontroller {
         });
         return;
       }
-      res.status(404);
       res.json({
         status: 'success',
         categoriesCount: 0,

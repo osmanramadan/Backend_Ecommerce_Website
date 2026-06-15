@@ -53,8 +53,9 @@ export default class ProductServicesController {
         return;
       }
 
-      return res.status(404).json({
-        status: 'fail',
+      return res.status(200).json({
+        status: 'success',
+        productsCount: 0,
         msg: 'No products found in this category',
         data: []
       });
@@ -108,9 +109,10 @@ export default class ProductServicesController {
         });
         return;
       }
-      res.status(404);
+
       res.json({
-        status: 'fail',
+        status: 'success',
+        productsCount: 0,
         msg: 'No products in orders found yet',
         data: []
       });

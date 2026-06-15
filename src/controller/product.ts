@@ -86,7 +86,7 @@ export default class Productcontroller {
         });
         return;
       }
-      res.status(404);
+   
       res.json({ status: 'success', data: [], msg: 'No products found' });
       return;
     } catch (e) {
@@ -254,8 +254,8 @@ export default class Productcontroller {
         res.json({ status: 'success', productCount: data.length, data: data });
         return;
       }
-      res.status(404);
-      res.json({ status: 'success', msg: 'No products found', data: [] });
+    
+      res.json({ status: 'success',productCount:0,msg: 'No products found', data: [] });
       return;
     } catch (err) {
       res.status(400);
@@ -423,9 +423,9 @@ export default class Productcontroller {
         });
         return;
       } else {
-        res.status(404);
+        
         res.json({
-          status: 'fail',
+          status: 'success',
           productCommentsCount: 0,
           msg: 'Comments not found for the product',
           data: []
@@ -454,8 +454,8 @@ export default class Productcontroller {
         });
         return;
       } else {
-        res.status(404);
-        res.json({ status: 'No stars', msg: 'No stars found for the product' });
+       
+        res.json({ status: 'No stars', msg: 'No stars found for the product',data:[] });
         return;
       }
     } catch (e) {

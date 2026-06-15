@@ -78,7 +78,7 @@ export default class Markcontroller {
         });
         return;
       }
-      res.status(404);
+      
       res.json({
         status: 'success',
         brandsCount: 0,

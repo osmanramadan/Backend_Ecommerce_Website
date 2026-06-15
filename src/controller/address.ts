@@ -44,10 +44,11 @@ export default class Addresscontroller {
         });
         return;
       } else {
-        res.status(404);
         res.json({
           status: 'No address',
-          msg: 'No address found for this user'
+          addressCount:0,
+          msg: 'No address found for this user',
+          data:[]
         });
         return;
       }

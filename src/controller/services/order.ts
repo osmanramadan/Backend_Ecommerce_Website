@@ -78,7 +78,7 @@ export default class OrderServicesController {
         });
         return;
       }
-      res.status(404);
+   
       res.json({
         status: 'success',
         msg: 'No Active Orders Found',
@@ -168,7 +168,7 @@ export default class OrderServicesController {
         });
         return;
       }
-      res.status(404);
+  
       res.json({
         status: 'success',
         msg: 'No Complete Orders Found',

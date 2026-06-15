@@ -938,7 +938,7 @@ flowchart TD
 ```
 
 
-**Response `404` — no purchases:**
+**Response `200` — no purchases:**
 ```json
 {
   "status": "success",
@@ -1030,9 +1030,9 @@ flowchart TD
   ]
 }
 ```
-**Response `404` — No addr Found**
+**Response `200` — No addr Found**
 ```json
-{ "status": "No address", "msg": "No address found for this user" }
+{ "status": "No address", "addressCount":0,"msg": "No address found for this user","data":[] }
 ```
 **Response `400` — unknown error**
 ```json
@@ -1194,7 +1194,7 @@ flowchart TD
   ]
 }
 ```
-**Response `404` — No products found**
+**Response `200` — No products found**
 ```json
 { "status": "success", "data": [] , "msg":"No products found" }
 ```
@@ -1409,9 +1409,9 @@ flowchart TD
 { "status": "fail", "msg": "Failed to load image for product with id  + product.id + or its rate" }
 ```
 
-**Response `404` — no found products**
+**Response `200` — no found products**
 ```json
-{ "status": "success", "msg": "No products found", "data": [] }
+{ "status": "success","productCount":0,"msg": "No products found", "data": [] }
 ```
 
 **Response `400` — unknown error**
@@ -1443,9 +1443,10 @@ flowchart TD
   ]
 }
 ```
-**Response `404` — there is no orders yet**
+
+**Response `200` — there is no orders yet**
 ```json
-{ "status": "fail", "msg": "No products in orders found yet", "data": [] }
+{ "status": "success","productsCount": 0,"msg": "No products in orders found yet", "data": [] }
 ```
 
 
@@ -1480,9 +1481,9 @@ flowchart TD
   ]
 }
 ```
-**Response `404` — no products for this cat**
+**Response `200` — no products for this cat**
 ```json
-{ "status": "fail", "msg": "No products found in this category", "data": [] }
+{ "status": "success", "productsCount": 0,"msg": "No products found in this category", "data": [] }
 ```
 
 
@@ -1579,9 +1580,9 @@ flowchart TD
   ]
 }
 ```
-**Response `404` — no comments**
+**Response `200` — no comments**
 ```json
-{ "status": "fail","productCommentsCount":0,"msg": "Comments not found for the product", "data": [] }
+{ "status": "success","productCommentsCount":0,"msg": "Comments not found for the product", "data": [] }
 ```
 
 **Response `400`  — unknown error**
@@ -1613,9 +1614,9 @@ flowchart TD
   "rate": 4.5
 }
 ```
-**Response `404` — no stars for product**
+**Response `200` — no stars for product**
 ```json
-{ "status": "No stars", "msg": "No stars found for the product" }
+{ "status": "No stars", "msg": "No stars found for the product","data":[]}
 ```
 
 **Response `400`  — unknown error**
@@ -1676,7 +1677,7 @@ flowchart TD
   ]
 }
 ```
-**Response `404`  — no brands found**
+**Response `200`  — no brands found**
 ```json
 { "status": "success"," brandsCount":0,"msg":"No brands found","data": [] }
 ```
@@ -1782,7 +1783,7 @@ flowchart TD
   ]
 }
 ```
-**Response `404`  — no categories found**
+**Response `200`  — no categories found**
 ```json
 { "status": "success"," categoriesCount":0,"msg":"No categories found","data": [] }
 ```
@@ -1891,7 +1892,7 @@ flowchart TD
 }
 
 ```
-**Response `404`  — no sub-categories found**
+**Response `200`  — no sub-categories found**
 ```json
 { 
   "status": "success",
@@ -2024,7 +2025,7 @@ flowchart TD
 }
 ```
 
-**Response `404` — No coupons**
+**Response `200` — No coupons**
 ```json
 { "status": "success", "msg": "No coupons found" , "couponsCount":0 , "data": [] }
 ```
@@ -2257,7 +2258,7 @@ flowchart TD
 }
 ```
 
-**Response `404`  — No orders found**
+**Response `200`  — No orders found**
 ```json
 { "status": "success" ,"ordersCount": 0,"msg": "No orders found" , "data": []}
 ```
@@ -2314,7 +2315,7 @@ flowchart TD
   ]
 }
 ```
-**Response `404`:**
+**Response `200`:**
 ```json
 { "status": "success","ordersCount": 0, "msg": "No orders found for this user" , "data": []}
 ```
@@ -2548,7 +2549,7 @@ flowchart TD
 }
 ```
 
-**Response `404`  — No active orders found**
+**Response `200`  — No active orders found**
 ```json
 { "status": "success" ,"msg": "No Active Orders Found","ordersCount": 0,"data": []}
 ```
@@ -2620,7 +2621,7 @@ flowchart TD
 }
 ```
 
-**Response `404`  — No complete orders found**
+**Response `200`  — No complete orders found**
 ```json
 { "status": "success" ,"msg": "No Complete Orders Found","ordersCount": 0,"data": []}
 ```
@@ -2632,7 +2633,7 @@ flowchart TD
 ```
 
 
-**Response `404`  — not found product Id in  order details items**
+**Response `404`  — not found product Id which it's in order details items**
 ```json
 { "status": "fail", "msg": "Product with id  +  product.productId  + not found"}
 

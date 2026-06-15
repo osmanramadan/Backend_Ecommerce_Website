@@ -69,7 +69,7 @@ export default class Couponcontroller {
         });
         return;
       }
-      res.status(404);
+      
       res.json({
         status: 'success',
         msg: 'No coupons found',
